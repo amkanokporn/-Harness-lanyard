@@ -1,0 +1,6 @@
+{
+  "name": "Pre-Use Equipment Inspection Report Generator",
+  "description": "ระบบสร้างรายงาน PDF แบบตรวจสอบเครื่องมืออุปกรณ์ก่อนการใช้งาน สำหรับ Full Body Harness และ Lanyard ตาม Master Template กฟผ.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,461 @@
+import React, { useRef } from 'react';
+import {
+  EquipmentType,
+  FilterState,
+  Inspector,
+  ParsedExcelResult,
+} from '../types';
+import { THAI_MONTHS } from '../constants/masterTemplates';
+import {
+  UploadCloud,
+  FileSpreadsheet,
+  Calendar,
+  Layers,
+  UserCheck,
+  FileDown,
+  Printer,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
+
+interface FilterControlsProps {
+  parsedData: ParsedExcelResult | null;
+  filters: FilterState;
+  onFilterChange: (newFilters: Partial<FilterState>) => void;
+  onFileUpload: (file: File) => void;
+  inspectors: Inspector[];
+  onOpenInspectorModal: () => void;
+  onGeneratePdf: () => void;
+  onGenerateDocx: () => void;
+  onPrintPreview: () => void;
+  isGeneratingPdf: boolean;
+  isGeneratingDocx: boolean;
+  generationProgressText: string;
+}
+
+export const FilterControls: React.FC<FilterControlsProps> = ({
+  parsedData,
+  filters,
+  onFilterChange,
+  onFileUpload,
+  inspectors,
+  onOpenInspectorModal,
+  onGeneratePdf,
+  onGenerateDocx,
+  onPrintPreview,
+  isGeneratingPdf,
+  isGeneratingDocx,
+  generationProgressText,
+}) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      onFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      onFileUpload(e.target.files[0]);
+    }
+  };
+
+  // Filtered Records Summary (Without Plant filter since it's an overall checklist)
+  const filteredRecords = (parsedData?.records || []).filter((r) => {
+    const matchMonth = !filters.month || r.month === filters.month;
+    const matchYear = !filters.year || String(r.year) === String(filters.year);
+    const matchType =
+      filters.equipmentType === 'all' || r.equipmentType === filters.equipmentType;
+    return matchMonth && matchYear && matchType;
+  });
+
+  const checkedDays = Array.from(
+    new Set(filteredRecords.map((r) => Number(r.day)))
+  ).sort((a: number, b: number) => a - b);
+
+  // Real inspectors appearing in current filtered month/year records
+  const monthInspectorNames = Array.from(
+    new Set(
+      filteredRecords
+        .map((r) => (r.inspectorName || '').trim())
+        .filter(Boolean)
+    )
+  );
+
+  // Check validity for PDF/DOCX generation
+  const validationErrors: string[] = [];
+  if (!parsedData) {
+    validationErrors.push('ยังไม่ได้อัปโหลดหรือเลือกไฟล์ข้อมูล Excel');
+  } else {
+    if (!filters.month) validationErrors.push('กรุณาระบุเดือน');
+    if (!filters.year) validationErrors.push('กรุณาระบุปี พ.ศ.');
+    if (filteredRecords.length === 0) {
+      validationErrors.push('ไม่พบข้อมูลการตรวจสอบตามเงื่อนไขที่เลือก');
+    }
+  }
+
+  const canGenerate = validationErrors.length === 0;
+
+  return (
+    <div id="filter-controls-panel" className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-5">
+      {/* 1. File Upload & Source Status */}
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+          1. ข้อมูลนำเข้า (Excel Data Source)
+        </label>
+
+        <div
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className="border-2 border-dashed border-slate-300 hover:border-blue-400 bg-slate-50 hover:bg-blue-50/30 rounded-xl p-4 transition-all cursor-pointer flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left"
+        >
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".xlsx, .xls, .csv"
+            className="hidden"
+            id="file-input-excel"
+          />
+
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <FileSpreadsheet className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-800">
+                {parsedData ? parsedData.fileName : 'คลิกเพื่อเลือกไฟล์ Excel (.xlsx) หรือลากไฟล์มาวางที่นี่'}
+              </p>
+              <p className="text-xs text-slate-500">
+                {parsedData
+                  ? `ประมวลผลแล้ว ${parsedData.records.length} รายการ (พบข้อมูล ${parsedData.totalRowsParsed} แถว ในไฟล์)`
+                  : 'รองรับไฟล์ Excel ตารางรวม Full Body Harness & Lanyard'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-medium shadow-2xs hover:bg-slate-50">
+              <UploadCloud className="w-3.5 h-3.5 text-blue-600" />
+              {parsedData ? 'เปลี่ยนไฟล์' : 'เลือกไฟล์'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Filter Grid (Without Plant) */}
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+          2. ตัวกรองและกำหนดค่ารายงาน (Report Filters)
+        </label>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          {/* เดือน */}
+          <div>
+            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mb-1.5">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              เดือน <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="select-month"
+              value={filters.month}
+              onChange={(e) => onFilterChange({ month: e.target.value })}
+              className="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">-- เลือกเดือน --</option>
+              {THAI_MONTHS.map((m) => {
+                const count = (parsedData?.records || []).filter(
+                  (r) => r.month === m && (!filters.year || String(r.year) === String(filters.year))
+                ).length;
+                return (
+                  <option key={m} value={m}>
+                    {m} {count > 0 ? `(มีข้อมูล ${count} วันตรวจ)` : ''}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          {/* ปี พ.ศ. */}
+          <div>
+            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mb-1.5">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              ปี (พ.ศ.) <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="select-year"
+              value={filters.year}
+              onChange={(e) => onFilterChange({ year: e.target.value })}
+              className="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">-- เลือกปี พ.ศ. --</option>
+              {Array.from(
+                new Set([
+                  ...(parsedData?.availableYears || []),
+                  '2569',
+                  '2568',
+                  '2567',
+                ])
+              )
+                .sort((a, b) => parseInt(b, 10) - parseInt(a, 10))
+                .map((y) => {
+                  const count = (parsedData?.records || []).filter(
+                    (r) => String(r.year) === String(y)
+                  ).length;
+                  return (
+                    <option key={y} value={y}>
+                      พ.ศ. {y} {count > 0 ? `(มีข้อมูล ${count} วันตรวจ)` : ''}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+
+          {/* ประเภทอุปกรณ์ */}
+          <div>
+            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mb-1.5">
+              <Layers className="w-3.5 h-3.5 text-slate-400" />
+              ประเภทอุปกรณ์
+            </label>
+            <select
+              id="select-equipment-type"
+              value={filters.equipmentType}
+              onChange={(e) =>
+                onFilterChange({ equipmentType: e.target.value as 'all' | EquipmentType })
+              }
+              className="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="all">ทั้งหมด (Harness + Lanyard / 2 หน้า)</option>
+              <option value="harness">เฉพาะ Full Body Harness (หน้า 1)</option>
+              <option value="lanyard">เฉพาะ Lanyard (หน้า 2)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Quick Month/Year Switcher Pills for all detected historical periods */}
+        {parsedData && parsedData.records.length > 0 && (() => {
+          const uniquePeriods: { month: string; year: string; count: number }[] = [];
+          const seen = new Set<string>();
+          for (const r of parsedData.records) {
+            const key = `${r.year}:::${r.month}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              const count = parsedData.records.filter((rec) => String(rec.year) === String(r.year) && rec.month === r.month).length;
+              uniquePeriods.push({ month: r.month, year: r.year, count });
+            }
+          }
+          uniquePeriods.sort((a, b) => {
+            const yA = parseInt(a.year, 10) || 0;
+            const yB = parseInt(b.year, 10) || 0;
+            if (yA !== yB) return yA - yB;
+            return THAI_MONTHS.indexOf(a.month) - THAI_MONTHS.indexOf(b.month);
+          });
+
+          if (uniquePeriods.length <= 1) return null;
+
+          return (
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2 flex-wrap text-xs">
+              <span className="text-slate-500 font-medium shrink-0">พบข้อมูลตรวจในไฟล์ (คลิกเลือกดูได้ทันที):</span>
+              {uniquePeriods.map((p) => {
+                const isSelected = filters.month === p.month && String(filters.year) === String(p.year);
+                return (
+                  <button
+                    key={`${p.year}-${p.month}`}
+                    type="button"
+                    onClick={() => onFilterChange({ month: p.month, year: p.year })}
+                    className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer border ${
+                      isSelected
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
+                    }`}
+                  >
+                    {p.month} {p.year} <span className="opacity-75 text-[10px]">({p.count} วัน)</span>
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* 3. Real-Data Inspectors Signature Overview */}
+      <div className="pt-2 border-t border-slate-100">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 bg-gradient-to-r from-slate-50 to-blue-50/40 p-4 rounded-xl border border-slate-200">
+          <div className="flex-1 space-y-2">
+            <div className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-blue-600" />
+              <span className="text-xs font-bold text-slate-800">
+                ผู้ตรวจสอบจากข้อมูลจริง (ตรวจพบ {monthInspectorNames.length > 0 ? `${monthInspectorNames.length} ท่านในเดือนนี้` : `ทั้งหมด ${inspectors.length} ท่าน`})
+              </span>
+            </div>
+
+            {/* List of inspector badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {inspectors.length === 0 ? (
+                <span className="text-xs text-slate-400">ยังไม่พบรายชื่อผู้ตรวจในไฟล์</span>
+              ) : (
+                inspectors.map((insp) => {
+                  const hasSig = Boolean(insp.signatureDataUrl);
+                  const isCurrentMonth = monthInspectorNames.includes(insp.name) || monthInspectorNames.length === 0;
+                  const countInMonth = filteredRecords.filter((r) => r.inspectorName?.trim() === insp.name.trim()).length;
+
+                  return (
+                    <div
+                      key={insp.id}
+                      onClick={onOpenInspectorModal}
+                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${
+                        hasSig
+                          ? 'bg-white border-slate-200 hover:border-blue-400 text-slate-800 shadow-2xs'
+                          : 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100'
+                      } ${!isCurrentMonth ? 'opacity-60' : ''}`}
+                      title={hasSig ? 'ลายเซ็นพร้อมใช้งาน (คลิกเพื่อแก้ไข)' : 'ยังไม่มีลายเซ็น (คลิกเพื่ออัปเดต)'}
+                    >
+                      <span>{insp.name}</span>
+                      {countInMonth > 0 && (
+                        <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-semibold">
+                          {countInMonth} วัน
+                        </span>
+                      )}
+                      {hasSig ? (
+                        <span className="inline-flex items-center gap-0.5 text-[11px] text-emerald-600 font-semibold">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> มีลายเซ็น
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-0.5 text-[11px] text-amber-700 font-semibold">
+                          <AlertCircle className="w-3.5 h-3.5" /> รอลายเซ็น
+                        </span>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          <div className="shrink-0 flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-manage-inspectors-panel"
+              onClick={onOpenInspectorModal}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 hover:border-blue-300 rounded-xl shadow-xs transition-all cursor-pointer"
+            >
+              <UserCheck className="w-4 h-4 text-blue-600" />
+              <span>อัปเดตลายเซ็นผู้ตรวจ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Data Summary Banner */}
+      {parsedData && (
+        <div
+          id="data-summary-box"
+          className="p-3.5 bg-blue-50/80 border border-blue-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-blue-900"
+        >
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-semibold">ผลการประมวลผลข้อมูล:</span>
+            <span>พบข้อมูลการตรวจสอบ {filteredRecords.length} รายการ</span>
+            {checkedDays.length > 0 ? (
+              <span className="bg-blue-200/70 text-blue-950 px-2 py-0.5 rounded-md font-medium">
+                วันที่ตรวจในไฟล์: วันที่ {checkedDays.join(', ')} {filters.month} {filters.year} (รวม {checkedDays.length} วัน)
+              </span>
+            ) : (
+              <span className="text-amber-700 font-medium">
+                (ไม่พบวันที่ตรวจในเดือน/ปีที่เลือก)
+              </span>
+            )}
+          </div>
+          <div className="text-[11px] text-blue-700">
+            * ช่องวันที่ที่ไม่มีข้อมูลใน Excel จะถูกเว้นว่างใน PDF โดยอัตโนมัติตามข้อกำหนด
+          </div>
+        </div>
+      )}
+
+      {/* 5. Validation Alert Box before Generation */}
+      {!canGenerate && validationErrors.length > 0 && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-xs text-amber-800">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-semibold">ข้อกำหนดก่อนสร้าง PDF:</span>
+            <ul className="list-disc list-inside mt-0.5 space-y-0.5">
+              {validationErrors.map((err, idx) => (
+                <li key={idx}>{err}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+        <button
+          type="button"
+          id="btn-print-preview"
+          onClick={onPrintPreview}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+        >
+          <Printer className="w-4 h-4" />
+          พิมพ์เอกสาร (Print Dialog)
+        </button>
+
+        {/* Export Word (.docx) Button */}
+        <button
+          type="button"
+          id="btn-generate-word"
+          disabled={!canGenerate || isGeneratingDocx}
+          onClick={onGenerateDocx}
+          className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl border transition-all ${
+            canGenerate && !isGeneratingDocx
+              ? 'bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 hover:border-blue-400 cursor-pointer shadow-xs'
+              : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+          }`}
+        >
+          {isGeneratingDocx ? (
+            <>
+              <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
+              <span>กำลังสร้าง Word...</span>
+            </>
+          ) : (
+            <>
+              <FileSpreadsheet className="w-4 h-4 text-blue-600" />
+              <span>ดาวน์โหลด Word (.docx)</span>
+            </>
+          )}
+        </button>
+
+        {/* Export PDF Button */}
+        <button
+          type="button"
+          id="btn-generate-pdf"
+          disabled={!canGenerate || isGeneratingPdf}
+          onClick={onGeneratePdf}
+          className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-xl shadow-md transition-all ${
+            canGenerate && !isGeneratingPdf
+              ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer hover:shadow-blue-500/25'
+              : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+          }`}
+        >
+          {isGeneratingPdf ? (
+            <>
+              <RefreshCw className="w-4 h-4 animate-spin" />
+              <span>{generationProgressText || 'กำลังสร้าง PDF...'}</span>
+            </>
+          ) : (
+            <>
+              <FileDown className="w-4 h-4" />
+              <span>สร้างเอกสาร PDF (Generate PDF)</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};

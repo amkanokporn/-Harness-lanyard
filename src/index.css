@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'TH Sarabun New';
+  src: url('https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@master/fonts/THSarabunNew/THSarabunNew.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@master/fonts/THSarabunNew/THSarabunNew.woff') format('woff'),
+       url('https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@master/fonts/THSarabunNew/THSarabunNew.ttf') format('truetype'),
+       local('TH Sarabun New'),
+       local('THSarabunNew'),
+       local('TH Sarabun PSK'),
+       local('THSarabunPSK');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TH Sarabun New';
+  src: url('https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@master/fonts/THSarabunNew/THSarabunNew-Bold.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@master/fonts/THSarabunNew/THSarabunNew-Bold.woff') format('woff'),
+       url('https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@master/fonts/THSarabunNew/THSarabunNew-Bold.ttf') format('truetype'),
+       local('TH Sarabun New Bold'),
+       local('THSarabunNew-Bold'),
+       local('TH Sarabun PSK Bold'),
+       local('THSarabunPSK-Bold');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  body {
+    font-family: 'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+/* Master PDF Template Typography & Element Normalization */
+.font-sarabun-new {
+  font-family: 'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', sans-serif !important;
+}
+
+/* Print Specific Styles */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header,
+  #filter-controls-panel,
+  #validation-banner,
+  #report-preview-container > div:first-child,
+  #report-preview-container > div:last-child,
+  .no-print {
+    display: none !important;
+  }
+
+  #report-preview-container {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #preview-viewport {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    gap: 0 !important;
+  }
+
+  #preview-viewport > div {
+    page-break-after: always;
+    break-after: page;
+    transform: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  [id^="master-template-page-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 10mm !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+}
