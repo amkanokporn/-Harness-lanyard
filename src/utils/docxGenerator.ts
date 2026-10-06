@@ -863,10 +863,17 @@ function createSingleEquipmentDocxElements(
         children: [
           new Paragraph({
             alignment: AlignmentType.LEFT,
-            spacing: { before: 0, after: 0, line: 180 },
+            spacing: { before: 0, after: 0, line: 160 },
             children: [
-              new TextRun({ text: '[✓] ปกติ  [✕] ผิดปกติ ใช้ได้  [■] ห้ามใช้   ', font: 'TH Sarabun New', size: 24 }),
-              new TextRun({ text: 'ลงชื่อ ผู้ตรวจสอบ (รายละเอียดตามแนบ)', font: 'TH Sarabun New', size: 27, bold: true }),
+              new TextRun({ text: '[✓] ปกติ  [✕] ผิดปกติ ใช้ได้  [■] ห้ามใช้', font: 'TH Sarabun New', size: 23 }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            spacing: { before: 10, after: 0, line: 160 },
+            children: [
+              new TextRun({ text: 'ลงชื่อ ผู้ตรวจสอบ ', font: 'TH Sarabun New', size: 25, bold: true }),
+              new TextRun({ text: '(รายละเอียดตามแนบ)', font: 'TH Sarabun New', size: 23 }),
             ],
           }),
         ],

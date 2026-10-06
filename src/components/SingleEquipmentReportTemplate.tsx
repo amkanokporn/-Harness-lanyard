@@ -411,35 +411,60 @@ const EquipmentSection: React.FC<{
               colSpan={2}
               style={{
                 width: '318px',
+                maxWidth: '318px',
                 height: '44px',
                 border: '1.2px solid #000000',
                 verticalAlign: 'middle',
-                padding: '2px 8px',
+                padding: '2px 6px',
+                overflow: 'hidden',
+                boxSizing: 'border-box',
               }}
             >
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                   width: '100%',
+                  height: '100%',
+                  gap: '1px',
+                  overflow: 'hidden',
                 }}
               >
-                {/* Standard Legend matching Word */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '15px', color: '#000000', whiteSpace: 'nowrap' }}>
-                    [✓] ปกติ&nbsp;&nbsp;[✕] ผิดปกติ ใช้ได้&nbsp;&nbsp;[■] ห้ามใช้
-                  </span>
+                {/* Row 1: Status Legend */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '13.5px',
+                    color: '#000000',
+                    lineHeight: 1.15,
+                    whiteSpace: 'nowrap',
+                    width: '100%',
+                  }}
+                >
+                  <span>[✓] ปกติ</span>
+                  <span>[✕] ผิดปกติ ใช้ได้</span>
+                  <span>[■] ห้ามใช้</span>
                 </div>
 
-                {/* ลงชื่อ ผู้ตรวจสอบ label */}
-                <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  <span style={{ fontWeight: 'bold', fontSize: '18px', color: '#000000' }}>
-                    ลงชื่อ ผู้ตรวจสอบ
-                  </span>
-                  <span style={{ fontSize: '14px', color: '#334155', marginLeft: '4px' }}>
-                    (รายละเอียดตามแนบ)
-                  </span>
+                {/* Row 2: ลงชื่อ ผู้ตรวจสอบ (รายละเอียดตามแนบ) */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    fontSize: '14.5px',
+                    color: '#000000',
+                    lineHeight: 1.15,
+                    whiteSpace: 'nowrap',
+                    width: '100%',
+                  }}
+                >
+                  <span style={{ fontWeight: 'bold' }}>ลงชื่อ ผู้ตรวจสอบ</span>
+                  <span style={{ fontSize: '13px', color: '#1e293b' }}>(รายละเอียดตามแนบ)</span>
                 </div>
               </div>
             </td>
