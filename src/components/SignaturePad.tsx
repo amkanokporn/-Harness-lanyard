@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { RotateCcw, Check, PenLine } from 'lucide-react';
+import { trimAndMakeTransparentPng } from '../utils/signatureUtils';
 
 interface SignaturePadProps {
   onSave: (dataUrl: string) => void;
@@ -97,8 +98,8 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, onCancel, in
   const handleSave = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dataUrl = canvas.toDataURL('image/png');
-    onSave(dataUrl);
+    const transparentPng = trimAndMakeTransparentPng(canvas, { padding: 6 });
+    onSave(transparentPng);
   };
 
   return (

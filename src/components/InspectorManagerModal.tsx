@@ -6,6 +6,7 @@ import {
   generateDigitalSignaturePng,
   rotateDataUrlToVertical,
   extractFirstNameOnly,
+  convertToTransparentPng,
 } from '../utils/signatureUtils';
 import {
   X,
@@ -110,9 +111,11 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
     }
   }
 
-  const handleUpdateInspectorSignature = async (id: string, signatureDataUrl: string) => {
+  const handleUpdateInspectorSignature = async (id: string, rawSignatureDataUrl: string) => {
+    let signatureDataUrl = rawSignatureDataUrl;
     let verticalSignatureDataUrl = '';
     if (signatureDataUrl) {
+      signatureDataUrl = await convertToTransparentPng(signatureDataUrl);
       verticalSignatureDataUrl = await rotateDataUrlToVertical(signatureDataUrl, -90);
     }
     const updated = localInspectors.map((insp) =>
@@ -121,7 +124,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
     setLocalInspectors(updated);
     onSaveInspectors(updated);
     setActiveDrawingId(null);
-    setFeedbackMsg({ text: 'อัปเดตลายเซ็นสำเร็จและบันทึกเรียบร้อยแล้ว', type: 'success' });
+    setFeedbackMsg({ text: 'แปลงเป็นไฟล์ .PNG พื้นหลังโปร่งใสและบันทึกลายเซ็นเรียบร้อยแล้ว', type: 'success' });
     setTimeout(() => setFeedbackMsg(null), 3000);
   };
 
@@ -147,7 +150,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
     onSaveInspectors(updated);
     setActiveDrawingId(null);
     setFeedbackMsg({
-      text: `สร้างลายเซ็นตัวเขียนภาษาไทยจากชื่อจริง "${firstName}" ให้กับ ${insp.name} สำเร็จ`,
+      text: `สร้างลายเซ็น .PNG พื้นหลังโปร่งใสจากชื่อจริง "${firstName}" ให้กับ ${insp.name} สำเร็จ`,
       type: 'success',
     });
     setTimeout(() => setFeedbackMsg(null), 3500);
@@ -165,7 +168,9 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
     const reader = new FileReader();
     reader.onload = async (event) => {
       if (event.target?.result) {
-        await handleUpdateInspectorSignature(id, event.target.result as string);
+        const raw = event.target.result as string;
+        const transparentPng = await convertToTransparentPng(raw);
+        await handleUpdateInspectorSignature(id, transparentPng);
       }
     };
     reader.readAsDataURL(file);

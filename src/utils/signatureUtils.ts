@@ -179,7 +179,8 @@ export function generateDigitalSignaturePng(
     hCtx.restore();
   }
 
-  const horizontalDataUrl = hCanvas.toDataURL('image/png');
+  // Trim empty margins and guarantee 100% transparent PNG
+  const horizontalDataUrl = trimAndMakeTransparentPng(hCanvas, { padding: 8 });
 
   // 2. Draw Vertical Rotated Signature (-90 degrees: rotated up, reading bottom to top for day columns)
   // For vertical day cells, we use the first name or clean name so it fits the tall narrow cell with full letters
@@ -281,12 +282,191 @@ export function generateDigitalSignaturePng(
     vCtx.drawImage(vSourceCanvas, -240, -80);
   }
 
-  const verticalDataUrl = vCanvas.toDataURL('image/png');
+  // Trim empty margins and guarantee 100% transparent PNG
+  const verticalDataUrl = trimAndMakeTransparentPng(vCanvas, { padding: 4 });
 
   return {
     horizontal: horizontalDataUrl,
     vertical: verticalDataUrl,
   };
+}
+
+/**
+ * Crops transparent margins and removes white/light paper background if needed,
+ * outputting a clean high-resolution .PNG with transparent background.
+ */
+export function trimAndMakeTransparentPng(
+  sourceCanvas: HTMLCanvasElement,
+  options?: { padding?: number; removeLightBackground?: boolean }
+): string {
+  const { padding = 6, removeLightBackground = false } = options || {};
+  const width = sourceCanvas.width;
+  const height = sourceCanvas.height;
+  const ctx = sourceCanvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx || width === 0 || height === 0) {
+    return sourceCanvas.toDataURL('image/png');
+  }
+
+  const imgData = ctx.getImageData(0, 0, width, height);
+  const data = imgData.data;
+
+  // 1. If removeLightBackground requested, sample corners to detect paper background luminance
+  let bgBrightness = 255;
+  if (removeLightBackground) {
+    const sampleBrightness: number[] = [];
+    const cornerSize = Math.max(3, Math.min(15, Math.floor(Math.min(width, height) / 8)));
+
+    // Sample top-left, top-right, bottom-left, bottom-right corners
+    const checkCoords = [
+      { x0: 0, y0: 0 },
+      { x0: width - cornerSize, y0: 0 },
+      { x0: 0, y0: height - cornerSize },
+      { x0: width - cornerSize, y0: height - cornerSize },
+    ];
+
+    for (const c of checkCoords) {
+      for (let cy = 0; cy < cornerSize; cy++) {
+        for (let cx = 0; cx < cornerSize; cx++) {
+          const px = Math.min(width - 1, Math.max(0, c.x0 + cx));
+          const py = Math.min(height - 1, Math.max(0, c.y0 + cy));
+          const idx = (py * width + px) * 4;
+          const a = data[idx + 3];
+          if (a > 20) {
+            const b = 0.2126 * data[idx] + 0.7152 * data[idx + 1] + 0.0722 * data[idx + 2];
+            sampleBrightness.push(b);
+          }
+        }
+      }
+    }
+
+    if (sampleBrightness.length > 0) {
+      sampleBrightness.sort((a, b) => a - b);
+      // Pick upper quartile as representative paper brightness
+      bgBrightness = sampleBrightness[Math.floor(sampleBrightness.length * 0.75)] || 255;
+    }
+  }
+
+  let minX = width;
+  let minY = height;
+  let maxX = 0;
+  let maxY = 0;
+  let foundInk = false;
+
+  const bgThreshold = Math.max(190, bgBrightness - 25);
+  const transitionThreshold = Math.max(130, bgThreshold - 60);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const idx = (y * width + x) * 4;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      let a = data[idx + 3];
+
+      if (removeLightBackground) {
+        const brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+        if (brightness >= bgThreshold) {
+          // Paper background -> completely transparent
+          a = 0;
+        } else if (brightness >= transitionThreshold) {
+          // Smooth antialiasing between paper and ink
+          const factor = (brightness - transitionThreshold) / (bgThreshold - transitionThreshold);
+          const alphaFactor = Math.max(0, Math.min(1, 1 - Math.pow(factor, 1.4)));
+          a = Math.round(a * alphaFactor);
+        } else {
+          // Rich ink stroke: increase contrast
+          data[idx] = Math.max(0, Math.round(r * 0.85));
+          data[idx + 1] = Math.max(0, Math.round(g * 0.85));
+          data[idx + 2] = Math.max(0, Math.round(b * 0.85));
+        }
+        data[idx + 3] = a;
+      }
+
+      if (a > 20) {
+        foundInk = true;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+
+  if (removeLightBackground) {
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  if (!foundInk || maxX < minX || maxY < minY) {
+    return sourceCanvas.toDataURL('image/png');
+  }
+
+  const cropX = Math.max(0, minX - padding);
+  const cropY = Math.max(0, minY - padding);
+  const cropW = Math.min(width - cropX, maxX - minX + padding * 2);
+  const cropH = Math.min(height - cropY, maxY - minY + padding * 2);
+
+  if (cropW <= 2 || cropH <= 2) {
+    return sourceCanvas.toDataURL('image/png');
+  }
+
+  const outCanvas = document.createElement('canvas');
+  outCanvas.width = cropW;
+  outCanvas.height = cropH;
+  const outCtx = outCanvas.getContext('2d');
+  if (!outCtx) {
+    return sourceCanvas.toDataURL('image/png');
+  }
+
+  outCtx.clearRect(0, 0, cropW, cropH);
+  outCtx.drawImage(sourceCanvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+  return outCanvas.toDataURL('image/png');
+}
+
+/**
+ * Converts any image Data URL (JPG, WebP, opaque PNG, or drawn signature)
+ * to a clean, transparent-background .PNG image without paper artifacts.
+ */
+export async function convertToTransparentPng(dataUrl: string): Promise<string> {
+  if (!dataUrl || !dataUrl.startsWith('data:image/')) return dataUrl || '';
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        if (w === 0 || h === 0) {
+          resolve(dataUrl);
+          return;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (!ctx) {
+          resolve(dataUrl);
+          return;
+        }
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const transparentPng = trimAndMakeTransparentPng(canvas, {
+          padding: 8,
+          removeLightBackground: true,
+        });
+        resolve(transparentPng);
+      } catch (e) {
+        console.warn('convertToTransparentPng error:', e);
+        resolve(dataUrl);
+      }
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
 }
 
 /**
@@ -336,7 +516,7 @@ export function dataUrlToUint8Array(dataUrl: string): Uint8Array | null {
 
 /**
  * Takes any image Data URL (uploaded or drawn) and creates a 90-degree rotated
- * vertical PNG Data URL.
+ * vertical PNG Data URL with 100% transparent background.
  */
 export async function rotateDataUrlToVertical(
   dataUrl: string,
@@ -344,38 +524,52 @@ export async function rotateDataUrlToVertical(
 ): Promise<string> {
   if (!dataUrl) return '';
 
+  const cleanPng = await convertToTransparentPng(dataUrl);
+
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       try {
+        const naturalW = img.naturalWidth || img.width;
+        const naturalH = img.naturalHeight || img.height;
+        if (naturalW === 0 || naturalH === 0) {
+          resolve(cleanPng);
+          return;
+        }
+
         const canvas = document.createElement('canvas');
         const rads = (angle * Math.PI) / 180;
         const isRotated90 = Math.abs(angle % 180) === 90;
 
-        canvas.width = isRotated90 ? img.height : img.width;
-        canvas.height = isRotated90 ? img.width : img.height;
+        canvas.width = isRotated90 ? naturalH : naturalW;
+        canvas.height = isRotated90 ? naturalW : naturalH;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          resolve(dataUrl);
+          resolve(cleanPng);
           return;
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(rads);
-        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+        ctx.drawImage(img, -naturalW / 2, -naturalH / 2);
 
-        resolve(canvas.toDataURL('image/png'));
+        // Trim empty padding and guarantee transparent PNG
+        const verticalPng = trimAndMakeTransparentPng(canvas, {
+          padding: 4,
+          removeLightBackground: true,
+        });
+        resolve(verticalPng);
       } catch (e) {
         console.warn('Canvas rotation error:', e);
-        resolve(dataUrl);
+        resolve(cleanPng);
       }
     };
     img.onerror = () => {
-      resolve(dataUrl);
+      resolve(cleanPng);
     };
-    img.src = dataUrl;
+    img.src = cleanPng;
   });
 }

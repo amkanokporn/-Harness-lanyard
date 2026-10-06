@@ -565,7 +565,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   ) || effectiveInspectors[0]
                 : effectiveInspectors[0];
 
-              let sigSrc = matchedInsp?.verticalSignatureDataUrl || matchedInsp?.signatureDataUrl;
+              let sigSrc = matchedInsp?.verticalSignatureDataUrl;
               if (isInspected && (!sigSrc || !sigSrc.startsWith('data:image/'))) {
                 const gen = generateDigitalSignaturePng(matchedInsp?.name || dayRec?.inspectorName || 'ผู้ตรวจสอบ');
                 sigSrc = gen.vertical;
@@ -600,15 +600,15 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                           loading="eager"
                           decoding="sync"
                           referrerPolicy="no-referrer"
-                          width={18}
-                          height={28}
                           style={{
-                            width: '18px',
-                            height: '28px',
-                            maxHeight: '38px',
                             maxWidth: '19px',
+                            maxHeight: '34px',
+                            width: 'auto',
+                            height: 'auto',
                             objectFit: 'contain',
                             display: 'block',
+                            margin: '0 auto',
+                            backgroundColor: 'transparent',
                           }}
                         />
                       </div>
@@ -679,10 +679,14 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                             decoding="sync"
                             referrerPolicy="no-referrer"
                             style={{
-                              maxHeight: effectiveInspectors.length > 1 ? '14px' : '24px',
+                              maxHeight: effectiveInspectors.length > 1 ? '16px' : '24px',
                               maxWidth: '72px',
+                              width: 'auto',
+                              height: 'auto',
                               objectFit: 'contain',
                               display: 'block',
+                              margin: '0 auto',
+                              backgroundColor: 'transparent',
                             }}
                           />
                         ) : (

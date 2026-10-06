@@ -417,7 +417,7 @@ const EquipmentSection: React.FC<{
             {days.map((d) => {
               const isInspected = data.inspectedDays.includes(d);
               const dayInsp = data.dayInspectors[d];
-              let signatureSrc = dayInsp?.verticalSignatureDataUrl || dayInsp?.signatureDataUrl;
+              let signatureSrc = dayInsp?.verticalSignatureDataUrl;
               if (isInspected && (!signatureSrc || !signatureSrc.startsWith('data:image/'))) {
                 const gen = generateDigitalSignaturePng(dayInsp?.inspectorName || 'ผู้ตรวจสอบ');
                 signatureSrc = gen.vertical;
@@ -462,16 +462,15 @@ const EquipmentSection: React.FC<{
                           loading="eager"
                           decoding="sync"
                           referrerPolicy="no-referrer"
-                          width={18}
-                          height={28}
                           style={{
-                            width: '18px',
-                            height: '28px',
-                            maxHeight: '30px',
                             maxWidth: '19px',
+                            maxHeight: '28px',
+                            width: 'auto',
+                            height: 'auto',
                             objectFit: 'contain',
                             display: 'block',
                             margin: '0 auto',
+                            backgroundColor: 'transparent',
                           }}
                         />
                       ) : (

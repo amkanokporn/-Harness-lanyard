@@ -107,6 +107,47 @@ export async function generatePdfFromElements({
         })
       );
 
+      // Pre-calculate exact proportional dimensions for all images to guarantee zero distortion in PDF.
+      // html2canvas does not reliably implement CSS object-fit: contain on flex child images,
+      // so locking explicit pixel width & height preserving natural aspect ratio ensures 100% distortion-free rendering.
+      imgs.forEach((img) => {
+        const naturalW = img.naturalWidth || 1;
+        const naturalH = img.naturalHeight || 1;
+        const aspect = naturalW / naturalH;
+
+        const parent = img.parentElement;
+        const parentW = parent ? parent.clientWidth : 20;
+        const parentH = parent ? parent.clientHeight : 35;
+
+        const comp = window.getComputedStyle(img);
+        const maxW = parseFloat(comp.maxWidth) || parentW || 20;
+        const maxH = parseFloat(comp.maxHeight) || parentH || 35;
+
+        const availW = Math.max(4, Math.min(parentW > 0 ? parentW : maxW, maxW));
+        const availH = Math.max(4, Math.min(parentH > 0 ? parentH : maxH, maxH));
+
+        let fittedW = availW;
+        let fittedH = fittedW / aspect;
+        if (fittedH > availH) {
+          fittedH = availH;
+          fittedW = fittedH * aspect;
+        }
+
+        const finalW = Math.max(1, Math.round(fittedW));
+        const finalH = Math.max(1, Math.round(fittedH));
+
+        img.style.width = `${finalW}px`;
+        img.style.height = `${finalH}px`;
+        img.style.maxWidth = `${finalW}px`;
+        img.style.maxHeight = `${finalH}px`;
+        img.style.minWidth = '0';
+        img.style.minHeight = '0';
+        img.style.objectFit = 'fill';
+        img.style.display = 'block';
+        img.style.margin = 'auto';
+        img.style.backgroundColor = 'transparent';
+      });
+
       // Brief tick for final layout stabilization
       await new Promise((r) => setTimeout(r, 100));
 
@@ -144,11 +185,12 @@ export async function generatePdfFromElements({
             }
           });
 
-          // Ensure all signature and checklist images in clonedDoc are crisp, visible, and free of crossOrigin restrictions
+          // Ensure all signature and checklist images in clonedDoc are crisp, visible, and transparent
           const clonedImgs = clonedDoc.querySelectorAll('img');
           clonedImgs.forEach((img) => {
             img.style.visibility = 'visible';
             img.style.opacity = '1';
+            img.style.backgroundColor = 'transparent';
             img.removeAttribute('crossorigin');
           });
         },

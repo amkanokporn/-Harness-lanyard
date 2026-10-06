@@ -1,13 +1,12 @@
 {
-  "name": "react-example",
+  "name": "equipment-inspection-report-generator",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
@@ -25,7 +24,6 @@
     "motion": "^12.23.24",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
-    "vite": "^6.2.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

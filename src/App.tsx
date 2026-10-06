@@ -22,7 +22,11 @@ import {
   extractUniqueInspectorsFromRecords,
   EquipmentPairPageData,
 } from './utils/inspectionAggregation';
-import { ensureInspectorSignatures } from './utils/signatureUtils';
+import {
+  ensureInspectorSignatures,
+  convertToTransparentPng,
+  rotateDataUrlToVertical,
+} from './utils/signatureUtils';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 const LOCAL_STORAGE_INSPECTORS_KEY = 'pre_use_inspection_inspectors_v1';
@@ -94,6 +98,45 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  // Ensure all inspector signatures are 100% transparent PNG format without paper background
+  useEffect(() => {
+    let isMounted = true;
+    const sanitizeSignatures = async () => {
+      let hasChanges = false;
+      const sanitized = await Promise.all(
+        inspectors.map(async (insp) => {
+          let sig = insp.signatureDataUrl;
+          let vertSig = insp.verticalSignatureDataUrl;
+          if (sig && typeof sig === 'string' && sig.startsWith('data:image/')) {
+            const cleanSig = await convertToTransparentPng(sig);
+            if (!vertSig || cleanSig !== sig) {
+              sig = cleanSig;
+              vertSig = await rotateDataUrlToVertical(cleanSig, -90);
+              hasChanges = true;
+            }
+          }
+          return {
+            ...insp,
+            signatureDataUrl: sig,
+            verticalSignatureDataUrl: vertSig,
+          };
+        })
+      );
+      if (hasChanges && isMounted) {
+        setInspectors(sanitized);
+        try {
+          localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(sanitized));
+        } catch (e) {
+          console.warn('Failed to update sanitized signatures in localStorage', e);
+        }
+      }
+    };
+    sanitizeSignatures();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Save inspectors to localStorage when modified
   const handleSaveInspectors = (updatedInspectors: Inspector[]) => {
