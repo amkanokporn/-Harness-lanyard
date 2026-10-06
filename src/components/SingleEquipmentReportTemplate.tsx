@@ -60,6 +60,7 @@ const CrossSvg: React.FC<{ size?: number; className?: string }> = ({ size = 11, 
 /**
  * Sub-component for rendering a single equipment's header box and 31-day checklist table
  * Built as an EXACT digital twin of the Microsoft Word template (FM-004/QP-PB-013)
+ * Uses TH Sarabun New 13.5pt font styling matching Word layout
  */
 const EquipmentSection: React.FC<{
   data: SingleEquipmentMonthData;
@@ -88,6 +89,7 @@ const EquipmentSection: React.FC<{
           marginBottom: '3px',
           backgroundColor: '#ffffff',
           color: '#000000',
+          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', sans-serif",
         }}
       >
         <colgroup>
@@ -97,7 +99,7 @@ const EquipmentSection: React.FC<{
           <col style={{ width: '350px' }} />
         </colgroup>
         <tbody>
-          <tr style={{ height: '22px' }}>
+          <tr style={{ height: '24px' }}>
             {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
             <td
               style={{
@@ -105,9 +107,10 @@ const EquipmentSection: React.FC<{
                 padding: '2px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '12.5px',
+                fontSize: '13.5px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
+                lineHeight: 1.2,
               }}
             >
               <span>ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
@@ -128,9 +131,10 @@ const EquipmentSection: React.FC<{
                 padding: '2px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '12.5px',
+                fontSize: '13.5px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
+                lineHeight: 1.2,
               }}
             >
               <span>รหัสประจำตัวอุปกรณ์:&nbsp;</span>
@@ -144,9 +148,10 @@ const EquipmentSection: React.FC<{
                 padding: '2px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '12.5px',
+                fontSize: '13.5px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
+                lineHeight: 1.2,
               }}
             >
               <span>ทะเบียน กฟผ.:&nbsp;</span>
@@ -160,9 +165,10 @@ const EquipmentSection: React.FC<{
                 padding: '2px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '12.5px',
+                fontSize: '13.5px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
+                lineHeight: 1.2,
               }}
             >
               <span>ยี่ห้อ/รุ่น:&nbsp;</span>
@@ -182,6 +188,7 @@ const EquipmentSection: React.FC<{
           backgroundColor: '#ffffff',
           color: '#000000',
           boxSizing: 'border-box',
+          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', sans-serif",
         }}
       >
         <colgroup>
@@ -203,7 +210,7 @@ const EquipmentSection: React.FC<{
                 border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13px',
+                fontSize: '13.5px',
                 fontWeight: 'bold',
                 padding: '1px',
                 lineHeight: 1.15,
@@ -219,7 +226,7 @@ const EquipmentSection: React.FC<{
                 border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13px',
+                fontSize: '13.5px',
                 fontWeight: 'bold',
                 padding: '2px 6px',
                 lineHeight: 1.15,
@@ -251,7 +258,7 @@ const EquipmentSection: React.FC<{
                 border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13px',
+                fontSize: '13.5px',
                 fontWeight: 'bold',
                 padding: '1px',
                 lineHeight: 1.15,
@@ -273,10 +280,11 @@ const EquipmentSection: React.FC<{
                   border: '1px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  fontSize: '11px',
+                  fontSize: '11.5px',
                   fontWeight: 'bold',
                   padding: 0,
                   backgroundColor: '#ffffff',
+                  lineHeight: 1,
                 }}
               >
                 {d}
@@ -297,7 +305,7 @@ const EquipmentSection: React.FC<{
                   border: '1px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  fontSize: '13px',
+                  fontSize: '13.5px',
                   fontWeight: 'bold',
                   padding: '1px',
                 }}
@@ -313,7 +321,7 @@ const EquipmentSection: React.FC<{
                   border: '1px solid #000000',
                   textAlign: 'left',
                   verticalAlign: 'middle',
-                  fontSize: isHarness ? '11px' : '10.5px',
+                  fontSize: isHarness ? '12px' : '11.5px',
                   lineHeight: '1.2',
                   padding: '1px 6px',
                 }}
@@ -368,7 +376,7 @@ const EquipmentSection: React.FC<{
                     {symbol && !['/', '√', '✓', 'X', '■'].includes(symbol) && (
                       <span
                         style={{
-                          fontSize: '10px',
+                          fontSize: '11px',
                           fontWeight: 'bold',
                           lineHeight: '1',
                           display: 'inline-block',
@@ -419,17 +427,17 @@ const EquipmentSection: React.FC<{
               >
                 {/* Standard Legend matching Word */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '11px', color: '#000000', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '11.5px', color: '#000000', whiteSpace: 'nowrap' }}>
                     [✓] ปกติ&nbsp;&nbsp;[✕] ผิดปกติ ใช้ได้&nbsp;&nbsp;[■] ห้ามใช้
                   </span>
                 </div>
 
                 {/* ลงชื่อ ผู้ตรวจสอบ label */}
                 <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  <span style={{ fontWeight: 'bold', fontSize: '12.5px', color: '#000000' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '13.5px', color: '#000000' }}>
                     ลงชื่อ ผู้ตรวจสอบ
                   </span>
-                  <span style={{ fontSize: '10px', color: '#475569', marginLeft: '4px' }}>
+                  <span style={{ fontSize: '10.5px', color: '#334155', marginLeft: '4px' }}>
                     (รายละเอียดตามแนบ)
                   </span>
                 </div>
@@ -566,7 +574,7 @@ const EquipmentSection: React.FC<{
                 })()}
                 <span
                   style={{
-                    fontSize: '11px',
+                    fontSize: '11.5px',
                     fontWeight: 'bold',
                     lineHeight: '1',
                     whiteSpace: 'nowrap',

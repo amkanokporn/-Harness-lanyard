@@ -41,15 +41,23 @@ export function extractFirstNameOnly(fullName: string): string {
   return clean || 'ผู้ตรวจสอบ';
 }
 
+// Global In-Memory Cache for Generated Signatures to ensure 0ms instant re-renders
+const SIGNATURE_PNG_CACHE = new Map<string, { horizontal: string; vertical: string }>();
+
 /**
  * Generates an authentic Thai cursive handwritten digital signature rendered onto a transparent HTML5 canvas.
  * Renders full name styling with rich cursive strokes, flowing baseline underline, and flourishes.
  * Returns both horizontal (for summary boxes) and vertical rotated -90deg (for day columns).
+ * Cached in memory for instant high-performance rendering.
  */
 export function generateDigitalSignaturePng(
   fullName: string,
   seedStr?: string
 ): { horizontal: string; vertical: string } {
+  const cacheKey = `${fullName || 'ผู้ตรวจสอบ'}:::${seedStr || ''}`;
+  const cached = SIGNATURE_PNG_CACHE.get(cacheKey);
+  if (cached) return cached;
+
   const cleanName = cleanInspectorFullName(fullName);
   const firstName = extractFirstNameOnly(fullName);
 
@@ -285,10 +293,13 @@ export function generateDigitalSignaturePng(
   // Trim empty margins and guarantee 100% transparent PNG
   const verticalDataUrl = trimAndMakeTransparentPng(vCanvas, { padding: 4 });
 
-  return {
+  const result = {
     horizontal: horizontalDataUrl,
     vertical: verticalDataUrl,
   };
+
+  SIGNATURE_PNG_CACHE.set(cacheKey, result);
+  return result;
 }
 
 /**

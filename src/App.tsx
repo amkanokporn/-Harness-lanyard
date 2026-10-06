@@ -410,7 +410,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-['Sarabun',sans-serif]">
+    <div className="min-h-screen bg-slate-100/90 flex flex-col font-['TH_Sarabun_New','THSarabunNew','TH_Sarabun_PSK','Sarabun',sans-serif]">
       {/* Top Navbar */}
       <Navbar
         onOpenInspectorModal={() => setIsInspectorModalOpen(true)}
@@ -425,28 +425,34 @@ export default function App() {
         {toast && (
           <div
             id="toast-notification"
-            className={`flex items-center justify-between p-3.5 rounded-xl border shadow-sm transition-all ${
+            className={`flex items-center justify-between p-4 rounded-2xl border-2 shadow-md transition-all ${
               toast.type === 'success'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                ? 'bg-blue-950 border-yellow-400 text-yellow-300'
                 : toast.type === 'error'
-                ? 'bg-red-50 border-red-200 text-red-800'
-                : 'bg-blue-50 border-blue-200 text-blue-800'
+                ? 'bg-red-950 border-red-400 text-red-100'
+                : 'bg-blue-900 border-blue-400 text-white'
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3">
               {toast.type === 'success' ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div className="w-8 h-8 rounded-lg bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0">
+                  <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
+                </div>
               ) : toast.type === 'error' ? (
-                <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                <div className="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center font-bold shrink-0">
+                  <AlertCircle className="w-5 h-5 stroke-[2.5]" />
+                </div>
               ) : (
-                <Info className="w-5 h-5 text-blue-600 shrink-0" />
+                <div className="w-8 h-8 rounded-lg bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0">
+                  <Info className="w-5 h-5 stroke-[2.5]" />
+                </div>
               )}
-              <span className="text-xs sm:text-sm font-medium">{toast.message}</span>
+              <span className="text-xs sm:text-sm font-bold tracking-wide">{toast.message}</span>
             </div>
             <button
               type="button"
               onClick={() => setToast(null)}
-              className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+              className="p-1 text-blue-200 hover:text-white cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

@@ -93,25 +93,25 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
   return (
     <div
       id="report-preview-container"
-      className="bg-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-slate-700 flex flex-col space-y-4"
+      className="bg-gradient-to-b from-blue-950 via-slate-900 to-blue-950 rounded-2xl p-4 sm:p-6 shadow-2xl border-2 border-yellow-400/30 flex flex-col space-y-4"
     >
       {/* Top Preview Control Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-white">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-            <Eye className="w-5 h-5" />
+          <div className="w-11 h-11 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-md shadow-yellow-500/20">
+            <Eye className="w-6 h-6 stroke-[2.5]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-white tracking-wide">
                 ตัวอย่างเอกสารรายงานจริง (Live Report Preview)
               </h3>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <Sparkles className="w-3 h-3 mr-1" /> ลายเซ็นตรงตามวันตรวจ
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/40">
+                <Sparkles className="w-3 h-3 mr-1 text-yellow-400" /> ลายเซ็นตรงตามวันตรวจ
               </span>
             </div>
-            <p className="text-xs text-slate-400">
-              ขนาด A4 แนวนอน (Landscape) ตามแบบฟอร์ม FM-004/QP-PB-013 พร้อมช่องเซ็นชื่อใต้แต่ละวันที่ตรวจ
+            <p className="text-xs text-blue-200/70">
+              ขนาด A4 แนวนอน (Landscape) ฟอนต์ TH Sarabun New ขนาด 13.5pt ตามแบบฟอร์ม FM-004/QP-PB-013 กฟผ.
             </p>
           </div>
         </div>
@@ -119,15 +119,15 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
         {/* View Mode & Zoom Controls */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {/* Layout Mode Switcher */}
-          <div className="bg-slate-900/90 p-1 rounded-xl border border-slate-700 flex items-center gap-1 text-xs">
+          <div className="bg-blue-950/90 p-1.5 rounded-xl border border-blue-800 flex items-center gap-1.5 text-xs">
             <button
               type="button"
               id="tab-mode-pair"
               onClick={() => setViewFormat('pair')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer font-bold flex items-center gap-1.5 ${
                 viewFormat === 'pair'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-yellow-400 text-blue-950 shadow-sm'
+                  : 'text-blue-200 hover:text-white hover:bg-blue-900/60'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -137,10 +137,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
               type="button"
               id="tab-mode-matrix"
               onClick={() => setViewFormat('matrix')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer font-bold flex items-center gap-1.5 ${
                 viewFormat === 'matrix'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-yellow-400 text-blue-950 shadow-sm'
+                  : 'text-blue-200 hover:text-white hover:bg-blue-900/60'
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
@@ -149,24 +149,24 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
           </div>
 
           {/* Zoom Buttons */}
-          <div className="bg-slate-900/90 p-1 rounded-xl border border-slate-700 flex items-center gap-1 text-xs">
+          <div className="bg-blue-950/90 p-1.5 rounded-xl border border-blue-800 flex items-center gap-1 text-xs">
             <button
               type="button"
               id="btn-zoom-out"
               onClick={handleZoomOut}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-1.5 text-blue-200 hover:text-yellow-400 rounded-lg hover:bg-blue-900 transition-colors"
               title="ย่อขนาด"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
-            <span className="px-2 text-[11px] font-mono text-slate-300">
+            <span className="px-2 text-[11px] font-mono font-bold text-yellow-300">
               {Math.round(zoomLevel * 100)}%
             </span>
             <button
               type="button"
               id="btn-zoom-in"
               onClick={handleZoomIn}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-1.5 text-blue-200 hover:text-yellow-400 rounded-lg hover:bg-blue-900 transition-colors"
               title="ขยายขนาด"
             >
               <ZoomIn className="w-4 h-4" />
@@ -175,7 +175,7 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
               type="button"
               id="btn-zoom-reset"
               onClick={handleResetZoom}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-1.5 text-blue-200 hover:text-yellow-400 rounded-lg hover:bg-blue-900 transition-colors"
               title="ขนาดพอดีจอ"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -186,10 +186,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
 
       {/* Equipment Pair Tabs (When in Pair Mode) */}
       {viewFormat === 'pair' && (
-        <div className="bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 flex items-center justify-between gap-2 flex-wrap">
+        <div className="bg-blue-950/80 p-2.5 rounded-xl border border-blue-800 flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap overflow-x-auto py-1">
-            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1 pl-1">
-              <Layers className="w-3.5 h-3.5 text-blue-400" /> ลำดับชุดอุปกรณ์ (ใช้มากที่สุดขึ้นก่อน):
+            <span className="text-xs font-bold text-yellow-300 flex items-center gap-1 pl-1">
+              <Layers className="w-3.5 h-3.5 text-yellow-400" /> ชุดอุปกรณ์:
             </span>
             {pairReports.map((pair, idx) => {
               const isSelected = activePairIndex === idx;
@@ -204,15 +204,15 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
                   type="button"
                   id={`select-pair-tab-${pair.pairNumber}`}
                   onClick={() => setPairIndex(idx)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                      ? 'bg-yellow-400 text-blue-950 shadow-md ring-2 ring-yellow-300/40'
                       : hasData
-                      ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-600'
-                      : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+                      ? 'bg-blue-900/80 text-blue-100 hover:bg-blue-800 border border-blue-700'
+                      : 'bg-blue-950/60 text-blue-300/60 hover:bg-blue-900 border border-blue-800/40'
                   }`}
                 >
-                  <span className="font-semibold">ชุดที่ {pair.setLabel || pair.pairNumber}</span>
+                  <span>ชุดที่ {pair.setLabel || pair.pairNumber}</span>
                   <span className="text-[10px] opacity-80">
                     ({harnessName.replace(/Harness-/i, 'H-').replace(/[✓√✔]/g, '').trim()} / {lanyardName.replace(/Lanyard-/i, 'L-').replace(/[✓√✔]/g, '').trim()})
                   </span>
@@ -220,8 +220,8 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                         isSelected
-                          ? 'bg-emerald-400 text-slate-900'
-                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          ? 'bg-blue-950 text-yellow-300'
+                          : 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/40'
                       }`}
                       title={`ตรวจ ${daysCount} วัน (${pair.totalInspectionCount || 0} ครั้ง)`}
                     >
@@ -238,10 +238,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
               type="button"
               id="select-pair-tab-all"
               onClick={() => setPairIndex('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activePairIndex === 'all'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-600'
+                  ? 'bg-yellow-400 text-blue-950 shadow-md ring-2 ring-yellow-300/40'
+                  : 'bg-blue-900/80 text-yellow-200 hover:bg-blue-800 border border-yellow-400/30'
               }`}
             >
               <span>แสดงทั้งหมดทุกชุด ({pairReports.length} หน้า)</span>

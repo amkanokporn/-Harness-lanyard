@@ -230,20 +230,20 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
     >
       <div
         id="inspector-manager-dialog"
-        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200"
+        className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border-2 border-yellow-400/40"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/40">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
-              <UserCheck className="w-5 h-5" />
+        <div className="flex items-center justify-between px-6 py-5 border-b border-yellow-400/30 bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 text-white">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-yellow-400 text-blue-950 flex items-center justify-center shadow-md shadow-yellow-500/20 font-bold shrink-0">
+              <UserCheck className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-wide">
                 จัดการลายเซ็นผู้ตรวจสอบ (ดึงจากไฟล์ Excel อัตโนมัติ)
               </h2>
-              <p className="text-xs text-slate-500">
-                ระบบวิเคราะห์และรวมชื่อที่สะกดผิดตามหลักไวยากรณ์อัตโนมัติ พร้อมสร้างลายเซ็นตัวเขียนโปร่งใส
+              <p className="text-xs text-blue-200/80">
+                ระบบรวมชื่อสะกดผิดตามหลักไวยากรณ์อัตโนมัติ พร้อมสร้างลายเซ็นตัวเขียนโปร่งใส 100%
               </p>
             </div>
           </div>
@@ -251,18 +251,18 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
             type="button"
             id="btn-close-inspector-modal"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 rounded-xl transition-colors cursor-pointer"
+            className="p-2 text-blue-200 hover:text-white hover:bg-blue-800/80 rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Status Bar with Search & Quick Actions */}
-        <div className="px-6 py-2.5 bg-slate-100/80 border-b border-slate-200 flex items-center justify-between gap-3 text-xs flex-wrap">
+        <div className="px-6 py-3 bg-blue-50/80 border-b border-blue-200 flex items-center justify-between gap-3 text-xs flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-slate-700">สถานะลายเซ็น:</span>
-            <span className="inline-flex items-center gap-1 font-medium px-2 py-0.5 rounded-md bg-white border border-slate-300 text-slate-800">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="font-bold text-blue-950">สถานะลายเซ็น:</span>
+            <span className="inline-flex items-center gap-1 font-bold px-2.5 py-1 rounded-lg bg-blue-950 text-yellow-300 border border-yellow-400/40">
+              <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400" />
               พร้อมใช้งาน {totalWithSignature} / {totalInspectors} ท่าน
             </span>
           </div>
@@ -275,7 +275,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
               placeholder="ค้นหาชื่อคล้ายคลึง/คำสะกด..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1 text-xs border border-slate-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              className="w-full pl-8 pr-3 py-1.5 text-xs border-2 border-slate-200 rounded-xl bg-white text-slate-800 focus:border-blue-900 focus:ring-2 focus:ring-yellow-400/40 focus:outline-none font-medium"
             />
           </div>
 
@@ -284,10 +284,10 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
               type="button"
               id="btn-smart-merge-sigs"
               onClick={handleSmartMergeAndFixGrammar}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 rounded-lg font-semibold shadow-xs transition-colors cursor-pointer text-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-blue-950 border border-yellow-300 rounded-xl font-bold shadow-xs transition-colors cursor-pointer text-xs"
               title="ระบบรวมชื่อและแก้ไขคำสะกดผิดอัตโนมัติ 100%"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <Sparkles className="w-3.5 h-3.5 text-blue-950" />
               รวมชื่อออโต้แล้ว
             </button>
 
@@ -295,9 +295,9 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
               type="button"
               id="btn-quick-fill-all-sigs"
               onClick={handleAutoFillAllSignatures}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-xs transition-colors cursor-pointer text-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-bold shadow-xs transition-colors cursor-pointer text-xs"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
               สร้างลายเซ็นทุกคน
             </button>
           </div>

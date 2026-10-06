@@ -19,10 +19,10 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ issues }) =>
   return (
     <div
       id="validation-banner"
-      className={`rounded-xl border p-4 transition-all ${
+      className={`rounded-2xl border-2 p-4 transition-all shadow-sm ${
         hasErrors
-          ? 'bg-red-50/90 border-red-200 text-red-900'
-          : 'bg-amber-50/90 border-amber-200 text-amber-900'
+          ? 'bg-red-50/90 border-red-300 text-red-950'
+          : 'bg-yellow-50/90 border-yellow-400/60 text-blue-950'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -30,10 +30,10 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ issues }) =>
           {hasErrors ? (
             <XCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           ) : (
-            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
           )}
           <div>
-            <h4 className="text-sm font-semibold">
+            <h4 className="text-sm font-bold text-blue-950">
               {hasErrors
                 ? `พบข้อผิดพลาดในข้อมูล (${errors.length} รายการ)`
                 : `ข้อควรระวังในการประมวลผล (${warnings.length} รายการ)`}
