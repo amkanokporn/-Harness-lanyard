@@ -19,7 +19,7 @@ interface SingleEquipmentReportTemplateProps {
 /**
  * 100% Canvas & PDF-safe Vector Checkmark component
  */
-const CheckmarkSvg: React.FC<{ size?: number; className?: string }> = ({ size = 12, className = '' }) => (
+const CheckmarkSvg: React.FC<{ size?: number; className?: string }> = ({ size = 14, className = '' }) => (
   <svg
     width={size}
     height={size}
@@ -32,7 +32,7 @@ const CheckmarkSvg: React.FC<{ size?: number; className?: string }> = ({ size = 
     <polyline
       points="2 6.2 4.8 9.2 10 2.8"
       stroke="#000000"
-      strokeWidth="1.8"
+      strokeWidth="2.2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -42,7 +42,7 @@ const CheckmarkSvg: React.FC<{ size?: number; className?: string }> = ({ size = 
 /**
  * 100% Canvas & PDF-safe Vector Cross component
  */
-const CrossSvg: React.FC<{ size?: number; className?: string }> = ({ size = 11, className = '' }) => (
+const CrossSvg: React.FC<{ size?: number; className?: string }> = ({ size = 13, className = '' }) => (
   <svg
     width={size}
     height={size}
@@ -52,15 +52,15 @@ const CrossSvg: React.FC<{ size?: number; className?: string }> = ({ size = 11, 
     className={`inline-block shrink-0 ${className}`}
     style={{ display: 'inline-block', verticalAlign: 'middle' }}
   >
-    <line x1="2.5" y1="2.5" x2="9.5" y2="9.5" stroke="#000000" strokeWidth="1.8" strokeLinecap="round" />
-    <line x1="9.5" y1="2.5" x2="2.5" y2="9.5" stroke="#000000" strokeWidth="1.8" strokeLinecap="round" />
+    <line x1="2.5" y1="2.5" x2="9.5" y2="9.5" stroke="#000000" strokeWidth="2.2" strokeLinecap="round" />
+    <line x1="9.5" y1="2.5" x2="2.5" y2="9.5" stroke="#000000" strokeWidth="2.2" strokeLinecap="round" />
   </svg>
 );
 
 /**
  * Sub-component for rendering a single equipment's header box and 31-day checklist table
- * Built as an EXACT digital twin of the Microsoft Word template (FM-004/QP-PB-013)
- * Uses TH Sarabun New 13.5pt font styling matching Word layout
+ * Built as an EXACT 1:1 digital twin of the Microsoft Word template (FM-004/QP-PB-013)
+ * Full 13.5pt (18px) TH Sarabun New font for maximum clarity and exact document fidelity
  */
 const EquipmentSection: React.FC<{
   data: SingleEquipmentMonthData;
@@ -78,39 +78,39 @@ const EquipmentSection: React.FC<{
   const isChecked = data.isCheckedInMonth || eq.isCheckedInReport;
 
   return (
-    <div style={{ width: '1040px', boxSizing: 'border-box' }}>
-      {/* 1. Single-line Equipment Info Table (4 Bordered Cells, exactly matching Word layout) */}
+    <div style={{ width: '1078px', boxSizing: 'border-box' }}>
+      {/* 1. Single-line Equipment Info Table (4 Bordered Cells, exactly matching Word layout with 13.5pt font) */}
       <table
         style={{
-          width: '1040px',
+          width: '1078px',
           tableLayout: 'fixed',
           borderCollapse: 'collapse',
-          border: '1px solid #000000',
+          border: '1.2px solid #000000',
           marginBottom: '3px',
           backgroundColor: '#ffffff',
           color: '#000000',
-          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', sans-serif",
+          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
         }}
       >
         <colgroup>
-          <col style={{ width: '260px' }} />
-          <col style={{ width: '210px' }} />
+          <col style={{ width: '270px' }} />
           <col style={{ width: '220px' }} />
-          <col style={{ width: '350px' }} />
+          <col style={{ width: '230px' }} />
+          <col style={{ width: '358px' }} />
         </colgroup>
         <tbody>
-          <tr style={{ height: '24px' }}>
+          <tr style={{ height: '26px' }}>
             {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
             <td
               style={{
-                border: '1px solid #000000',
-                padding: '2px 6px',
+                border: '1.2px solid #000000',
+                padding: '2px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '13.5px',
+                fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.15,
               }}
             >
               <span>ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
@@ -127,14 +127,14 @@ const EquipmentSection: React.FC<{
             {/* Col 2: รหัสประจำตัวอุปกรณ์ */}
             <td
               style={{
-                border: '1px solid #000000',
-                padding: '2px 6px',
+                border: '1.2px solid #000000',
+                padding: '2px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '13.5px',
+                fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.15,
               }}
             >
               <span>รหัสประจำตัวอุปกรณ์:&nbsp;</span>
@@ -144,14 +144,14 @@ const EquipmentSection: React.FC<{
             {/* Col 3: ทะเบียน กฟผ. */}
             <td
               style={{
-                border: '1px solid #000000',
-                padding: '2px 6px',
+                border: '1.2px solid #000000',
+                padding: '2px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '13.5px',
+                fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.15,
               }}
             >
               <span>ทะเบียน กฟผ.:&nbsp;</span>
@@ -161,14 +161,14 @@ const EquipmentSection: React.FC<{
             {/* Col 4: ยี่ห้อ/รุ่น */}
             <td
               style={{
-                border: '1px solid #000000',
-                padding: '2px 6px',
+                border: '1.2px solid #000000',
+                padding: '2px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
-                fontSize: '13.5px',
+                fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.15,
               }}
             >
               <span>ยี่ห้อ/รุ่น:&nbsp;</span>
@@ -178,24 +178,24 @@ const EquipmentSection: React.FC<{
         </tbody>
       </table>
 
-      {/* 2. Checklist Table (Days 1..31) - Every cell explicitly bordered 1px solid black */}
+      {/* 2. Checklist Table (Days 1..31) - Fully bordered matching Word */}
       <table
         style={{
-          width: '1040px',
+          width: '1078px',
           tableLayout: 'fixed',
           borderCollapse: 'collapse',
-          border: '1px solid #000000',
+          border: '1.2px solid #000000',
           backgroundColor: '#ffffff',
           color: '#000000',
           boxSizing: 'border-box',
-          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', sans-serif",
+          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
         }}
       >
         <colgroup>
-          <col style={{ width: '36px' }} />
-          <col style={{ width: '275px' }} />
+          <col style={{ width: '38px' }} />
+          <col style={{ width: '280px' }} />
           {days.map((d) => (
-            <col key={d} style={{ width: '21px' }} />
+            <col key={d} style={{ width: '22px' }} />
           ))}
           <col style={{ width: '78px' }} />
         </colgroup>
@@ -206,14 +206,14 @@ const EquipmentSection: React.FC<{
             <th
               rowSpan={2}
               style={{
-                width: '36px',
-                border: '1px solid #000000',
+                width: '38px',
+                border: '1.2px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13.5px',
+                fontSize: '18px', // 13.5pt
                 fontWeight: 'bold',
                 padding: '1px',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -222,14 +222,14 @@ const EquipmentSection: React.FC<{
             <th
               rowSpan={2}
               style={{
-                width: '275px',
-                border: '1px solid #000000',
+                width: '280px',
+                border: '1.2px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13.5px',
+                fontSize: '18px', // 13.5pt
                 fontWeight: 'bold',
-                padding: '2px 6px',
-                lineHeight: 1.15,
+                padding: '2px 8px',
+                lineHeight: 1.1,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -238,14 +238,14 @@ const EquipmentSection: React.FC<{
             <th
               colSpan={31}
               style={{
-                width: '651px',
-                border: '1px solid #000000',
+                width: '682px',
+                border: '1.2px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13.5px',
+                fontSize: '18px', // 13.5pt
                 fontWeight: 'bold',
                 padding: '2px 0',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -255,13 +255,13 @@ const EquipmentSection: React.FC<{
               rowSpan={2}
               style={{
                 width: '78px',
-                border: '1px solid #000000',
+                border: '1.2px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '13.5px',
+                fontSize: '18px', // 13.5pt
                 fontWeight: 'bold',
                 padding: '1px',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -275,12 +275,12 @@ const EquipmentSection: React.FC<{
               <th
                 key={d}
                 style={{
-                  width: '21px',
-                  height: '18px',
-                  border: '1px solid #000000',
+                  width: '22px',
+                  height: '20px',
+                  border: '1.2px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  fontSize: '11.5px',
+                  fontSize: '15px', // 11.5pt
                   fontWeight: 'bold',
                   padding: 0,
                   backgroundColor: '#ffffff',
@@ -300,12 +300,12 @@ const EquipmentSection: React.FC<{
               {/* ลำดับที่ */}
               <td
                 style={{
-                  width: '36px',
-                  height: isHarness ? '21px' : '19px',
-                  border: '1px solid #000000',
+                  width: '38px',
+                  height: isHarness ? '22px' : '20px',
+                  border: '1.2px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  fontSize: '13.5px',
+                  fontSize: '18px', // 13.5pt
                   fontWeight: 'bold',
                   padding: '1px',
                 }}
@@ -316,14 +316,14 @@ const EquipmentSection: React.FC<{
               {/* รายการตรวจสอบ */}
               <td
                 style={{
-                  width: '275px',
-                  height: isHarness ? '21px' : '19px',
-                  border: '1px solid #000000',
+                  width: '280px',
+                  height: isHarness ? '22px' : '20px',
+                  border: '1.2px solid #000000',
                   textAlign: 'left',
                   verticalAlign: 'middle',
-                  fontSize: isHarness ? '12px' : '11.5px',
-                  lineHeight: '1.2',
-                  padding: '1px 6px',
+                  fontSize: '17px', // 13pt
+                  lineHeight: '1.15',
+                  padding: '1px 8px',
                 }}
               >
                 {item.text}
@@ -339,9 +339,9 @@ const EquipmentSection: React.FC<{
                   <td
                     key={d}
                     style={{
-                      width: '21px',
-                      height: isHarness ? '21px' : '19px',
-                      border: '1px solid #000000',
+                      width: '22px',
+                      height: isHarness ? '22px' : '20px',
+                      border: '1.2px solid #000000',
                       textAlign: 'center',
                       verticalAlign: 'middle',
                       padding: 0,
@@ -350,7 +350,7 @@ const EquipmentSection: React.FC<{
                     {(symbol === '/' || symbol === '√') && (
                       <span
                         style={{
-                          fontSize: '13.5px',
+                          fontSize: '18.5px', // 14pt
                           fontWeight: 'bold',
                           lineHeight: '1',
                           display: 'inline-block',
@@ -360,14 +360,14 @@ const EquipmentSection: React.FC<{
                         /
                       </span>
                     )}
-                    {symbol === '✓' && <CheckmarkSvg size={10} />}
-                    {symbol === 'X' && <CrossSvg size={9} />}
+                    {symbol === '✓' && <CheckmarkSvg size={12} />}
+                    {symbol === 'X' && <CrossSvg size={11} />}
                     {symbol === '■' && (
                       <span
                         style={{
                           display: 'inline-block',
-                          width: '8px',
-                          height: '8px',
+                          width: '9px',
+                          height: '9px',
                           backgroundColor: '#000000',
                           verticalAlign: 'middle',
                         }}
@@ -376,7 +376,7 @@ const EquipmentSection: React.FC<{
                     {symbol && !['/', '√', '✓', 'X', '■'].includes(symbol) && (
                       <span
                         style={{
-                          fontSize: '11px',
+                          fontSize: '14px',
                           fontWeight: 'bold',
                           lineHeight: '1',
                           display: 'inline-block',
@@ -394,8 +394,8 @@ const EquipmentSection: React.FC<{
               <td
                 style={{
                   width: '78px',
-                  height: isHarness ? '21px' : '19px',
-                  border: '1px solid #000000',
+                  height: isHarness ? '22px' : '20px',
+                  border: '1.2px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
                   padding: '1px',
@@ -405,14 +405,14 @@ const EquipmentSection: React.FC<{
           ))}
 
           {/* Bottom Row: Status Legend + ลงชื่อ ผู้ตรวจสอบ (Per-Day Signatures) */}
-          <tr style={{ height: '42px' }}>
+          <tr style={{ height: '44px' }}>
             {/* Left: Legend & Label (spans columns 1 and 2) */}
             <td
               colSpan={2}
               style={{
-                width: '311px',
-                height: '42px',
-                border: '1px solid #000000',
+                width: '318px',
+                height: '44px',
+                border: '1.2px solid #000000',
                 verticalAlign: 'middle',
                 padding: '2px 8px',
               }}
@@ -427,17 +427,17 @@ const EquipmentSection: React.FC<{
               >
                 {/* Standard Legend matching Word */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '11.5px', color: '#000000', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '15px', color: '#000000', whiteSpace: 'nowrap' }}>
                     [✓] ปกติ&nbsp;&nbsp;[✕] ผิดปกติ ใช้ได้&nbsp;&nbsp;[■] ห้ามใช้
                   </span>
                 </div>
 
                 {/* ลงชื่อ ผู้ตรวจสอบ label */}
                 <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  <span style={{ fontWeight: 'bold', fontSize: '13.5px', color: '#000000' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '18px', color: '#000000' }}>
                     ลงชื่อ ผู้ตรวจสอบ
                   </span>
-                  <span style={{ fontSize: '10.5px', color: '#334155', marginLeft: '4px' }}>
+                  <span style={{ fontSize: '14px', color: '#334155', marginLeft: '4px' }}>
                     (รายละเอียดตามแนบ)
                   </span>
                 </div>
@@ -464,9 +464,9 @@ const EquipmentSection: React.FC<{
                   }}
                   title={isInspected ? `ผู้ตรวจวันที่ ${d}: ${dayInsp?.inspectorName || 'ผู้ตรวจสอบ'}` : undefined}
                   style={{
-                    width: '21px',
-                    height: '42px',
-                    border: '1px solid #000000',
+                    width: '22px',
+                    height: '44px',
+                    border: '1.2px solid #000000',
                     textAlign: 'center',
                     verticalAlign: 'middle',
                     padding: 0,
@@ -494,8 +494,8 @@ const EquipmentSection: React.FC<{
                           decoding="sync"
                           referrerPolicy="no-referrer"
                           style={{
-                            maxWidth: '18px',
-                            maxHeight: '38px',
+                            maxWidth: '19px',
+                            maxHeight: '40px',
                             width: 'auto',
                             height: 'auto',
                             objectFit: 'contain',
@@ -510,13 +510,13 @@ const EquipmentSection: React.FC<{
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: '12px',
-                            height: '12px',
+                            width: '14px',
+                            height: '14px',
                             border: '1px solid #000000',
                             backgroundColor: '#ffffff',
                           }}
                         >
-                          <CheckmarkSvg size={8} />
+                          <CheckmarkSvg size={10} />
                         </span>
                       )}
                     </div>
@@ -529,8 +529,8 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 width: '78px',
-                height: '42px',
-                border: '1px solid #000000',
+                height: '44px',
+                border: '1.2px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 padding: '1px 2px',
@@ -560,8 +560,8 @@ const EquipmentSection: React.FC<{
                       decoding="sync"
                       referrerPolicy="no-referrer"
                       style={{
-                        maxHeight: '22px',
-                        maxWidth: '72px',
+                        maxHeight: '24px',
+                        maxWidth: '74px',
                         width: 'auto',
                         height: 'auto',
                         objectFit: 'contain',
@@ -574,7 +574,7 @@ const EquipmentSection: React.FC<{
                 })()}
                 <span
                   style={{
-                    fontSize: '11.5px',
+                    fontSize: '15px', // 11.5pt
                     fontWeight: 'bold',
                     lineHeight: '1',
                     whiteSpace: 'nowrap',
@@ -605,11 +605,11 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
       id={pageId}
       className="bg-white text-black select-none shadow-md print:shadow-none mx-auto"
       style={{
-        width: '1080px',
-        height: '764px',
-        minHeight: '764px',
-        maxHeight: '764px',
-        padding: '10px 20px 8px 20px',
+        width: '1122px',
+        height: '793px',
+        minHeight: '793px',
+        maxHeight: '793px',
+        padding: '14px 22px 10px 22px',
         boxSizing: 'border-box',
         fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
         color: '#000000',
@@ -619,10 +619,10 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
       }}
     >
       {/* 1. Header Title */}
-      <div style={{ textAlign: 'center', marginBottom: '2px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '3px' }}>
         <h1
           style={{
-            fontSize: '18px',
+            fontSize: '21px', // 16pt bold
             fontWeight: 'bold',
             color: '#000000',
             margin: 0,
@@ -640,12 +640,12 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          fontSize: '13.5px',
+          fontSize: '18px', // 13.5pt bold
           fontWeight: 'bold',
           color: '#000000',
           padding: '0 2px',
-          marginBottom: '3px',
-          gap: '32px',
+          marginBottom: '4px',
+          gap: '36px',
           lineHeight: 1.2,
         }}
       >
@@ -677,9 +677,9 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
       {/* 5. Footer: Copy Note & Document Revision Bar */}
       <div
         style={{
-          fontSize: '11px',
+          fontSize: '16px', // 12pt
           color: '#000000',
-          margin: '2px 0 2px 2px',
+          margin: '3px 0 2px 2px',
           lineHeight: 1.2,
         }}
       >
@@ -689,22 +689,23 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
       {/* Revision Table matching Word's 3-column bordered table */}
       <table
         style={{
-          width: '1040px',
+          width: '1078px',
           tableLayout: 'fixed',
           borderCollapse: 'collapse',
-          border: '1px solid #000000',
+          border: '1.2px solid #000000',
           backgroundColor: '#ffffff',
           color: '#000000',
           textAlign: 'center',
-          fontSize: '11px',
+          fontSize: '16px', // 12pt
+          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
         }}
       >
         <tbody>
-          <tr style={{ height: '20px' }}>
+          <tr style={{ height: '22px' }}>
             <td
               style={{
                 width: '33.33%',
-                border: '1px solid #000000',
+                border: '1.2px solid #000000',
                 padding: '2px',
                 verticalAlign: 'middle',
               }}
@@ -714,7 +715,7 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
             <td
               style={{
                 width: '33.33%',
-                border: '1px solid #000000',
+                border: '1.2px solid #000000',
                 padding: '2px',
                 verticalAlign: 'middle',
                 fontWeight: 'bold',
@@ -725,7 +726,7 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
             <td
               style={{
                 width: '33.34%',
-                border: '1px solid #000000',
+                border: '1.2px solid #000000',
                 padding: '2px',
                 verticalAlign: 'middle',
               }}

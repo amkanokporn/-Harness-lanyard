@@ -93,80 +93,80 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
   return (
     <div
       id="report-preview-container"
-      className="bg-gradient-to-b from-blue-950 via-slate-900 to-blue-950 rounded-2xl p-4 sm:p-6 shadow-2xl border-2 border-yellow-400/30 flex flex-col space-y-4"
+      className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 flex flex-col space-y-5"
     >
       {/* Top Preview Control Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-white">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-md shadow-yellow-500/20">
-            <Eye className="w-6 h-6 stroke-[2.5]" />
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-blue-950 text-yellow-400 flex items-center justify-center font-bold shrink-0 shadow-md">
+            <Eye className="w-7 h-7 stroke-[2.5]" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-white tracking-wide">
-                ตัวอย่างเอกสารรายงานจริง (Live Report Preview)
-              </h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/40">
-                <Sparkles className="w-3 h-3 mr-1 text-yellow-400" /> ลายเซ็นตรงตามวันตรวจ
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2 className="text-lg sm:text-xl font-bold text-blue-950 tracking-normal">
+                ตัวอย่างเอกสารรายงานจริง (Document Preview)
+              </h2>
+              <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs sm:text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <Sparkles className="w-4 h-4 mr-1 text-emerald-600" /> ลายเซ็นลงตรงตามวันตรวจ
               </span>
             </div>
-            <p className="text-xs text-blue-200/70">
-              ขนาด A4 แนวนอน (Landscape) ฟอนต์ TH Sarabun New ขนาด 13.5pt ตามแบบฟอร์ม FM-004/QP-PB-013 กฟผ.
+            <p className="text-sm sm:text-base text-slate-600 mt-0.5 font-normal">
+              แบบฟอร์ม FM-004/QP-PB-013 กฟผ. (ขนาด A4 แนวนอน • ฟอนต์ TH Sarabun New 13.5pt พอดี 1 หน้า)
             </p>
           </div>
         </div>
 
         {/* View Mode & Zoom Controls */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
           {/* Layout Mode Switcher */}
-          <div className="bg-blue-950/90 p-1.5 rounded-xl border border-blue-800 flex items-center gap-1.5 text-xs">
+          <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex items-center gap-1.5 text-sm sm:text-base">
             <button
               type="button"
               id="tab-mode-pair"
               onClick={() => setViewFormat('pair')}
-              className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer font-bold flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl transition-all cursor-pointer font-semibold flex items-center gap-2 ${
                 viewFormat === 'pair'
-                  ? 'bg-yellow-400 text-blue-950 shadow-sm'
-                  : 'text-blue-200 hover:text-white hover:bg-blue-900/60'
+                  ? 'bg-blue-950 text-yellow-300 shadow-xs'
+                  : 'text-slate-700 hover:text-blue-950 hover:bg-slate-200/60'
               }`}
             >
-              <FileText className="w-3.5 h-3.5" />
-              <span>แบบรายชุดอุปกรณ์ (Master Form)</span>
+              <FileText className="w-4 h-4" />
+              <span>รายชุดอุปกรณ์ (Word Layout)</span>
             </button>
             <button
               type="button"
               id="tab-mode-matrix"
               onClick={() => setViewFormat('matrix')}
-              className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer font-bold flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl transition-all cursor-pointer font-semibold flex items-center gap-2 ${
                 viewFormat === 'matrix'
-                  ? 'bg-yellow-400 text-blue-950 shadow-sm'
-                  : 'text-blue-200 hover:text-white hover:bg-blue-900/60'
+                  ? 'bg-blue-950 text-yellow-300 shadow-xs'
+                  : 'text-slate-700 hover:text-blue-950 hover:bg-slate-200/60'
               }`}
             >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>แบบสรุปตารางรวม (Matrix)</span>
+              <LayoutGrid className="w-4 h-4" />
+              <span>ตารางรวม (Matrix)</span>
             </button>
           </div>
 
           {/* Zoom Buttons */}
-          <div className="bg-blue-950/90 p-1.5 rounded-xl border border-blue-800 flex items-center gap-1 text-xs">
+          <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex items-center gap-1 text-sm sm:text-base">
             <button
               type="button"
               id="btn-zoom-out"
               onClick={handleZoomOut}
-              className="p-1.5 text-blue-200 hover:text-yellow-400 rounded-lg hover:bg-blue-900 transition-colors"
+              className="p-2 text-slate-700 hover:text-blue-950 rounded-xl hover:bg-slate-200 transition-colors"
               title="ย่อขนาด"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
-            <span className="px-2 text-[11px] font-mono font-bold text-yellow-300">
+            <span className="px-2 text-xs sm:text-sm font-mono font-bold text-blue-950 min-w-[42px] text-center">
               {Math.round(zoomLevel * 100)}%
             </span>
             <button
               type="button"
               id="btn-zoom-in"
               onClick={handleZoomIn}
-              className="p-1.5 text-blue-200 hover:text-yellow-400 rounded-lg hover:bg-blue-900 transition-colors"
+              className="p-2 text-slate-700 hover:text-blue-950 rounded-xl hover:bg-slate-200 transition-colors"
               title="ขยายขนาด"
             >
               <ZoomIn className="w-4 h-4" />
@@ -175,10 +175,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
               type="button"
               id="btn-zoom-reset"
               onClick={handleResetZoom}
-              className="p-1.5 text-blue-200 hover:text-yellow-400 rounded-lg hover:bg-blue-900 transition-colors"
+              className="p-2 text-slate-700 hover:text-blue-950 rounded-xl hover:bg-slate-200 transition-colors"
               title="ขนาดพอดีจอ"
             >
-              <Maximize2 className="w-3.5 h-3.5" />
+              <Maximize2 className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -186,10 +186,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
 
       {/* Equipment Pair Tabs (When in Pair Mode) */}
       {viewFormat === 'pair' && (
-        <div className="bg-blue-950/80 p-2.5 rounded-xl border border-blue-800 flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2 flex-wrap overflow-x-auto py-1">
-            <span className="text-xs font-bold text-yellow-300 flex items-center gap-1 pl-1">
-              <Layers className="w-3.5 h-3.5 text-yellow-400" /> ชุดอุปกรณ์:
+        <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap overflow-x-auto py-1">
+            <span className="text-sm sm:text-base font-bold text-blue-950 flex items-center gap-1.5 pl-1">
+              <Layers className="w-4 h-4 text-blue-800" /> ชุดอุปกรณ์:
             </span>
             {pairReports.map((pair, idx) => {
               const isSelected = activePairIndex === idx;
@@ -204,31 +204,31 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
                   type="button"
                   id={`select-pair-tab-${pair.pairNumber}`}
                   onClick={() => setPairIndex(idx)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-4 py-2 rounded-xl text-sm sm:text-base font-semibold transition-all cursor-pointer flex items-center gap-2 border ${
                     isSelected
-                      ? 'bg-yellow-400 text-blue-950 shadow-md ring-2 ring-yellow-300/40'
+                      ? 'bg-blue-950 text-yellow-300 border-blue-950 shadow-sm'
                       : hasData
-                      ? 'bg-blue-900/80 text-blue-100 hover:bg-blue-800 border border-blue-700'
-                      : 'bg-blue-950/60 text-blue-300/60 hover:bg-blue-900 border border-blue-800/40'
+                      ? 'bg-white text-slate-800 hover:bg-blue-50 border-slate-300'
+                      : 'bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-200/70'
                   }`}
                 >
                   <span>ชุดที่ {pair.setLabel || pair.pairNumber}</span>
-                  <span className="text-[10px] opacity-80">
+                  <span className="text-xs opacity-80">
                     ({harnessName.replace(/Harness-/i, 'H-').replace(/[✓√✔]/g, '').trim()} / {lanyardName.replace(/Lanyard-/i, 'L-').replace(/[✓√✔]/g, '').trim()})
                   </span>
                   {hasData ? (
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                         isSelected
-                          ? 'bg-blue-950 text-yellow-300'
-                          : 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/40'
+                          ? 'bg-yellow-400 text-blue-950'
+                          : 'bg-blue-100 text-blue-900 border border-blue-200'
                       }`}
-                      title={`ตรวจ ${daysCount} วัน (${pair.totalInspectionCount || 0} ครั้ง)`}
+                      title={`ตรวจ ${daysCount} วัน`}
                     >
                       {daysCount} วัน
                     </span>
                   ) : (
-                    <span className="text-[9.5px] opacity-40">0 วัน</span>
+                    <span className="text-xs opacity-40">0 วัน</span>
                   )}
                 </button>
               );
@@ -238,10 +238,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
               type="button"
               id="select-pair-tab-all"
               onClick={() => setPairIndex('all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-xl text-sm sm:text-base font-semibold transition-all cursor-pointer flex items-center gap-1.5 border ${
                 activePairIndex === 'all'
-                  ? 'bg-yellow-400 text-blue-950 shadow-md ring-2 ring-yellow-300/40'
-                  : 'bg-blue-900/80 text-yellow-200 hover:bg-blue-800 border border-yellow-400/30'
+                  ? 'bg-blue-950 text-yellow-300 border-blue-950 shadow-sm'
+                  : 'bg-white text-blue-950 hover:bg-yellow-50 border-yellow-400/60'
               }`}
             >
               <span>แสดงทั้งหมดทุกชุด ({pairReports.length} หน้า)</span>
@@ -252,13 +252,13 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
 
       {/* Matrix Sub-tabs (When in Matrix Mode) */}
       {viewFormat === 'matrix' && (
-        <div className="bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-400 pl-1">เลือกหน้าตารางรวม:</span>
+        <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
+          <span className="text-xs sm:text-sm font-semibold text-slate-600 pl-1">เลือกหน้าตารางรวม:</span>
           <button
             type="button"
             onClick={() => setMatrixTab('both')}
-            className={`px-3 py-1 rounded-lg text-xs font-medium cursor-pointer ${
-              matrixTab === 'both' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold cursor-pointer ${
+              matrixTab === 'both' ? 'bg-blue-950 text-white' : 'text-slate-700 hover:bg-slate-200'
             }`}
           >
             ทั้ง 2 หน้า
@@ -266,8 +266,8 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
           <button
             type="button"
             onClick={() => setMatrixTab('harness')}
-            className={`px-3 py-1 rounded-lg text-xs font-medium cursor-pointer ${
-              matrixTab === 'harness' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold cursor-pointer ${
+              matrixTab === 'harness' ? 'bg-blue-950 text-white' : 'text-slate-700 hover:bg-slate-200'
             }`}
           >
             เฉพาะ Harness (12 รายการ)
@@ -275,8 +275,8 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
           <button
             type="button"
             onClick={() => setMatrixTab('lanyard')}
-            className={`px-3 py-1 rounded-lg text-xs font-medium cursor-pointer ${
-              matrixTab === 'lanyard' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold cursor-pointer ${
+              matrixTab === 'lanyard' ? 'bg-blue-950 text-white' : 'text-slate-700 hover:bg-slate-200'
             }`}
           >
             เฉพาะ Lanyard (10 รายการ)
@@ -287,21 +287,21 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
       {/* Preview Stage Area with Scale */}
       <div
         id="preview-viewport"
-        className="w-full bg-slate-900/90 rounded-xl p-4 sm:p-8 overflow-auto border border-slate-700/80 min-h-[550px] flex flex-col items-center gap-8"
+        className="w-full bg-slate-800 rounded-2xl p-4 sm:p-8 overflow-auto border border-slate-700 min-h-[550px] flex flex-col items-center gap-8 shadow-inner"
       >
         {viewFormat === 'pair' ? (
           /* Single Equipment Pair Pages */
           displayedPairs.map((pair) => {
             return (
               <div key={pair.pairNumber} className="flex flex-col items-center">
-                <div className="mb-2 flex items-center justify-between w-full max-w-[1080px] text-xs text-slate-300 font-medium px-1">
+                <div className="mb-2.5 flex items-center justify-between w-full max-w-[1122px] text-xs sm:text-sm text-slate-300 font-medium px-1">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-3.5 h-3.5 text-blue-400" />
+                    <FileText className="w-4 h-4 text-yellow-400" />
                     <span className="font-semibold text-white">
                       {pair.pairLabel}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                  <div className="flex items-center gap-3 text-xs sm:text-sm text-blue-200">
                     <span>
                       Harness ตรวจ {pair.harnessData.inspectedDays.length} วัน
                     </span>
@@ -318,10 +318,10 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
                     transformOrigin: 'top center',
                     marginBottom:
                       zoomLevel < 1
-                        ? `-${(1 - zoomLevel) * 764}px`
-                        : `${(zoomLevel - 1) * 764}px`,
+                        ? `-${(1 - zoomLevel) * 793}px`
+                        : `${(zoomLevel - 1) * 793}px`,
                   }}
-                  className="transition-transform duration-150"
+                  className="transition-transform duration-150 shadow-2xl rounded-sm"
                 >
                   <SingleEquipmentReportTemplate
                     pageData={pair}
@@ -341,8 +341,8 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
           <>
             {(matrixTab === 'both' || matrixTab === 'harness') && (
               <div className="flex flex-col items-center">
-                <div className="mb-2 flex items-center gap-2 text-xs text-slate-400 font-medium">
-                  <FileText className="w-3.5 h-3.5 text-blue-400" />
+                <div className="mb-2 flex items-center gap-2 text-xs sm:text-sm text-slate-300 font-medium">
+                  <FileText className="w-4 h-4 text-yellow-400" />
                   <span>หน้าที่ 1 : ตารางรวม Full Body Harness (12 รายการ)</span>
                 </div>
                 <div
@@ -354,7 +354,7 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
                         ? `-${(1 - zoomLevel) * 764}px`
                         : `${(zoomLevel - 1) * 764}px`,
                   }}
-                  className="transition-transform duration-150"
+                  className="transition-transform duration-150 shadow-2xl rounded-sm"
                 >
                   <PdfReportTemplate
                     equipmentType="harness"
@@ -373,8 +373,8 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
 
             {(matrixTab === 'both' || matrixTab === 'lanyard') && (
               <div className="flex flex-col items-center">
-                <div className="mb-2 flex items-center gap-2 text-xs text-slate-400 font-medium">
-                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="mb-2 flex items-center gap-2 text-xs sm:text-sm text-slate-300 font-medium">
+                  <FileText className="w-4 h-4 text-emerald-400" />
                   <span>หน้าที่ 2 : ตารางรวม Lanyard (10 รายการ)</span>
                 </div>
                 <div
@@ -386,7 +386,7 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
                         ? `-${(1 - zoomLevel) * 764}px`
                         : `${(zoomLevel - 1) * 764}px`,
                   }}
-                  className="transition-transform duration-150"
+                  className="transition-transform duration-150 shadow-2xl rounded-sm"
                 >
                   <PdfReportTemplate
                     equipmentType="lanyard"
@@ -407,20 +407,20 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
       </div>
 
       {/* Bottom Notes & Inspector Information */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-slate-400 px-1">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm text-slate-600 px-1 pt-1">
         <div className="flex items-center gap-2">
-          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <Check className="w-4 h-4 text-emerald-600 shrink-0 stroke-[2.5]" />
           <span>
-            แยกตามเลขที่อุปกรณ์ (Harness-1 / Lanyard-1) และลงลายเซ็นในช่องใต้วันที่ตรวจโดยอัตโนมัติตาม Master Template
+            แยกตามเลขที่อุปกรณ์ (Harness-1 / Lanyard-1) และลงลายเซ็นใต้ช่องวันที่ตรวจโดยอัตโนมัติ
           </span>
         </div>
         {onOpenInspectorManager && (
           <button
             type="button"
             onClick={onOpenInspectorManager}
-            className="text-blue-400 hover:text-blue-300 underline font-medium cursor-pointer"
+            className="text-blue-900 hover:text-blue-700 underline font-semibold cursor-pointer"
           >
-            จัดการรายชื่อและลายเซ็นผู้ตรวจสอบ ({allInspectors.length} ท่าน)
+            จัดการรายชื่อและลายเซ็นผู้ตรวจ ({allInspectors.length} ท่าน)
           </button>
         )}
       </div>

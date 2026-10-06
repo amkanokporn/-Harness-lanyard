@@ -19,6 +19,8 @@ import {
   RefreshCw,
   Search,
   Sparkles,
+  Check,
+  FileText,
 } from 'lucide-react';
 import { normalizeInspectorName } from '../utils/inspectionAggregation';
 import { fuzzyFilterInspectors } from '../utils/thaiNameNormalizer';
@@ -89,7 +91,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
     );
   }, [filteredRecords]);
 
-  // Precomputed inspector day counts for current filtered records (O(1) lookups)
+  // Precomputed inspector day counts for current filtered records
   const inspectorCountsMap = useMemo(() => {
     const map = new Map<string, number>();
     for (const r of filteredRecords) {
@@ -110,7 +112,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
     );
   }, [filteredRecords]);
 
-  // Memoized filtered inspectors for display in badges based on search query
+  // Memoized filtered inspectors for display based on search query
   const displayedInspectors = useMemo(() => {
     return fuzzyFilterInspectors(inspectors, inspectorSearchQuery);
   }, [inspectors, inspectorSearchQuery]);
@@ -130,17 +132,20 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
   const canGenerate = validationErrors.length === 0;
 
   return (
-    <div id="filter-controls-panel" className="bg-white rounded-2xl border-2 border-blue-900/20 shadow-md p-5 sm:p-6 space-y-5">
+    <div id="filter-controls-panel" className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
       {/* 1. File Upload & Source Status */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-950">
-            <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
-            1. ข้อมูลนำเข้า (Excel Data Source)
-          </label>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg sm:text-xl font-bold text-blue-950 flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-blue-950 text-yellow-400 flex items-center justify-center text-sm font-bold shadow-xs">
+              1
+            </span>
+            <span>นำเข้าข้อมูลการตรวจสอบ (Excel Source)</span>
+          </h2>
           {parsedData && (
-            <span className="text-[11px] font-semibold text-blue-900 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
-              โหลดข้อมูลสำเร็จ
+            <span className="text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3.5 py-1 rounded-full flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+              พร้อมใช้งาน
             </span>
           )}
         </div>
@@ -149,7 +154,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-blue-200 hover:border-yellow-400 bg-blue-50/30 hover:bg-yellow-50/30 rounded-xl p-4 transition-all cursor-pointer flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left"
+          className="border-2 border-dashed border-blue-200 hover:border-yellow-500 bg-blue-50/30 hover:bg-yellow-50/30 rounded-2xl p-5 sm:p-6 transition-all cursor-pointer flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
         >
           <input
             type="file"
@@ -160,50 +165,52 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
             id="file-input-excel"
           />
 
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-blue-950 text-yellow-400 flex items-center justify-center font-bold shrink-0 shadow-sm">
-              <FileSpreadsheet className="w-6 h-6" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-blue-950 text-yellow-400 flex items-center justify-center font-bold shrink-0 shadow-md">
+              <FileSpreadsheet className="w-8 h-8" />
             </div>
             <div>
-              <p className="text-sm font-bold text-blue-950">
-                {parsedData ? parsedData.fileName : 'คลิกเพื่อเลือกไฟล์ Excel (.xlsx) หรือลากไฟล์มาวางที่นี่'}
+              <p className="text-base sm:text-lg font-bold text-blue-950">
+                {parsedData ? parsedData.fileName : 'คลิกเพื่อเลือกไฟล์ Excel หรือลากไฟล์มาวางที่นี่'}
               </p>
-              <p className="text-xs text-slate-600">
+              <p className="text-sm sm:text-base text-slate-600 mt-0.5 font-normal">
                 {parsedData
-                  ? `ประมวลผลแล้ว ${parsedData.records.length} วันตรวจ (พบข้อมูล ${parsedData.totalRowsParsed} แถวในไฟล์)`
+                  ? `ประมวลผลแล้ว ${parsedData.records.length} วันตรวจ (ข้อมูลทั้งหมด ${parsedData.totalRowsParsed} แถว)`
                   : 'รองรับไฟล์ Excel ตารางรวม Full Body Harness & Lanyard'}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-yellow-400 hover:bg-yellow-300 text-blue-950 rounded-xl text-xs font-bold shadow-xs transition-colors">
-              <UploadCloud className="w-4 h-4 text-blue-950" />
+            <span className="inline-flex items-center gap-2 px-5 py-3 bg-yellow-400 hover:bg-yellow-300 text-blue-950 rounded-xl text-sm sm:text-base font-bold shadow-xs transition-all">
+              <UploadCloud className="w-5 h-5 text-blue-950 stroke-[2.5]" />
               {parsedData ? 'เปลี่ยนไฟล์ Excel' : 'เลือกไฟล์ Excel'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* 2. Filter Grid (Without Plant) */}
-      <div>
-        <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-950 mb-2.5">
-          <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
-          2. ตัวกรองและกำหนดค่ารายงาน (Report Filters)
-        </label>
+      {/* 2. Filter Grid */}
+      <div className="pt-2">
+        <h2 className="text-lg sm:text-xl font-bold text-blue-950 flex items-center gap-2.5 mb-3.5">
+          <span className="w-8 h-8 rounded-xl bg-blue-950 text-yellow-400 flex items-center justify-center text-sm font-bold shadow-xs">
+            2
+          </span>
+          <span>เลือกเงื่อนไขรายงาน (Report Options)</span>
+        </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* เดือน */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-bold text-blue-950 mb-1.5">
-              <Calendar className="w-3.5 h-3.5 text-blue-700" />
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label className="flex items-center gap-2 text-sm sm:text-base font-bold text-blue-950 mb-2">
+              <Calendar className="w-4 h-4 text-blue-700" />
               เดือน <span className="text-red-500">*</span>
             </label>
             <select
               id="select-month"
               value={filters.month}
               onChange={(e) => onFilterChange({ month: e.target.value })}
-              className="w-full px-3 py-2 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-800"
+              className="w-full px-3.5 py-3 text-base border border-slate-300 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-900 shadow-xs"
             >
               <option value="">-- เลือกเดือน --</option>
               {THAI_MONTHS.map((m) => {
@@ -212,7 +219,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
                 ).length;
                 return (
                   <option key={m} value={m}>
-                    {m} {count > 0 ? `(มีข้อมูล ${count} วันตรวจ)` : ''}
+                    {m} {count > 0 ? `(${count} วันตรวจ)` : ''}
                   </option>
                 );
               })}
@@ -220,16 +227,16 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           </div>
 
           {/* ปี พ.ศ. */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-bold text-blue-950 mb-1.5">
-              <Calendar className="w-3.5 h-3.5 text-blue-700" />
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label className="flex items-center gap-2 text-sm sm:text-base font-bold text-blue-950 mb-2">
+              <Calendar className="w-4 h-4 text-blue-700" />
               ปี (พ.ศ.) <span className="text-red-500">*</span>
             </label>
             <select
               id="select-year"
               value={filters.year}
               onChange={(e) => onFilterChange({ year: e.target.value })}
-              className="w-full px-3 py-2 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-800"
+              className="w-full px-3.5 py-3 text-base border border-slate-300 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-900 shadow-xs"
             >
               <option value="">-- เลือกปี พ.ศ. --</option>
               {Array.from(
@@ -247,7 +254,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
                   ).length;
                   return (
                     <option key={y} value={y}>
-                      พ.ศ. {y} {count > 0 ? `(มีข้อมูล ${count} วันตรวจ)` : ''}
+                      พ.ศ. {y} {count > 0 ? `(${count} วัน)` : ''}
                     </option>
                   );
                 })}
@@ -255,9 +262,9 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           </div>
 
           {/* ประเภทอุปกรณ์ */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-bold text-blue-950 mb-1.5">
-              <Layers className="w-3.5 h-3.5 text-blue-700" />
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label className="flex items-center gap-2 text-sm sm:text-base font-bold text-blue-950 mb-2">
+              <Layers className="w-4 h-4 text-blue-700" />
               ประเภทอุปกรณ์
             </label>
             <select
@@ -266,36 +273,32 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
               onChange={(e) =>
                 onFilterChange({ equipmentType: e.target.value as 'all' | EquipmentType })
               }
-              className="w-full px-3 py-2 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-800"
+              className="w-full px-3.5 py-3 text-base border border-slate-300 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-900 shadow-xs"
             >
-              <option value="all">ทั้งหมด (Harness + Lanyard / 2 หน้า)</option>
-              <option value="harness">เฉพาะ Full Body Harness (หน้า 1)</option>
-              <option value="lanyard">เฉพาะ Lanyard (หน้า 2)</option>
+              <option value="all">ทั้งหมด (Harness + Lanyard)</option>
+              <option value="harness">เฉพาะ Full Body Harness</option>
+              <option value="lanyard">เฉพาะ Lanyard</option>
             </select>
           </div>
 
           {/* ผู้ตรวจสอบ */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-bold text-blue-950 mb-1.5">
-              <UserCheck className="w-3.5 h-3.5 text-blue-700" />
-              ผู้ตรวจสอบ (Inspector)
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label className="flex items-center gap-2 text-sm sm:text-base font-bold text-blue-950 mb-2">
+              <UserCheck className="w-4 h-4 text-blue-700" />
+              กรองตามผู้ตรวจสอบ
             </label>
             <select
               id="select-inspector"
               value={filters.selectedInspectorId}
               onChange={(e) => onFilterChange({ selectedInspectorId: e.target.value })}
-              className="w-full px-3 py-2 text-xs sm:text-sm border-2 border-slate-200 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-800"
+              className="w-full px-3.5 py-3 text-base border border-slate-300 focus:border-blue-900 rounded-xl bg-white focus:ring-2 focus:ring-yellow-400/50 focus:outline-none font-medium text-slate-900 shadow-xs"
             >
-              <option value="">-- ผู้ตรวจสอบทั้งหมด (ภาพรวม) --</option>
+              <option value="">-- ผู้ตรวจทั้งหมด (รวม) --</option>
               {inspectors.map((insp) => {
                 const count = inspectorCountsMap.get(normalizeInspectorName(insp.name).toLowerCase()) || 0;
-                const aliasNotice =
-                  insp.aliases && insp.aliases.length > 0
-                    ? ` [รวมชื่อ ${insp.aliases.length}]`
-                    : '';
                 return (
                   <option key={insp.id} value={insp.id}>
-                    {insp.name} {count > 0 ? `(ตรวจ ${count} วัน)` : ''}{aliasNotice}
+                    {insp.name} {count > 0 ? `(ตรวจ ${count} วัน)` : ''}
                   </option>
                 );
               })}
@@ -303,7 +306,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           </div>
         </div>
 
-        {/* Quick Month/Year Switcher Pills for all detected historical periods */}
+        {/* Quick Month/Year Switcher Buttons */}
         {parsedData && parsedData.records.length > 0 && (() => {
           const uniquePeriods: { month: string; year: string; count: number }[] = [];
           const seen = new Set<string>();
@@ -325,8 +328,8 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           if (uniquePeriods.length <= 1) return null;
 
           return (
-            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2 flex-wrap text-xs">
-              <span className="text-blue-950 font-bold shrink-0">ข้อมูลในไฟล์ (คลิกเลือกดูได้ทันที):</span>
+            <div className="mt-4 pt-3.5 border-t border-slate-200 flex items-center gap-2.5 flex-wrap">
+              <span className="text-sm sm:text-base font-semibold text-slate-700 shrink-0">เลือกดูเดือนในไฟล์:</span>
               {uniquePeriods.map((p) => {
                 const isSelected = filters.month === p.month && String(filters.year) === String(p.year);
                 return (
@@ -334,13 +337,13 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
                     key={`${p.year}-${p.month}`}
                     type="button"
                     onClick={() => onFilterChange({ month: p.month, year: p.year })}
-                    className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer border ${
+                    className={`px-4 py-2 rounded-xl text-sm sm:text-base font-semibold transition-all cursor-pointer border ${
                       isSelected
-                        ? 'bg-blue-950 text-yellow-400 border-yellow-400 shadow-sm'
-                        : 'bg-blue-50 text-blue-950 border-blue-200 hover:bg-yellow-100 hover:border-yellow-400'
+                        ? 'bg-blue-950 text-yellow-300 border-blue-950 shadow-sm'
+                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                     }`}
                   >
-                    {p.month} {p.year} <span className="opacity-80 text-[11px]">({p.count} วัน)</span>
+                    {p.month} {p.year} <span className="opacity-75 text-xs">({p.count} วัน)</span>
                   </button>
                 );
               })}
@@ -350,31 +353,31 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
       </div>
 
       {/* 3. Real-Data Inspectors Signature Overview */}
-      <div className="pt-2 border-t border-slate-200">
-        <div className="flex flex-col gap-3.5 bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 p-4 sm:p-5 rounded-2xl text-white border border-yellow-400/30 shadow-inner">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="w-7 h-7 rounded-lg bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0">
-                <UserCheck className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-bold text-white tracking-wide">
-                ผู้ตรวจสอบจากข้อมูลจริง ({monthInspectorNamesSet.size > 0 ? `พบ ${monthInspectorNamesSet.size} ท่านในเดือนนี้` : `ทั้งหมด ${inspectors.length} ท่าน`})
+      <div className="pt-2">
+        <div className="flex flex-col gap-4 bg-slate-900 p-5 sm:p-6 rounded-3xl text-white border border-slate-800 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="w-8 h-8 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center text-sm font-bold shrink-0">
+                3
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/40">
-                <Sparkles className="w-3 h-3 text-yellow-400" /> รวมชื่อคล้ายคลึง & แก้คำสะกดผิดอัตโนมัติ
+              <span className="text-base sm:text-lg font-bold text-white tracking-normal">
+                ผู้ตรวจสอบและลายเซ็น ({monthInspectorNamesSet.size > 0 ? `พบ ${monthInspectorNamesSet.size} ท่านในเดือนนี้` : `ทั้งหมด ${inspectors.length} ท่าน`})
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-yellow-400/20 text-yellow-300 border border-yellow-400/30">
+                <Sparkles className="w-4 h-4 text-yellow-400" /> รวมชื่อคล้ายคลึง & แก้สะกดผิดอัตโนมัติแล้ว
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Inspector Search Input */}
+            <div className="flex items-center gap-2.5">
+              {/* Search Input */}
               <div className="relative w-full sm:w-60">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="ค้นหาชื่อคล้ายคลึง/คำสะกด..."
+                  placeholder="ค้นหาชื่อผู้ตรวจ..."
                   value={inspectorSearchQuery}
                   onChange={(e) => setInspectorSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs border border-blue-700 rounded-xl bg-blue-900/60 text-white placeholder-blue-300/60 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                  className="w-full pl-9 pr-3.5 py-2 text-sm sm:text-base border border-slate-700 rounded-xl bg-slate-800 text-white placeholder-slate-400 focus:border-yellow-400 focus:outline-none font-normal"
                 />
               </div>
 
@@ -382,18 +385,18 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
                 type="button"
                 id="btn-manage-inspectors-panel"
                 onClick={onOpenInspectorModal}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-blue-950 bg-yellow-400 hover:bg-yellow-300 border border-yellow-300 rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm sm:text-base font-semibold text-blue-950 bg-yellow-400 hover:bg-yellow-300 rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
               >
-                <UserCheck className="w-3.5 h-3.5 text-blue-950" />
+                <UserCheck className="w-4 h-4 text-blue-950 stroke-[2.5]" />
                 <span>จัดการลายเซ็น</span>
               </button>
             </div>
           </div>
 
           {/* List of inspector badges */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             {displayedInspectors.length === 0 ? (
-              <span className="text-xs text-blue-200">
+              <span className="text-sm sm:text-base text-slate-400 font-normal">
                 {inspectorSearchQuery ? `ไม่พบผู้ตรวจที่ตรงกับ "${inspectorSearchQuery}"` : 'ยังไม่พบรายชื่อผู้ตรวจในไฟล์'}
               </span>
             ) : (
@@ -415,12 +418,12 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
                         onFilterChange({ selectedInspectorId: insp.id });
                       }
                     }}
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
+                    className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-sm sm:text-base font-medium cursor-pointer transition-all ${
                       isFilterSelected
-                        ? 'bg-yellow-400 text-blue-950 border-yellow-300 shadow-md font-bold ring-2 ring-yellow-300/50'
+                        ? 'bg-yellow-400 text-blue-950 border-yellow-400 shadow-sm font-bold'
                         : hasSig
-                        ? 'bg-blue-900/80 border-blue-700/80 text-white hover:border-yellow-400 hover:bg-blue-800'
-                        : 'bg-amber-950/60 border-amber-500/50 text-amber-200 hover:bg-amber-900/70'
+                        ? 'bg-slate-800 border-slate-700 text-white hover:border-yellow-400'
+                        : 'bg-amber-950/70 border-amber-500/60 text-amber-200 hover:bg-amber-900/80'
                     } ${!isCurrentMonth && !isFilterSelected ? 'opacity-60' : ''}`}
                     title={
                       isFilterSelected
@@ -431,42 +434,30 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
                     <span>{insp.name}</span>
                     {countInMonth > 0 && (
                       <span
-                        className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                        className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                           isFilterSelected
                             ? 'bg-blue-950 text-yellow-300'
-                            : 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/30'
+                            : 'bg-yellow-400/20 text-yellow-300'
                         }`}
                       >
                         {countInMonth} วัน
                       </span>
                     )}
-                    {insp.aliases && insp.aliases.length > 0 && (
-                      <span
-                        className={`text-[10px] px-1 py-0.2 rounded font-medium ${
-                          isFilterSelected
-                            ? 'bg-blue-900 text-white'
-                            : 'bg-blue-950 text-blue-200 border border-blue-800'
-                        }`}
-                        title={`รวมชื่อที่สะกดผิด/คล้ายกัน: ${insp.aliases.join(', ')}`}
-                      >
-                        รวม {insp.aliases.length} ชื่อ
-                      </span>
-                    )}
                     {hasSig ? (
                       <span
-                        className={`inline-flex items-center gap-0.5 text-[11px] font-bold ${
+                        className={`inline-flex items-center gap-1 text-xs sm:text-sm font-semibold ${
                           isFilterSelected ? 'text-blue-950' : 'text-emerald-400'
                         }`}
                       >
-                        <CheckCircle2 className="w-3.5 h-3.5" /> มีลายเซ็น
+                        <CheckCircle2 className="w-4 h-4 stroke-[2.5]" /> มีลายเซ็น
                       </span>
                     ) : (
                       <span
-                        className={`inline-flex items-center gap-0.5 text-[11px] font-bold ${
+                        className={`inline-flex items-center gap-1 text-xs sm:text-sm font-semibold ${
                           isFilterSelected ? 'text-blue-950' : 'text-yellow-400'
                         }`}
                       >
-                        <AlertCircle className="w-3.5 h-3.5" /> รอลายเซ็น
+                        <AlertCircle className="w-4 h-4 stroke-[2.5]" /> รอลายเซ็น
                       </span>
                     )}
                   </div>
@@ -481,14 +472,14 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
       {parsedData && (
         <div
           id="data-summary-box"
-          className="p-3.5 bg-yellow-50/80 border border-yellow-200/80 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-blue-950"
+          className="p-4 sm:p-5 bg-amber-50/80 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm sm:text-base text-slate-800"
         >
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-blue-950">ผลการประมวลผลข้อมูล:</span>
-            <span>พบข้อมูลการตรวจสอบ {filteredRecords.length} รายการ</span>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="font-bold text-blue-950">สรุปข้อมูลตรวจ:</span>
+            <span>พบรายการตรวจ {filteredRecords.length} รายการ</span>
             {checkedDays.length > 0 ? (
-              <span className="bg-blue-950 text-yellow-300 px-2 py-0.5 rounded-md font-bold">
-                วันที่ตรวจในไฟล์: วันที่ {checkedDays.join(', ')} {filters.month} {filters.year} (รวม {checkedDays.length} วัน)
+              <span className="bg-blue-950 text-yellow-300 px-3 py-1 rounded-lg font-semibold text-sm sm:text-base">
+                วันที่ตรวจ: วันที่ {checkedDays.join(', ')} {filters.month} {filters.year} (รวม {checkedDays.length} วัน)
               </span>
             ) : (
               <span className="text-amber-800 font-bold">
@@ -496,36 +487,36 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
               </span>
             )}
           </div>
-          <div className="text-[11px] text-slate-600">
-            * ช่องวันที่ที่ไม่มีข้อมูลใน Excel จะถูกเว้นว่างใน PDF โดยอัตโนมัติตามข้อกำหนด
+          <div className="text-xs sm:text-sm text-slate-500">
+            * ช่องวันที่ไม่มีการตรวจจะเว้นว่างใน PDF อัตโนมัติตามแบบฟอร์ม
           </div>
         </div>
       )}
 
       {/* 5. Validation Alert Box before Generation */}
       {!canGenerate && validationErrors.length > 0 && (
-        <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl flex items-start gap-2 text-xs text-amber-900">
-          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-4 sm:p-5 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3 text-sm sm:text-base text-red-900">
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5 stroke-[2.5]" />
           <div>
-            <span className="font-bold">ข้อกำหนดก่อนสร้าง PDF:</span>
-            <ul className="list-disc list-inside mt-0.5 space-y-0.5">
+            <span className="font-bold text-base sm:text-lg">ข้อกำหนดก่อนสร้าง PDF / Word:</span>
+            <ul className="list-disc list-inside mt-1 space-y-1">
               {validationErrors.map((err, idx) => (
-                <li key={idx}>{err}</li>
+                <li key={idx} className="font-medium">{err}</li>
               ))}
             </ul>
           </div>
         </div>
       )}
 
-      {/* 6. Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+      {/* 6. Action Buttons - Big, Clean, Legible, Comfortable */}
+      <div className="flex flex-col sm:flex-row items-center justify-end gap-3.5 pt-4 border-t border-slate-200">
         <button
           type="button"
           id="btn-print-preview"
           onClick={onPrintPreview}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl transition-colors cursor-pointer"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3.5 text-sm sm:text-base font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-2xl transition-colors cursor-pointer"
         >
-          <Printer className="w-4 h-4" />
+          <Printer className="w-5 h-5" />
           พิมพ์เอกสาร (Print)
         </button>
 
@@ -535,46 +526,46 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           id="btn-generate-word"
           disabled={!canGenerate || isGeneratingDocx}
           onClick={onGenerateDocx}
-          className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold rounded-xl border-2 transition-all ${
+          className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-semibold rounded-2xl border transition-all ${
             canGenerate && !isGeneratingDocx
-              ? 'bg-blue-900 hover:bg-blue-800 text-white border-blue-950 cursor-pointer shadow-sm'
+              ? 'bg-blue-950 hover:bg-blue-900 text-white border-blue-950 cursor-pointer shadow-sm'
               : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
           }`}
         >
           {isGeneratingDocx ? (
             <>
-              <RefreshCw className="w-4 h-4 animate-spin text-yellow-400" />
+              <RefreshCw className="w-5 h-5 animate-spin text-yellow-400" />
               <span>กำลังสร้าง Word...</span>
             </>
           ) : (
             <>
-              <FileSpreadsheet className="w-4 h-4 text-yellow-400" />
+              <FileSpreadsheet className="w-5 h-5 text-yellow-400" />
               <span>ดาวน์โหลด Word (.docx)</span>
             </>
           )}
         </button>
 
-        {/* Export PDF Button - High Contrast Yellow Button */}
+        {/* Export PDF Button - Big Yellow Primary Button */}
         <button
           type="button"
           id="btn-generate-pdf"
           disabled={!canGenerate || isGeneratingPdf}
           onClick={onGeneratePdf}
-          className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-bold rounded-xl shadow-md transition-all ${
+          className={`w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-3.5 text-base sm:text-lg font-bold rounded-2xl shadow-md transition-all ${
             canGenerate && !isGeneratingPdf
-              ? 'bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-blue-950 cursor-pointer border-2 border-yellow-300 shadow-yellow-500/20'
+              ? 'bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-blue-950 cursor-pointer border border-yellow-300 shadow-yellow-500/20'
               : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
           }`}
         >
           {isGeneratingPdf ? (
             <>
-              <RefreshCw className="w-4 h-4 animate-spin text-blue-950" />
+              <RefreshCw className="w-5 h-5 animate-spin text-blue-950" />
               <span>{generationProgressText || 'กำลังสร้าง PDF...'}</span>
             </>
           ) : (
             <>
-              <FileDown className="w-4 h-4 text-blue-950" />
-              <span>สร้างเอกสาร PDF (Generate PDF)</span>
+              <FileDown className="w-5 h-5 text-blue-950 stroke-[2.5]" />
+              <span>สร้างเอกสาร PDF (13.5pt)</span>
             </>
           )}
         </button>

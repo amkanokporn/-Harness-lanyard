@@ -19,26 +19,26 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ issues }) =>
   return (
     <div
       id="validation-banner"
-      className={`rounded-2xl border-2 p-4 transition-all shadow-sm ${
+      className={`rounded-2xl border p-4 sm:p-5 transition-all shadow-xs ${
         hasErrors
-          ? 'bg-red-50/90 border-red-300 text-red-950'
-          : 'bg-yellow-50/90 border-yellow-400/60 text-blue-950'
+          ? 'bg-red-50 border-red-200 text-red-950'
+          : 'bg-amber-50 border-amber-200 text-amber-950'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-3">
           {hasErrors ? (
-            <XCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <XCircle className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
           ) : (
-            <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
           )}
           <div>
-            <h4 className="text-sm font-bold text-blue-950">
+            <h4 className="text-base font-bold text-blue-950">
               {hasErrors
                 ? `พบข้อผิดพลาดในข้อมูล (${errors.length} รายการ)`
                 : `ข้อควรระวังในการประมวลผล (${warnings.length} รายการ)`}
             </h4>
-            <p className="text-xs text-slate-600 mt-0.5">
+            <p className="text-sm text-slate-600 mt-0.5">
               {hasErrors
                 ? 'ระบบหยุดการสร้าง PDF เพื่อป้องกันความผิดพลาดของข้อมูล กรุณาตรวจสอบรายละเอียดด้านล่าง'
                 : 'ข้อมูลสามารถนำไปสร้างรายงานได้ แต่ควรตรวจสอบรายละเอียดบางจุด'}
@@ -50,15 +50,15 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ issues }) =>
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
+            className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-slate-900 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs"
           >
             {isExpanded ? (
               <>
-                ย่อรายการ <ChevronUp className="w-3.5 h-3.5" />
+                ย่อรายการ <ChevronUp className="w-4 h-4" />
               </>
             ) : (
               <>
-                ดูทั้งหมด ({issues.length}) <ChevronDown className="w-3.5 h-3.5" />
+                ดูทั้งหมด ({issues.length}) <ChevronDown className="w-4 h-4" />
               </>
             )}
           </button>
@@ -66,19 +66,19 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ issues }) =>
       </div>
 
       {/* Issues list */}
-      <div className={`mt-3 space-y-1.5 ${isExpanded || issues.length === 1 ? 'block' : 'hidden'}`}>
+      <div className={`mt-3.5 space-y-2 ${isExpanded || issues.length === 1 ? 'block' : 'hidden'}`}>
         {issues.map((issue, idx) => (
           <div
             key={idx}
-            className={`text-xs p-2 rounded-md flex items-start gap-2 ${
+            className={`text-sm p-3 rounded-xl flex items-start gap-2.5 ${
               issue.type === 'error'
-                ? 'bg-red-100/70 text-red-800'
+                ? 'bg-red-100 text-red-900'
                 : issue.type === 'warning'
-                ? 'bg-amber-100/70 text-amber-800'
-                : 'bg-blue-100/70 text-blue-800'
+                ? 'bg-amber-100 text-amber-900'
+                : 'bg-blue-100 text-blue-900'
             }`}
           >
-            <span className="font-semibold shrink-0">
+            <span className="font-bold shrink-0">
               {issue.type === 'error' ? '❌' : issue.type === 'warning' ? '⚠️' : 'ℹ️'}
               {issue.row ? ` แถวที่ ${issue.row}:` : ''}
             </span>

@@ -47,8 +47,8 @@ export async function generatePdfFromElements({
   offscreenStage.style.position = 'fixed';
   offscreenStage.style.top = '0';
   offscreenStage.style.left = '0';
-  offscreenStage.style.width = '1080px';
-  offscreenStage.style.height = '764px';
+  offscreenStage.style.width = '1122px';
+  offscreenStage.style.height = '793px';
   offscreenStage.style.overflow = 'visible';
   offscreenStage.style.zIndex = '-99999';
   offscreenStage.style.background = '#ffffff';
@@ -79,10 +79,10 @@ export async function generatePdfFromElements({
       clonedNode.style.transform = 'none';
       clonedNode.style.margin = '0';
       clonedNode.style.visibility = 'visible';
-      clonedNode.style.width = '1080px';
-      clonedNode.style.height = '764px';
-      clonedNode.style.minHeight = '764px';
-      clonedNode.style.maxHeight = '764px';
+      clonedNode.style.width = '1122px';
+      clonedNode.style.height = '793px';
+      clonedNode.style.minHeight = '793px';
+      clonedNode.style.maxHeight = '793px';
       clonedNode.style.boxSizing = 'border-box';
       offscreenStage.appendChild(clonedNode);
 
@@ -158,10 +158,10 @@ export async function generatePdfFromElements({
         foreignObjectRendering: false,
         logging: false,
         backgroundColor: '#ffffff',
-        width: 1080,
-        height: 764,
-        windowWidth: 1080,
-        windowHeight: 764,
+        width: 1122,
+        height: 793,
+        windowWidth: 1122,
+        windowHeight: 793,
         x: 0,
         y: 0,
         scrollX: 0,

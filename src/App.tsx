@@ -410,7 +410,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100/90 flex flex-col font-['TH_Sarabun_New','THSarabunNew','TH_Sarabun_PSK','Sarabun',sans-serif]">
+    <div className="min-h-screen bg-slate-100 flex flex-col font-['Prompt','Sarabun',sans-serif]">
       {/* Top Navbar */}
       <Navbar
         onOpenInspectorModal={() => setIsInspectorModalOpen(true)}
@@ -425,7 +425,7 @@ export default function App() {
         {toast && (
           <div
             id="toast-notification"
-            className={`flex items-center justify-between p-4 rounded-2xl border-2 shadow-md transition-all ${
+            className={`flex items-center justify-between p-4 sm:p-5 rounded-2xl border-2 shadow-md transition-all ${
               toast.type === 'success'
                 ? 'bg-blue-950 border-yellow-400 text-yellow-300'
                 : toast.type === 'error'
@@ -433,28 +433,28 @@ export default function App() {
                 : 'bg-blue-900 border-blue-400 text-white'
             }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3.5">
               {toast.type === 'success' ? (
-                <div className="w-8 h-8 rounded-lg bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-sm">
                   <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
                 </div>
               ) : toast.type === 'error' ? (
-                <div className="w-8 h-8 rounded-lg bg-red-500 text-white flex items-center justify-center font-bold shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-red-500 text-white flex items-center justify-center font-bold shrink-0 shadow-sm">
                   <AlertCircle className="w-5 h-5 stroke-[2.5]" />
                 </div>
               ) : (
-                <div className="w-8 h-8 rounded-lg bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-sm">
                   <Info className="w-5 h-5 stroke-[2.5]" />
                 </div>
               )}
-              <span className="text-xs sm:text-sm font-bold tracking-wide">{toast.message}</span>
+              <span className="text-sm sm:text-base font-semibold tracking-normal">{toast.message}</span>
             </div>
             <button
               type="button"
               onClick={() => setToast(null)}
-              className="p-1 text-blue-200 hover:text-white cursor-pointer"
+              className="p-1.5 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         )}
@@ -512,7 +512,7 @@ export default function App() {
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '1080px',
+          width: '1122px',
           height: 'auto',
           zIndex: -99999,
           pointerEvents: 'none',
