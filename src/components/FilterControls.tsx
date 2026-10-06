@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   EquipmentType,
   FilterState,
@@ -17,7 +17,11 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  Search,
+  Sparkles,
 } from 'lucide-react';
+import { normalizeInspectorName } from '../utils/inspectionAggregation';
+import { fuzzyFilterInspectors } from '../utils/thaiNameNormalizer';
 
 interface FilterControlsProps {
   parsedData: ParsedExcelResult | null;
@@ -50,6 +54,8 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [inspectorSearchQuery, setInspectorSearchQuery] = useState('');
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -80,14 +86,17 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
     new Set(filteredRecords.map((r) => Number(r.day)))
   ).sort((a: number, b: number) => a - b);
 
-  // Real inspectors appearing in current filtered month/year records
+  // Real inspectors appearing in current filtered month/year records (normalized to canonical names)
   const monthInspectorNames = Array.from(
     new Set(
       filteredRecords
-        .map((r) => (r.inspectorName || '').trim())
+        .map((r) => normalizeInspectorName(r.inspectorName || '').trim())
         .filter(Boolean)
     )
   );
+
+  // Filtered inspectors for display in badges based on search query
+  const displayedInspectors = fuzzyFilterInspectors(inspectors, inspectorSearchQuery);
 
   // Check validity for PDF/DOCX generation
   const validationErrors: string[] = [];
@@ -157,7 +166,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           2. ตัวกรองและกำหนดค่ารายงาน (Report Filters)
         </label>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* เดือน */}
           <div>
             <label className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mb-1.5">
@@ -238,6 +247,42 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
               <option value="lanyard">เฉพาะ Lanyard (หน้า 2)</option>
             </select>
           </div>
+
+          {/* ผู้ตรวจสอบ */}
+          <div>
+            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mb-1.5">
+              <UserCheck className="w-3.5 h-3.5 text-slate-400" />
+              ผู้ตรวจสอบ (Inspector)
+            </label>
+            <select
+              id="select-inspector"
+              value={filters.selectedInspectorId}
+              onChange={(e) => onFilterChange({ selectedInspectorId: e.target.value })}
+              className="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">-- ผู้ตรวจสอบทั้งหมด (ภาพรวม) --</option>
+              {inspectors.map((insp) => {
+                const count = (parsedData?.records || []).filter((r) => {
+                  const rName = normalizeInspectorName(r.inspectorName);
+                  const iName = normalizeInspectorName(insp.name);
+                  return (
+                    rName.toLowerCase() === iName.toLowerCase() &&
+                    (!filters.month || r.month === filters.month) &&
+                    (!filters.year || String(r.year) === String(filters.year))
+                  );
+                }).length;
+                const aliasNotice =
+                  insp.aliases && insp.aliases.length > 0
+                    ? ` [รวมชื่อคล้าย ${insp.aliases.length}]`
+                    : '';
+                return (
+                  <option key={insp.id} value={insp.id}>
+                    {insp.name} {count > 0 ? `(ตรวจ ${count} วัน)` : ''}{aliasNotice}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
 
         {/* Quick Month/Year Switcher Pills for all detected historical periods */}
@@ -288,68 +333,128 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
 
       {/* 3. Real-Data Inspectors Signature Overview */}
       <div className="pt-2 border-t border-slate-100">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 bg-gradient-to-r from-slate-50 to-blue-50/40 p-4 rounded-xl border border-slate-200">
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3.5 bg-gradient-to-r from-slate-50 to-blue-50/40 p-4 rounded-xl border border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
               <UserCheck className="w-4 h-4 text-blue-600" />
               <span className="text-xs font-bold text-slate-800">
                 ผู้ตรวจสอบจากข้อมูลจริง (ตรวจพบ {monthInspectorNames.length > 0 ? `${monthInspectorNames.length} ท่านในเดือนนี้` : `ทั้งหมด ${inspectors.length} ท่าน`})
               </span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <Sparkles className="w-3 h-3 text-emerald-600" /> รวมชื่อคล้ายคลึง & แก้คำสะกดผิดอัตโนมัติ
+              </span>
             </div>
 
-            {/* List of inspector badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {inspectors.length === 0 ? (
-                <span className="text-xs text-slate-400">ยังไม่พบรายชื่อผู้ตรวจในไฟล์</span>
-              ) : (
-                inspectors.map((insp) => {
-                  const hasSig = Boolean(insp.signatureDataUrl);
-                  const isCurrentMonth = monthInspectorNames.includes(insp.name) || monthInspectorNames.length === 0;
-                  const countInMonth = filteredRecords.filter((r) => r.inspectorName?.trim() === insp.name.trim()).length;
+            <div className="flex items-center gap-2">
+              {/* Inspector Search Input */}
+              <div className="relative w-full sm:w-60">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="ค้นหาชื่อคล้ายคลึง/คำสะกด..."
+                  value={inspectorSearchQuery}
+                  onChange={(e) => setInspectorSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
 
-                  return (
-                    <div
-                      key={insp.id}
-                      onClick={onOpenInspectorModal}
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${
-                        hasSig
-                          ? 'bg-white border-slate-200 hover:border-blue-400 text-slate-800 shadow-2xs'
-                          : 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100'
-                      } ${!isCurrentMonth ? 'opacity-60' : ''}`}
-                      title={hasSig ? 'ลายเซ็นพร้อมใช้งาน (คลิกเพื่อแก้ไข)' : 'ยังไม่มีลายเซ็น (คลิกเพื่ออัปเดต)'}
-                    >
-                      <span>{insp.name}</span>
-                      {countInMonth > 0 && (
-                        <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-semibold">
-                          {countInMonth} วัน
-                        </span>
-                      )}
-                      {hasSig ? (
-                        <span className="inline-flex items-center gap-0.5 text-[11px] text-emerald-600 font-semibold">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> มีลายเซ็น
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-0.5 text-[11px] text-amber-700 font-semibold">
-                          <AlertCircle className="w-3.5 h-3.5" /> รอลายเซ็น
-                        </span>
-                      )}
-                    </div>
-                  );
-                })
-              )}
+              <button
+                type="button"
+                id="btn-manage-inspectors-panel"
+                onClick={onOpenInspectorModal}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 hover:border-blue-300 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
+              >
+                <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                <span>จัดการลายเซ็น</span>
+              </button>
             </div>
           </div>
 
-          <div className="shrink-0 flex items-center gap-2">
-            <button
-              type="button"
-              id="btn-manage-inspectors-panel"
-              onClick={onOpenInspectorModal}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 hover:border-blue-300 rounded-xl shadow-xs transition-all cursor-pointer"
-            >
-              <UserCheck className="w-4 h-4 text-blue-600" />
-              <span>อัปเดตลายเซ็นผู้ตรวจ</span>
-            </button>
+          {/* List of inspector badges */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {displayedInspectors.length === 0 ? (
+              <span className="text-xs text-slate-400">
+                {inspectorSearchQuery ? `ไม่พบผู้ตรวจที่ตรงกับ "${inspectorSearchQuery}"` : 'ยังไม่พบรายชื่อผู้ตรวจในไฟล์'}
+              </span>
+            ) : (
+              displayedInspectors.map((insp) => {
+                const hasSig = Boolean(insp.signatureDataUrl);
+                const isCurrentMonth = monthInspectorNames.includes(insp.name) || monthInspectorNames.length === 0;
+                const countInMonth = filteredRecords.filter((r) => {
+                  const rName = normalizeInspectorName(r.inspectorName);
+                  const iName = normalizeInspectorName(insp.name);
+                  return rName.toLowerCase() === iName.toLowerCase();
+                }).length;
+                const isFilterSelected = filters.selectedInspectorId === insp.id;
+
+                return (
+                  <div
+                    key={insp.id}
+                    onClick={() => {
+                      if (filters.selectedInspectorId === insp.id) {
+                        onFilterChange({ selectedInspectorId: '' });
+                      } else {
+                        onFilterChange({ selectedInspectorId: insp.id });
+                      }
+                    }}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium cursor-pointer transition-all ${
+                      isFilterSelected
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                        : hasSig
+                        ? 'bg-white border-slate-200 hover:border-blue-400 text-slate-800 shadow-2xs'
+                        : 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100'
+                    } ${!isCurrentMonth && !isFilterSelected ? 'opacity-60' : ''}`}
+                    title={
+                      isFilterSelected
+                        ? 'คลิกเพื่อยกเลิกการเลือก'
+                        : `คลิกเพื่อกรองเฉพาะ ${insp.name} (หรือดับเบิลคลิกเพื่อจัดการลายเซ็น)`
+                    }
+                  >
+                    <span>{insp.name}</span>
+                    {countInMonth > 0 && (
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
+                          isFilterSelected
+                            ? 'bg-white/20 text-white'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
+                        {countInMonth} วัน
+                      </span>
+                    )}
+                    {insp.aliases && insp.aliases.length > 0 && (
+                      <span
+                        className={`text-[10px] px-1 py-0.2 rounded font-normal ${
+                          isFilterSelected
+                            ? 'bg-white/25 text-white'
+                            : 'bg-amber-100 text-amber-900 border border-amber-200'
+                        }`}
+                        title={`รวมชื่อที่สะกดผิด/คล้ายกัน: ${insp.aliases.join(', ')}`}
+                      >
+                        รวม {insp.aliases.length} ชื่อ
+                      </span>
+                    )}
+                    {hasSig ? (
+                      <span
+                        className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${
+                          isFilterSelected ? 'text-blue-100' : 'text-emerald-600'
+                        }`}
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" /> มีลายเซ็น
+                      </span>
+                    ) : (
+                      <span
+                        className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${
+                          isFilterSelected ? 'text-amber-200' : 'text-amber-700'
+                        }`}
+                      >
+                        <AlertCircle className="w-3.5 h-3.5" /> รอลายเซ็น
+                      </span>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

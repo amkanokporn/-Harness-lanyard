@@ -59,6 +59,7 @@ const CrossSvg: React.FC<{ size?: number; className?: string }> = ({ size = 11, 
 
 /**
  * Sub-component for rendering a single equipment's header box and 31-day checklist table
+ * Built as an EXACT digital twin of the Microsoft Word template (FM-004/QP-PB-013)
  */
 const EquipmentSection: React.FC<{
   data: SingleEquipmentMonthData;
@@ -76,63 +77,112 @@ const EquipmentSection: React.FC<{
   const isChecked = data.isCheckedInMonth || eq.isCheckedInReport;
 
   return (
-    <div className="mb-2">
-      {/* 1. Single-line Equipment Info Box */}
-      <div
-        className="border border-black mb-1 px-2 py-0.5 text-black bg-white"
-        style={{ width: '1040px', boxSizing: 'border-box' }}
-      >
-        <table
-          className="border-collapse text-[10.5px] leading-normal"
-          style={{ width: '100%', tableLayout: 'fixed' }}
-        >
-          <colgroup>
-            <col style={{ width: '260px' }} />
-            <col style={{ width: '210px' }} />
-            <col style={{ width: '220px' }} />
-            <col style={{ width: '350px' }} />
-          </colgroup>
-          <tbody>
-            <tr className="border-none" style={{ height: '19px' }}>
-              {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
-              <td className="text-left py-0 px-1 text-black align-middle whitespace-nowrap overflow-visible">
-                <span className="font-normal text-slate-800">ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
-                {hasData ? (
-                  <span className="font-bold text-black inline-flex items-center">
-                    {cleanName}
-                    {isChecked && <CheckmarkSvg size={11} className="ml-1.5" />}
-                  </span>
-                ) : (
-                  <span className="font-normal text-slate-400">-</span>
-                )}
-              </td>
-
-              {/* Col 2: รหัสประจำตัวอุปกรณ์ */}
-              <td className="text-left py-0 px-1 text-black align-middle whitespace-nowrap overflow-visible">
-                <span className="font-normal text-slate-800">รหัสประจำตัวอุปกรณ์:&nbsp;</span>
-                <span className="font-normal text-black">{hasData ? eq.sn || '-' : '-'}</span>
-              </td>
-
-              {/* Col 3: ทะเบียน กฟผ. */}
-              <td className="text-left py-0 px-1 text-black align-middle whitespace-nowrap overflow-visible">
-                <span className="font-normal text-slate-800">ทะเบียน กฟผ.:&nbsp;</span>
-                <span className="font-normal text-black">{hasData ? eq.egatNo || '-' : '-'}</span>
-              </td>
-
-              {/* Col 4: ยี่ห้อ/รุ่น */}
-              <td className="text-left py-0 px-1 text-black align-middle whitespace-nowrap overflow-visible">
-                <span className="font-normal text-slate-800">ยี่ห้อ/รุ่น:&nbsp;</span>
-                <span className="font-normal text-black">{hasData ? eq.brandModel || '-' : '-'}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* 2. Checklist Table (Days 1..31) */}
+    <div style={{ width: '1040px', boxSizing: 'border-box' }}>
+      {/* 1. Single-line Equipment Info Table (4 Bordered Cells, exactly matching Word layout) */}
       <table
-        className="border-collapse border border-black text-[10.5px] text-center bg-white"
-        style={{ width: '1040px', tableLayout: 'fixed', boxSizing: 'border-box' }}
+        style={{
+          width: '1040px',
+          tableLayout: 'fixed',
+          borderCollapse: 'collapse',
+          border: '1px solid #000000',
+          marginBottom: '3px',
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        }}
+      >
+        <colgroup>
+          <col style={{ width: '260px' }} />
+          <col style={{ width: '210px' }} />
+          <col style={{ width: '220px' }} />
+          <col style={{ width: '350px' }} />
+        </colgroup>
+        <tbody>
+          <tr style={{ height: '22px' }}>
+            {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
+            <td
+              style={{
+                border: '1px solid #000000',
+                padding: '2px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'left',
+                fontSize: '12.5px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+            >
+              <span>ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
+              {hasData ? (
+                <span style={{ fontWeight: 'bold' }}>
+                  {cleanName}
+                  {isChecked && ' ✓'}
+                </span>
+              ) : (
+                <span>-</span>
+              )}
+            </td>
+
+            {/* Col 2: รหัสประจำตัวอุปกรณ์ */}
+            <td
+              style={{
+                border: '1px solid #000000',
+                padding: '2px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'left',
+                fontSize: '12.5px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+            >
+              <span>รหัสประจำตัวอุปกรณ์:&nbsp;</span>
+              <span>{hasData ? eq.sn || '-' : '-'}</span>
+            </td>
+
+            {/* Col 3: ทะเบียน กฟผ. */}
+            <td
+              style={{
+                border: '1px solid #000000',
+                padding: '2px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'left',
+                fontSize: '12.5px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+            >
+              <span>ทะเบียน กฟผ.:&nbsp;</span>
+              <span>{hasData ? eq.egatNo || '-' : '-'}</span>
+            </td>
+
+            {/* Col 4: ยี่ห้อ/รุ่น */}
+            <td
+              style={{
+                border: '1px solid #000000',
+                padding: '2px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'left',
+                fontSize: '12.5px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+            >
+              <span>ยี่ห้อ/รุ่น:&nbsp;</span>
+              <span>{hasData ? eq.brandModel || '-' : '-'}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* 2. Checklist Table (Days 1..31) - Every cell explicitly bordered 1px solid black */}
+      <table
+        style={{
+          width: '1040px',
+          tableLayout: 'fixed',
+          borderCollapse: 'collapse',
+          border: '1px solid #000000',
+          backgroundColor: '#ffffff',
+          color: '#000000',
+          boxSizing: 'border-box',
+        }}
       >
         <colgroup>
           <col style={{ width: '36px' }} />
@@ -145,18 +195,19 @@ const EquipmentSection: React.FC<{
 
         <thead>
           {/* Header Row 1 */}
-          <tr className="border-b border-black">
+          <tr>
             <th
               rowSpan={2}
               style={{
                 width: '36px',
+                border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                borderRight: '1px solid #000',
-                fontSize: '11px',
+                fontSize: '13px',
                 fontWeight: 'bold',
-                padding: '2px',
+                padding: '1px',
                 lineHeight: 1.15,
+                backgroundColor: '#ffffff',
               }}
             >
               ลำดับ<br />ที่
@@ -165,13 +216,14 @@ const EquipmentSection: React.FC<{
               rowSpan={2}
               style={{
                 width: '275px',
+                border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                borderRight: '1px solid #000',
-                fontSize: '11px',
+                fontSize: '13px',
                 fontWeight: 'bold',
-                padding: '3px 6px',
+                padding: '2px 6px',
                 lineHeight: 1.15,
+                backgroundColor: '#ffffff',
               }}
             >
               รายการตรวจสอบ
@@ -179,13 +231,15 @@ const EquipmentSection: React.FC<{
             <th
               colSpan={31}
               style={{
+                width: '651px',
+                border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                borderRight: '1px solid #000',
-                fontSize: '11.5px',
+                fontSize: '13.5px',
                 fontWeight: 'bold',
                 padding: '2px 0',
                 lineHeight: 1.15,
+                backgroundColor: '#ffffff',
               }}
             >
               เดือน {month || '............'} พ.ศ. {year || '........'}
@@ -194,32 +248,35 @@ const EquipmentSection: React.FC<{
               rowSpan={2}
               style={{
                 width: '78px',
+                border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
-                fontSize: '11px',
+                fontSize: '13px',
                 fontWeight: 'bold',
-                padding: '2px',
+                padding: '1px',
                 lineHeight: 1.15,
+                backgroundColor: '#ffffff',
               }}
             >
               หมายเหตุ
             </th>
           </tr>
+
           {/* Header Row 2: Days 1 to 31 */}
-          <tr className="border-b border-black">
+          <tr>
             {days.map((d) => (
               <th
                 key={d}
                 style={{
                   width: '21px',
-                  height: '16px',
+                  height: '18px',
+                  border: '1px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  borderRight: '1px solid #000',
-                  fontSize: '10px',
+                  fontSize: '11px',
                   fontWeight: 'bold',
                   padding: 0,
-                  lineHeight: 1,
+                  backgroundColor: '#ffffff',
                 }}
               >
                 {d}
@@ -229,39 +286,42 @@ const EquipmentSection: React.FC<{
         </thead>
 
         <tbody>
-          {/* Checklist Items Rows */}
+          {/* Checklist Item Rows */}
           {checklistItems.map((item) => (
-            <tr key={item.id} className="border-b border-black">
+            <tr key={item.id}>
               {/* ลำดับที่ */}
               <td
                 style={{
                   width: '36px',
+                  height: isHarness ? '21px' : '19px',
+                  border: '1px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  borderRight: '1px solid #000',
-                  fontSize: '10.5px',
-                  fontWeight: 'normal',
+                  fontSize: '13px',
+                  fontWeight: 'bold',
                   padding: '1px',
                 }}
               >
                 {item.id}
               </td>
+
               {/* รายการตรวจสอบ */}
               <td
                 style={{
                   width: '275px',
+                  height: isHarness ? '21px' : '19px',
+                  border: '1px solid #000000',
                   textAlign: 'left',
                   verticalAlign: 'middle',
-                  borderRight: '1px solid #000',
-                  fontSize: isHarness ? '10px' : '9.5px',
-                  lineHeight: '1.25',
-                  padding: '2px 5px',
+                  fontSize: isHarness ? '11px' : '10.5px',
+                  lineHeight: '1.2',
+                  padding: '1px 6px',
                 }}
               >
                 {item.text}
               </td>
 
-              {/* 31 Day Cells */}
+              {/* 31 Day Check Cells (shows '/' like in Word) */}
               {days.map((d) => {
                 const res = data.dayResults[d]?.[item.id];
                 const isInspectedDay = data.inspectedDays.includes(d);
@@ -273,16 +333,16 @@ const EquipmentSection: React.FC<{
                     style={{
                       width: '21px',
                       height: isHarness ? '21px' : '19px',
+                      border: '1px solid #000000',
                       textAlign: 'center',
                       verticalAlign: 'middle',
-                      borderRight: '1px solid #000',
                       padding: 0,
                     }}
                   >
                     {(symbol === '/' || symbol === '√') && (
                       <span
                         style={{
-                          fontSize: '13px',
+                          fontSize: '13.5px',
                           fontWeight: 'bold',
                           lineHeight: '1',
                           display: 'inline-block',
@@ -326,6 +386,8 @@ const EquipmentSection: React.FC<{
               <td
                 style={{
                   width: '78px',
+                  height: isHarness ? '21px' : '19px',
+                  border: '1px solid #000000',
                   textAlign: 'center',
                   verticalAlign: 'middle',
                   padding: '1px',
@@ -335,15 +397,16 @@ const EquipmentSection: React.FC<{
           ))}
 
           {/* Bottom Row: Status Legend + ลงชื่อ ผู้ตรวจสอบ (Per-Day Signatures) */}
-          <tr className="border-b-0">
-            {/* Left: Legend & Label */}
+          <tr style={{ height: '42px' }}>
+            {/* Left: Legend & Label (spans columns 1 and 2) */}
             <td
               colSpan={2}
               style={{
                 width: '311px',
+                height: '42px',
+                border: '1px solid #000000',
                 verticalAlign: 'middle',
-                borderRight: '1px solid #000',
-                padding: '2px 6px',
+                padding: '2px 8px',
               }}
             >
               <div
@@ -354,59 +417,19 @@ const EquipmentSection: React.FC<{
                   width: '100%',
                 }}
               >
-                {/* Legend */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '11px',
-                        height: '11px',
-                        border: '1px solid #000000',
-                        backgroundColor: '#ffffff',
-                      }}
-                    >
-                      <CheckmarkSvg size={8} />
-                    </span>
-                    <span style={{ fontSize: '8.5px', lineHeight: 1 }}>สภาพปกติ</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '11px',
-                        height: '11px',
-                        border: '1px solid #000000',
-                        backgroundColor: '#ffffff',
-                      }}
-                    >
-                      <CrossSvg size={7} />
-                    </span>
-                    <span style={{ fontSize: '8.5px', lineHeight: 1 }}>สภาพผิดปกติ ยังใช้ได้</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        width: '11px',
-                        height: '11px',
-                        backgroundColor: '#000000',
-                      }}
-                    ></span>
-                    <span style={{ fontSize: '8.5px', lineHeight: 1 }}>ต้องแก้ไขห้ามใช้</span>
-                  </div>
+                {/* Standard Legend matching Word */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '11px', color: '#000000', whiteSpace: 'nowrap' }}>
+                    [✓] ปกติ&nbsp;&nbsp;[✕] ผิดปกติ ใช้ได้&nbsp;&nbsp;[■] ห้ามใช้
+                  </span>
                 </div>
 
                 {/* ลงชื่อ ผู้ตรวจสอบ label */}
-                <div style={{ textAlign: 'right', paddingRight: '2px' }}>
-                  <span style={{ fontWeight: 'bold', fontSize: '9.5px', lineHeight: 1 }}>
+                <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '12.5px', color: '#000000' }}>
                     ลงชื่อ ผู้ตรวจสอบ
                   </span>
-                  <span style={{ fontSize: '8px', color: '#475569', marginLeft: '3px' }}>
+                  <span style={{ fontSize: '10px', color: '#475569', marginLeft: '4px' }}>
                     (รายละเอียดตามแนบ)
                   </span>
                 </div>
@@ -434,13 +457,13 @@ const EquipmentSection: React.FC<{
                   title={isInspected ? `ผู้ตรวจวันที่ ${d}: ${dayInsp?.inspectorName || 'ผู้ตรวจสอบ'}` : undefined}
                   style={{
                     width: '21px',
-                    height: '32px',
+                    height: '42px',
+                    border: '1px solid #000000',
                     textAlign: 'center',
                     verticalAlign: 'middle',
-                    borderRight: '1px solid #000',
                     padding: 0,
                     cursor: isInspected ? 'pointer' : 'default',
-                    backgroundColor: isInspected ? '#f8fafc' : '#ffffff',
+                    backgroundColor: '#ffffff',
                     overflow: 'hidden',
                   }}
                 >
@@ -452,7 +475,7 @@ const EquipmentSection: React.FC<{
                         justifyContent: 'center',
                         width: '100%',
                         height: '100%',
-                        padding: '1px 0',
+                        overflow: 'hidden',
                       }}
                     >
                       {signatureSrc ? (
@@ -463,13 +486,13 @@ const EquipmentSection: React.FC<{
                           decoding="sync"
                           referrerPolicy="no-referrer"
                           style={{
-                            maxWidth: '19px',
-                            maxHeight: '28px',
+                            maxWidth: '18px',
+                            maxHeight: '38px',
                             width: 'auto',
                             height: 'auto',
                             objectFit: 'contain',
                             display: 'block',
-                            margin: '0 auto',
+                            margin: 'auto',
                             backgroundColor: 'transparent',
                           }}
                         />
@@ -494,11 +517,12 @@ const EquipmentSection: React.FC<{
               );
             })}
 
-            {/* Right Box: ผู้รายงาน (Signature of the top inspector who used this equipment the most) */}
+            {/* Right Box: ผู้รายงาน (Signature of the top inspector + label) */}
             <td
               style={{
                 width: '78px',
-                height: '32px',
+                height: '42px',
+                border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 padding: '1px 2px',
@@ -528,19 +552,21 @@ const EquipmentSection: React.FC<{
                       decoding="sync"
                       referrerPolicy="no-referrer"
                       style={{
-                        maxHeight: '19px',
+                        maxHeight: '22px',
                         maxWidth: '72px',
                         width: 'auto',
+                        height: 'auto',
                         objectFit: 'contain',
                         display: 'block',
-                        margin: '0 auto',
+                        margin: 'auto',
+                        backgroundColor: 'transparent',
                       }}
                     />
                   ) : null;
                 })()}
                 <span
                   style={{
-                    fontSize: '9.5px',
+                    fontSize: '11px',
                     fontWeight: 'bold',
                     lineHeight: '1',
                     whiteSpace: 'nowrap',
@@ -585,14 +611,36 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
       }}
     >
       {/* 1. Header Title */}
-      <div className="text-center mb-0.5">
-        <h1 className="text-[17px] font-bold tracking-tight text-black leading-snug">
+      <div style={{ textAlign: 'center', marginBottom: '2px' }}>
+        <h1
+          style={{
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#000000',
+            margin: 0,
+            padding: 0,
+            lineHeight: 1.2,
+          }}
+        >
           {FORM_METADATA.title}
         </h1>
       </div>
 
       {/* 2. Subheader Metadata */}
-      <div className="flex items-center justify-start text-[11.5px] font-medium text-black px-1 mb-1 gap-8 leading-tight">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          fontSize: '13.5px',
+          fontWeight: 'bold',
+          color: '#000000',
+          padding: '0 2px',
+          marginBottom: '3px',
+          gap: '32px',
+          lineHeight: 1.2,
+        }}
+      >
         <span>เรียน&nbsp;&nbsp;หมผ – ธ.</span>
         <span>แผนก&nbsp;&nbsp;หมผ - ธ.</span>
         <span>กอง&nbsp;&nbsp;กคว - ธ.</span>
@@ -607,6 +655,9 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
         onDaySignatureClick={onDaySignatureClick}
       />
 
+      {/* Clean vertical separator between Harness & Lanyard */}
+      <div style={{ height: '6px' }} />
+
       {/* 4. Section 2: Lanyard */}
       <EquipmentSection
         data={pageData.lanyardData}
@@ -616,21 +667,66 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
       />
 
       {/* 5. Footer: Copy Note & Document Revision Bar */}
-      <div className="text-[9.5px] text-black mb-0.5 pl-1 font-normal leading-tight">
+      <div
+        style={{
+          fontSize: '11px',
+          color: '#000000',
+          margin: '2px 0 2px 2px',
+          lineHeight: 1.2,
+        }}
+      >
         {FORM_METADATA.copyNote}
       </div>
 
-      <div className="border border-black grid grid-cols-12 text-center text-[10px] font-normal py-0.5 bg-white leading-tight">
-        <div className="col-span-4 border-r border-black">
-          {FORM_METADATA.subdivision}
-        </div>
-        <div className="col-span-4 border-r border-black font-bold">
-          {FORM_METADATA.docNumber}
-        </div>
-        <div className="col-span-4">
-          {FORM_METADATA.revision}
-        </div>
-      </div>
+      {/* Revision Table matching Word's 3-column bordered table */}
+      <table
+        style={{
+          width: '1040px',
+          tableLayout: 'fixed',
+          borderCollapse: 'collapse',
+          border: '1px solid #000000',
+          backgroundColor: '#ffffff',
+          color: '#000000',
+          textAlign: 'center',
+          fontSize: '11px',
+        }}
+      >
+        <tbody>
+          <tr style={{ height: '20px' }}>
+            <td
+              style={{
+                width: '33.33%',
+                border: '1px solid #000000',
+                padding: '2px',
+                verticalAlign: 'middle',
+              }}
+            >
+              {FORM_METADATA.subdivision}
+            </td>
+            <td
+              style={{
+                width: '33.33%',
+                border: '1px solid #000000',
+                padding: '2px',
+                verticalAlign: 'middle',
+                fontWeight: 'bold',
+              }}
+            >
+              {FORM_METADATA.docNumber}
+            </td>
+            <td
+              style={{
+                width: '33.34%',
+                border: '1px solid #000000',
+                padding: '2px',
+                verticalAlign: 'middle',
+              }}
+            >
+              {FORM_METADATA.revision}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };

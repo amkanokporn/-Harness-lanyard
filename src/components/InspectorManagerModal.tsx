@@ -3,6 +3,10 @@ import { Inspector, InspectionRecord } from '../types';
 import { SignaturePad } from './SignaturePad';
 import { normalizeInspectorName } from '../utils/inspectionAggregation';
 import {
+  mergeAndDeduplicateInspectors,
+  fuzzyFilterInspectors,
+} from '../utils/thaiNameNormalizer';
+import {
   generateDigitalSignaturePng,
   rotateDataUrlToVertical,
   extractFirstNameOnly,
@@ -20,6 +24,7 @@ import {
   Trash2,
   FileCheck2,
   Image as ImageIcon,
+  Search,
 } from 'lucide-react';
 
 interface InspectorManagerModalProps {
@@ -83,14 +88,16 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
   const [previewSignatureUrl, setPreviewSignatureUrl] = useState<string | null>(null);
   const [localInspectors, setLocalInspectors] = useState<Inspector[]>(inspectors);
   const [feedbackMsg, setFeedbackMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Sync with prop when modal opens
+  // Sync and auto-merge with prop when modal opens
   useEffect(() => {
     if (isOpen) {
-      setLocalInspectors(inspectors);
+      const autoMerged = mergeAndDeduplicateInspectors(inspectors);
+      setLocalInspectors(autoMerged);
       setFeedbackMsg(null);
       if (targetInspectorName) {
-        const found = inspectors.find(
+        const found = autoMerged.find(
           (i) => normalizeInspectorName(i.name) === normalizeInspectorName(targetInspectorName)
         );
         if (found) {
@@ -195,6 +202,24 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
     setTimeout(() => setFeedbackMsg(null), 3500);
   };
 
+  const handleSmartMergeAndFixGrammar = () => {
+    const beforeCount = localInspectors.length;
+    const merged = mergeAndDeduplicateInspectors(localInspectors);
+    const afterCount = merged.length;
+    setLocalInspectors(merged);
+    onSaveInspectors(merged);
+    const mergedCount = beforeCount - afterCount;
+    setFeedbackMsg({
+      text:
+        mergedCount > 0
+          ? `จัดกลุ่มและรวมชื่อสะกดผิดตามหลักไวยากรณ์เรียบร้อยแล้ว (รวมลดรายการซ้ำซ้อนลง ${mergedCount} รายการ)`
+          : 'ตรวจสอบรายชื่อครบถ้วน: ตัวสะกดและชื่อถูกต้องตามหลักไวยากรณ์แล้ว',
+      type: 'success',
+    });
+    setTimeout(() => setFeedbackMsg(null), 4000);
+  };
+
+  const displayedInspectors = fuzzyFilterInspectors(localInspectors, searchQuery);
   const totalWithSignature = localInspectors.filter((i) => Boolean(i.signatureDataUrl)).length;
   const totalInspectors = localInspectors.length;
 
@@ -218,7 +243,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
                 จัดการลายเซ็นผู้ตรวจสอบ (ดึงจากไฟล์ Excel อัตโนมัติ)
               </h2>
               <p className="text-xs text-slate-500">
-                ระบบสร้างลายเซ็นตัวเขียนภาษาไทยจากชื่อจริง (ไม่เอานามสกุล) ให้อัตโนมัติ หรือสามารถวาด/อัปโหลดใหม่ได้
+                ระบบวิเคราะห์และรวมชื่อที่สะกดผิดตามหลักไวยากรณ์อัตโนมัติ พร้อมสร้างลายเซ็นตัวเขียนโปร่งใส
               </p>
             </div>
           </div>
@@ -232,9 +257,9 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
           </button>
         </div>
 
-        {/* Status Bar */}
+        {/* Status Bar with Search & Quick Actions */}
         <div className="px-6 py-2.5 bg-slate-100/80 border-b border-slate-200 flex items-center justify-between gap-3 text-xs flex-wrap">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-slate-700">สถานะลายเซ็น:</span>
             <span className="inline-flex items-center gap-1 font-medium px-2 py-0.5 rounded-md bg-white border border-slate-300 text-slate-800">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -242,15 +267,40 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
             </span>
           </div>
 
-          <button
-            type="button"
-            id="btn-quick-fill-all-sigs"
-            onClick={handleAutoFillAllSignatures}
-            className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-xs transition-colors cursor-pointer text-xs"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            สร้างลายเซ็นชื่อจริงให้ทุกคน
-          </button>
+          {/* Search bar inside modal */}
+          <div className="relative w-full sm:w-56">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="ค้นหาชื่อคล้ายคลึง/คำสะกด..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1 text-xs border border-slate-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-smart-merge-sigs"
+              onClick={handleSmartMergeAndFixGrammar}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 rounded-lg font-semibold shadow-xs transition-colors cursor-pointer text-xs"
+              title="ระบบรวมชื่อและแก้ไขคำสะกดผิดอัตโนมัติ 100%"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              รวมชื่อออโต้แล้ว
+            </button>
+
+            <button
+              type="button"
+              id="btn-quick-fill-all-sigs"
+              onClick={handleAutoFillAllSignatures}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-xs transition-colors cursor-pointer text-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              สร้างลายเซ็นทุกคน
+            </button>
+          </div>
         </div>
 
         {/* Feedback Message */}
@@ -269,13 +319,15 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
 
         {/* Inspector Cards List */}
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
-          {localInspectors.length === 0 ? (
+          {displayedInspectors.length === 0 ? (
             <div className="text-center py-12 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
               <UserCheck className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-              ไม่พบรายชื่อผู้ตรวจสอบในไฟล์ข้อมูล Excel กรุณาตรวจสอบไฟล์นำเข้า
+              {searchQuery
+                ? `ไม่พบผู้ตรวจสอบที่ตรงกับ "${searchQuery}"`
+                : 'ไม่พบรายชื่อผู้ตรวจสอบในไฟล์ข้อมูล Excel กรุณาตรวจสอบไฟล์นำเข้า'}
             </div>
           ) : (
-            localInspectors.map((insp) => {
+            displayedInspectors.map((insp) => {
               const cleanName = normalizeInspectorName(insp.name);
               const firstNameOnly = extractFirstNameOnly(insp.name);
               const inspectCount = inspectorStats.get(cleanName) || 0;
@@ -321,6 +373,24 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
                             </span>
                           )}
                         </div>
+
+                        {/* Merged Aliases / Misspelled Variants Notice */}
+                        {insp.aliases && insp.aliases.length > 0 && (
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[11px] font-medium text-amber-900 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                              <Sparkles className="w-3 h-3 text-amber-600" />
+                              รวมรูปแบบชื่อที่สะกดผิด:
+                            </span>
+                            {insp.aliases.map((a, idx) => (
+                              <span
+                                key={idx}
+                                className="text-[11px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200"
+                              >
+                                "{a}"
+                              </span>
+                            ))}
+                          </div>
+                        )}
 
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                           <span>{insp.position || 'ผู้ตรวจสอบความปลอดภัย'}</span>

@@ -193,13 +193,12 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
               return (
                 <tr
                   key={idx}
-                  className="border-none"
                   style={{ height: isHarness ? '18px' : '20px' }}
                 >
                   {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
                   <td
                     className="text-left py-[1px] px-1.5 text-black align-middle"
-                    style={{ whiteSpace: 'nowrap', overflow: 'visible' }}
+                    style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">ชื่อเครื่องมืออุปกรณ์&nbsp;</span>
                     {hasData ? (
@@ -215,7 +214,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   {/* Col 2: รหัสประจำตัวอุปกรณ์ */}
                   <td
                     className="text-left py-[1px] px-1.5 text-black align-middle"
-                    style={{ whiteSpace: 'nowrap', overflow: 'visible' }}
+                    style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">รหัสประจำตัวอุปกรณ์&nbsp;</span>
                     <span className="font-normal text-black">
@@ -226,7 +225,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   {/* Col 3: ทะเบียน กฟผ. */}
                   <td
                     className="text-left py-[1px] px-1.5 text-black align-middle"
-                    style={{ whiteSpace: 'nowrap', overflow: 'visible' }}
+                    style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">ทะเบียน กฟผ.&nbsp;</span>
                     <span className="font-normal text-black">
@@ -237,7 +236,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   {/* Col 4: ยี่ห้อ/รุ่น */}
                   <td
                     className="text-left py-[1px] px-1.5 text-black align-middle"
-                    style={{ whiteSpace: 'nowrap', overflow: 'visible' }}
+                    style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">ยี่ห้อ/รุ่น&nbsp;</span>
                     <span className="font-normal text-black">
@@ -360,7 +359,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   width: '36px',
                   textAlign: 'center',
                   verticalAlign: 'middle',
-                  borderRight: '1px solid #000',
+                  border: '1px solid #000000',
                   fontSize: '11px',
                   fontWeight: 'normal',
                   padding: '2px',
@@ -374,7 +373,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   width: '275px',
                   textAlign: 'left',
                   verticalAlign: 'middle',
-                  borderRight: '1px solid #000',
+                  border: '1px solid #000000',
                   fontSize: '10.5px',
                   lineHeight: '1.35',
                   padding: '3px 6px',
@@ -398,7 +397,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                       height: isHarness ? '32px' : '26px',
                       textAlign: 'center',
                       verticalAlign: 'middle',
-                      borderRight: '1px solid #000',
+                      border: '1px solid #000000',
                       padding: 0,
                     }}
                   >
@@ -469,7 +468,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
               style={{
                 width: '311px',
                 verticalAlign: 'middle',
-                borderRight: '1px solid #000',
+                border: '1px solid #000000',
                 padding: '3px 8px',
               }}
             >
@@ -579,7 +578,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                     height: '44px',
                     textAlign: 'center',
                     verticalAlign: 'middle',
-                    borderRight: '1px solid #000',
+                    border: '1px solid #000000',
                     padding: '1px 0',
                   }}
                 >
@@ -638,6 +637,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
               style={{
                 width: '78px',
                 height: '44px',
+                border: '1px solid #000000',
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 padding: '2px 3px',

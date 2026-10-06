@@ -25,6 +25,7 @@ import {
   normalizeSerialNumber,
   sortEquipmentList,
 } from './equipmentUtils';
+import { getCanonicalThaiName } from './thaiNameNormalizer';
 
 /**
  * Parse an equipment descriptor string from the Excel column
@@ -536,12 +537,15 @@ function isNonInspectorValue(str: string): boolean {
 
 function cleanInspectorNameStr(raw: string): string {
   if (!raw) return '';
-  return raw
+  const cleaned = raw
     .normalize('NFC')
     .replace(/\(.*?\)|\[.*?\]/g, '')
     .replace(/^[\d\.\-\s_]+/, '')
     .trim()
     .replace(/\s+/g, ' ');
+
+  if (!cleaned) return '';
+  return getCanonicalThaiName(cleaned);
 }
 
 function isLikelyInspectorName(str: string): boolean {

@@ -28,7 +28,11 @@ import {
   MonthlyReportData,
   SingleEquipmentMonthData,
 } from './inspectionAggregation';
-import { dataUrlToUint8Array, generateDigitalSignaturePng } from './signatureUtils';
+import {
+  dataUrlToUint8Array,
+  convertSignatureForDocx,
+  generateDigitalSignaturePng,
+} from './signatureUtils';
 
 export interface GenerateDocxOptions {
   equipmentType?: 'all' | EquipmentType;
@@ -78,7 +82,8 @@ function createEquipmentDocxSection(
   equipmentList: EquipmentItem[],
   records: InspectionRecord[],
   inspectors: Inspector[] = [],
-  precomputedReportData?: MonthlyReportData
+  precomputedReportData?: MonthlyReportData,
+  signatureCache?: Map<string, Uint8Array>
 ) {
   const isHarness = type === 'harness';
   const checklistItems = isHarness ? HARNESS_CHECKLIST_ITEMS : LANYARD_CHECKLIST_ITEMS;
@@ -410,7 +415,9 @@ function createEquipmentDocxSection(
             const gen = generateDigitalSignaturePng(insp?.name || 'ผู้ตรวจสอบ');
             sigDataUrl = gen.vertical;
           }
-          const sigBytes = sigDataUrl ? dataUrlToUint8Array(sigDataUrl) : null;
+          const sigBytes = sigDataUrl
+            ? (signatureCache?.get(sigDataUrl) || dataUrlToUint8Array(sigDataUrl))
+            : null;
           if (sigBytes) {
             cellChildren = [
               new Paragraph({
@@ -458,7 +465,9 @@ function createEquipmentDocxSection(
           if (!topSigUrl || !topSigUrl.startsWith('data:image/')) {
             topSigUrl = generateDigitalSignaturePng(topInsp?.name || 'ผู้รายงาน').horizontal;
           }
-          const topSigBytes = topSigUrl ? dataUrlToUint8Array(topSigUrl) : null;
+          const topSigBytes = topSigUrl
+            ? (signatureCache?.get(topSigUrl) || dataUrlToUint8Array(topSigUrl))
+            : null;
           const paragraphs: Paragraph[] = [];
 
           if (topSigBytes) {
@@ -578,7 +587,8 @@ function createEquipmentDocxSection(
 function createSingleEquipmentDocxElements(
   data: SingleEquipmentMonthData,
   month: string,
-  year: string
+  year: string,
+  signatureCache?: Map<string, Uint8Array>
 ) {
   const isHarness = data.equipmentType === 'harness';
   const checklistItems = isHarness ? HARNESS_CHECKLIST_ITEMS : LANYARD_CHECKLIST_ITEMS;
@@ -869,7 +879,9 @@ function createSingleEquipmentDocxElements(
           const gen = generateDigitalSignaturePng(dayInsp?.inspectorName || 'ผู้ตรวจสอบ');
           sigDataUrl = gen.vertical;
         }
-        const sigBytes = sigDataUrl ? dataUrlToUint8Array(sigDataUrl) : null;
+        const sigBytes = sigDataUrl
+          ? (signatureCache?.get(sigDataUrl) || dataUrlToUint8Array(sigDataUrl))
+          : null;
 
         let cellChildren: Paragraph[] = [];
         if (isInspected) {
@@ -926,7 +938,9 @@ function createSingleEquipmentDocxElements(
           if (!reporterSigUrl || !reporterSigUrl.startsWith('data:image/')) {
             reporterSigUrl = generateDigitalSignaturePng(data.primaryInspector?.name || 'ผู้รายงาน').horizontal;
           }
-          const reporterSigBytes = reporterSigUrl ? dataUrlToUint8Array(reporterSigUrl) : null;
+          const reporterSigBytes = reporterSigUrl
+            ? (signatureCache?.get(reporterSigUrl) || dataUrlToUint8Array(reporterSigUrl))
+            : null;
           const paragraphs: Paragraph[] = [];
 
           if (reporterSigBytes) {
@@ -981,7 +995,10 @@ function createSingleEquipmentDocxElements(
 /**
  * Creates a complete A4 Landscape Word page for an individual Equipment Pair (Harness-N & Lanyard-N)
  */
-function createEquipmentPairDocxPage(pairData: EquipmentPairPageData) {
+function createEquipmentPairDocxPage(
+  pairData: EquipmentPairPageData,
+  signatureCache?: Map<string, Uint8Array>
+) {
   const titlePara = new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: 0, after: 15, line: 180 },
@@ -1013,13 +1030,15 @@ function createEquipmentPairDocxPage(pairData: EquipmentPairPageData) {
   const harnessElements = createSingleEquipmentDocxElements(
     pairData.harnessData,
     pairData.month,
-    pairData.year
+    pairData.year,
+    signatureCache
   );
 
   const lanyardElements = createSingleEquipmentDocxElements(
     pairData.lanyardData,
     pairData.month,
-    pairData.year
+    pairData.year,
+    signatureCache
   );
 
   const copyNotePara = new Paragraph({
@@ -1129,6 +1148,60 @@ export async function generateDocxReport({
     },
   };
 
+  // Pre-convert all signatures with solid white background (#ffffff)
+  // CRITICAL FIX: Microsoft Word on Windows renders transparent alpha PNGs inside table cells
+  // as solid black blocks when printing or saving as PDF.
+  // Pre-filling with pure white ensures the signature blends seamlessly with the white cell
+  // AND exports to PDF cleanly with NO black rectangles!
+  const signatureCache = new Map<string, Uint8Array>();
+  const allSigUrls = new Set<string>();
+
+  for (const insp of allInspectors) {
+    if (insp.signatureDataUrl) allSigUrls.add(insp.signatureDataUrl);
+    if (insp.verticalSignatureDataUrl) allSigUrls.add(insp.verticalSignatureDataUrl);
+  }
+
+  if (layoutMode === 'pair') {
+    const pairs = pairReports || buildEquipmentPairReports(
+      records,
+      harnessEquipment,
+      lanyardEquipment,
+      month,
+      year,
+      allInspectors
+    );
+    for (const pair of pairs) {
+      for (let d = 1; d <= 31; d++) {
+        const hInsp = pair.harnessData.dayInspectors[d];
+        if (hInsp?.verticalSignatureDataUrl) allSigUrls.add(hInsp.verticalSignatureDataUrl);
+        if (hInsp?.signatureDataUrl) allSigUrls.add(hInsp.signatureDataUrl);
+        const lInsp = pair.lanyardData.dayInspectors[d];
+        if (lInsp?.verticalSignatureDataUrl) allSigUrls.add(lInsp.verticalSignatureDataUrl);
+        if (lInsp?.signatureDataUrl) allSigUrls.add(lInsp.signatureDataUrl);
+      }
+      if (pair.harnessData.primaryInspector?.signatureDataUrl) {
+        allSigUrls.add(pair.harnessData.primaryInspector.signatureDataUrl);
+      }
+      if (pair.lanyardData.primaryInspector?.signatureDataUrl) {
+        allSigUrls.add(pair.lanyardData.primaryInspector.signatureDataUrl);
+      }
+    }
+  }
+
+  // Pre-convert all unique signature URLs in parallel
+  await Promise.all(
+    Array.from(allSigUrls).map(async (url) => {
+      try {
+        const bytes = await convertSignatureForDocx(url);
+        if (bytes) {
+          signatureCache.set(url, bytes);
+        }
+      } catch (err) {
+        console.warn('Signature conversion error for DOCX', err);
+      }
+    })
+  );
+
   if (layoutMode === 'pair') {
     const pairs = pairReports || buildEquipmentPairReports(
       records,
@@ -1147,7 +1220,7 @@ export async function generateDocxReport({
         : pairs.slice(0, 1);
 
     for (const pair of targetPairs) {
-      const pageChildren = createEquipmentPairDocxPage(pair);
+      const pageChildren = createEquipmentPairDocxPage(pair, signatureCache);
       sections.push({
         properties: pageLandscapeSettings,
         children: pageChildren,
@@ -1163,7 +1236,8 @@ export async function generateDocxReport({
         harnessEquipment,
         records,
         allInspectors,
-        harnessReportData
+        harnessReportData,
+        signatureCache
       );
       sections.push({
         properties: pageLandscapeSettings,
@@ -1179,7 +1253,8 @@ export async function generateDocxReport({
         lanyardEquipment,
         records,
         allInspectors,
-        lanyardReportData
+        lanyardReportData,
+        signatureCache
       );
       sections.push({
         properties: pageLandscapeSettings,

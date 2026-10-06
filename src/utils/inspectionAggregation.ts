@@ -13,6 +13,12 @@ import {
   normalizeSerialNumber,
 } from './equipmentUtils';
 import { ensureInspectorSignatures, generateDigitalSignaturePng } from './signatureUtils';
+import {
+  getCanonicalThaiName,
+  mergeAndDeduplicateInspectors,
+  stripThaiTitlePrefix,
+  calculateThaiNameSimilarity,
+} from './thaiNameNormalizer';
 
 export interface EquipmentInspectionEntry {
   day: number;
@@ -107,17 +113,20 @@ export interface MonthlyReportData {
  */
 export function normalizeInspectorName(raw?: string): string {
   if (!raw || typeof raw !== 'string') return '';
-  return raw
+  const clean = raw
     .normalize('NFC')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
     .trim()
     .replace(/\s+/g, ' ');
+  if (!clean) return '';
+  return getCanonicalThaiName(clean);
 }
 
 const THAI_NAME_PREFIX_REGEX = /^(นาย|นางสาว|นาง|น\.ส\.|นส\.|ด\.ช\.|ด\.ญ\.|คุณ|ดร\.|อาจารย์|อ\.|ผศ\.|รศ\.|ศ\.|นพ\.|พญ\.|นายแพทย์|แพทย์หญิง|ส\.อ\.|ส\.ท\.|ส\.ต\.|จ\.ส\.อ\.|จ\.ส\.ท\.|จ\.ส\.ต\.|ร\.ต\.|ร\.ท\.|ร\.อ\.|พ\.ต\.|พ\.ท\.|พ\.อ\.|พ\.ต\.ต\.|พ\.ต\.ท\.|พ\.ต\.อ\.|ด\.ต\.|ส\.ต\.ต\.|ส\.ต\.ท\.|ส\.ต\.อ\.|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรี|Mr\.|Mrs\.|Miss|Ms\.|Dr\.)\s*/i;
 
 /**
  * Matches an inspector name from Excel against the system Inspector list
- * Accurately handles titles, full names, first names, and avoids false-positive substring matches.
+ * Accurately handles titles, full names, first names, canonical names, aliases, and fuzzy similarity.
  */
 export function matchInspectorSignature(
   excelInspectorName: string,
@@ -126,23 +135,28 @@ export function matchInspectorSignature(
   const normExcel = normalizeInspectorName(excelInspectorName);
   if (!normExcel) return null;
 
-  // 1. Exact match after normalization
+  // 1. Exact match after canonical normalization
   const exact = inspectorsList.find(
     (i) => normalizeInspectorName(i.name).toLowerCase() === normExcel.toLowerCase()
   );
   if (exact) return ensureInspectorSignatures(exact);
 
-  // 2. Normalize and strip prefixes
-  let strippedExcel = normExcel.replace(THAI_NAME_PREFIX_REGEX, '').trim();
-  while (THAI_NAME_PREFIX_REGEX.test(strippedExcel)) {
-    strippedExcel = strippedExcel.replace(THAI_NAME_PREFIX_REGEX, '').trim();
-  }
+  // 2. Check aliases list on inspectors
+  const aliasMatch = inspectorsList.find((i) => {
+    if (!i.aliases || i.aliases.length === 0) return false;
+    return i.aliases.some(
+      (a) =>
+        normalizeInspectorName(a).toLowerCase() === normExcel.toLowerCase() ||
+        a.trim().toLowerCase() === excelInspectorName.trim().toLowerCase()
+    );
+  });
+  if (aliasMatch) return ensureInspectorSignatures(aliasMatch);
+
+  // 3. Normalize and strip prefixes
+  let strippedExcel = stripThaiTitlePrefix(normExcel);
 
   const candidates = inspectorsList.map((insp) => {
-    let strippedI = normalizeInspectorName(insp.name).replace(THAI_NAME_PREFIX_REGEX, '').trim();
-    while (THAI_NAME_PREFIX_REGEX.test(strippedI)) {
-      strippedI = strippedI.replace(THAI_NAME_PREFIX_REGEX, '').trim();
-    }
+    const strippedI = stripThaiTitlePrefix(insp.name);
     return {
       inspector: insp,
       normName: normalizeInspectorName(insp.name),
@@ -151,36 +165,39 @@ export function matchInspectorSignature(
     };
   });
 
-  // 3. Exact match on stripped full name (e.g. "ชญานนท์ เชื้อคำ" vs "ชญานนท์ เชื้อคำ")
+  // 4. Exact match on stripped full name (e.g. "ชญานนท์ เชื้อคำ" vs "ชญานนท์ เชื้อคำ")
   const strippedExact = candidates.find(
     (c) => c.strippedName.toLowerCase() === strippedExcel.toLowerCase()
   );
   if (strippedExact) return ensureInspectorSignatures(strippedExact.inspector);
 
-  // 4. Exact match on first-name token (e.g. "ชญานนท์" matches "ชญานนท์ เชื้อคำ")
+  // 5. Exact match on first-name token (e.g. "ชญานนท์" matches "ชญานนท์ เชื้อคำ")
   const excelTokens = strippedExcel.split(/\s+/).filter(Boolean);
   const excelFirstToken = excelTokens[0] || '';
 
   if (excelFirstToken && excelFirstToken.length >= 3) {
-    // 4a. Exact first name token match
     const tokenExact = candidates.find(
       (c) => c.firstToken.toLowerCase() === excelFirstToken.toLowerCase()
     );
     if (tokenExact) return ensureInspectorSignatures(tokenExact.inspector);
 
-    // 4b. Prefix root match with at least 4 common characters and identical first character
-    // e.g. "ชญานน" vs "ชญานนท์" (both start with "ชญา")
+    // Prefix root match
     const prefixMatch = candidates.find((c) => {
       if (c.firstToken.charAt(0) !== excelFirstToken.charAt(0)) return false;
-      if (
+      return (
         (c.firstToken.startsWith(excelFirstToken) || excelFirstToken.startsWith(c.firstToken)) &&
         excelFirstToken.slice(0, 3) === c.firstToken.slice(0, 3)
-      ) {
-        return true;
-      }
-      return false;
+      );
     });
     if (prefixMatch) return ensureInspectorSignatures(prefixMatch.inspector);
+  }
+
+  // 6. Deep phonetic & consonant similarity matching (score >= 0.82)
+  for (const c of candidates) {
+    const sim = calculateThaiNameSimilarity(strippedExcel, c.strippedName);
+    if (sim >= 0.82) {
+      return ensureInspectorSignatures(c.inspector);
+    }
   }
 
   return null;
@@ -645,36 +662,58 @@ export function extractUniqueInspectorsFromRecords(
 
   // Extract from records
   for (const rec of records) {
-    const rawName = rec.inspectorName;
+    const rawName = (rec.inspectorName || '').trim();
     const cleanName = normalizeInspectorName(rawName);
     if (!cleanName) continue;
 
     const key = cleanName.toLowerCase();
-    if (!inspectorMap.has(key)) {
-      // Find partial or title match
+    if (inspectorMap.has(key)) {
+      const existing = inspectorMap.get(key)!;
+      if (rawName && rawName !== cleanName) {
+        const aliases = new Set(existing.aliases || []);
+        aliases.add(rawName);
+        existing.aliases = Array.from(aliases);
+      }
+    } else {
+      // Find partial, canonical, or title match
       const matched = matchInspectorSignature(cleanName, existingInspectors);
+      const aliases = new Set<string>();
+      if (rawName && rawName !== cleanName) {
+        aliases.add(rawName);
+      }
+
       if (matched) {
-        inspectorMap.set(key, ensureInspectorSignatures({
-          ...matched,
-          name: cleanName,
-        }));
+        if (matched.aliases) {
+          matched.aliases.forEach((a) => aliases.add(a));
+        }
+        inspectorMap.set(
+          key,
+          ensureInspectorSignatures({
+            ...matched,
+            name: cleanName,
+            aliases: Array.from(aliases),
+          })
+        );
       } else {
         const sigs = generateDigitalSignaturePng(cleanName);
-        inspectorMap.set(key, ensureInspectorSignatures({
-          id: `insp-auto-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-          name: cleanName,
-          position: 'ผู้ตรวจสอบความปลอดภัย',
-          department: 'แผนก หมผ - ธ. กอง กคว - ธ.',
-          signatureDataUrl: sigs.horizontal,
-          verticalSignatureDataUrl: sigs.vertical,
-        }));
+        inspectorMap.set(
+          key,
+          ensureInspectorSignatures({
+            id: `insp-auto-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            name: cleanName,
+            position: 'ผู้ตรวจสอบความปลอดภัย',
+            department: 'แผนก หมผ - ธ. กอง กคว - ธ.',
+            signatureDataUrl: sigs.horizontal,
+            verticalSignatureDataUrl: sigs.vertical,
+            aliases: Array.from(aliases),
+          })
+        );
       }
     }
   }
 
-  return Array.from(inspectorMap.values())
-    .map(ensureInspectorSignatures)
-    .sort((a, b) => a.name.localeCompare(b.name, 'th'));
+  const rawList = Array.from(inspectorMap.values()).map(ensureInspectorSignatures);
+  return mergeAndDeduplicateInspectors(rawList);
 }
 
 /**

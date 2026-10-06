@@ -515,6 +515,52 @@ export function dataUrlToUint8Array(dataUrl: string): Uint8Array | null {
 }
 
 /**
+ * Converts a signature DataURL into a Uint8Array specifically for Microsoft Word (DOCX).
+ * Pre-fills the canvas with a solid white (#ffffff) background.
+ * CRITICAL FIX: Microsoft Word's Windows Print-to-PDF / Save-as-PDF engine drops alpha transparency
+ * inside table cells and renders transparent RGBA(0,0,0,0) as SOLID BLACK rectangles!
+ * By rendering onto a solid white background, Word displays the signature seamlessly on the white table cell
+ * AND exports to PDF with a clean white background, completely eliminating the black boxes.
+ */
+export async function convertSignatureForDocx(dataUrl: string): Promise<Uint8Array | null> {
+  if (!dataUrl || !dataUrl.includes(',')) return null;
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const w = img.naturalWidth || img.width || 120;
+        const h = img.naturalHeight || img.height || 60;
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(dataUrlToUint8Array(dataUrl));
+          return;
+        }
+
+        // Fill solid white background (#ffffff)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const whitePngDataUrl = canvas.toDataURL('image/png');
+        resolve(dataUrlToUint8Array(whitePngDataUrl));
+      } catch (err) {
+        console.warn('convertSignatureForDocx error:', err);
+        resolve(dataUrlToUint8Array(dataUrl));
+      }
+    };
+    img.onerror = () => {
+      resolve(dataUrlToUint8Array(dataUrl));
+    };
+    img.src = dataUrl;
+  });
+}
+
+/**
  * Takes any image Data URL (uploaded or drawn) and creates a 90-degree rotated
  * vertical PNG Data URL with 100% transparent background.
  */

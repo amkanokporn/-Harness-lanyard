@@ -23,6 +23,10 @@ import {
   EquipmentPairPageData,
 } from './utils/inspectionAggregation';
 import {
+  clusterAndNormalizeRecords,
+  mergeAndDeduplicateInspectors,
+} from './utils/thaiNameNormalizer';
+import {
   ensureInspectorSignatures,
   convertToTransparentPng,
   rotateDataUrlToVertical,
@@ -39,20 +43,23 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(ensureInspectorSignatures);
+          return mergeAndDeduplicateInspectors(parsed.map(ensureInspectorSignatures));
         }
       }
     } catch (e) {
       console.warn('Failed to load inspectors from localStorage', e);
     }
-    return DEFAULT_INSPECTORS.map(ensureInspectorSignatures);
+    return mergeAndDeduplicateInspectors(DEFAULT_INSPECTORS.map(ensureInspectorSignatures));
   });
 
   const [isInspectorModalOpen, setIsInspectorModalOpen] = useState(false);
 
   // 2. Parsed Data State (Default initialized with the sample data matching Master PDF)
   const [parsedData, setParsedData] = useState<ParsedExcelResult | null>(() => {
-    return getSampleParsedData();
+    const sample = getSampleParsedData();
+    const cluster = clusterAndNormalizeRecords(sample.records, DEFAULT_INSPECTORS);
+    sample.records = cluster.normalizedRecords;
+    return sample;
   });
 
   // 3. Filter State (Plant removed since it is an overall checklist)
@@ -157,6 +164,11 @@ export default function App() {
     try {
       const buffer = await file.arrayBuffer();
       const result = parseInspectionExcel(buffer, file.name);
+
+      // Automatically cluster, normalize, and fix grammatical errors in inspector names
+      const clusterResult = clusterAndNormalizeRecords(result.records, inspectors);
+      result.records = clusterResult.normalizedRecords;
+
       setParsedData(result);
 
       // Automatically update filter defaults if detected from the uploaded excel
@@ -182,7 +194,10 @@ export default function App() {
       }
 
       // Automatically extract and sync all inspectors from real records
-      const updatedInspectors = extractUniqueInspectorsFromRecords(result.records, inspectors);
+      const updatedInspectors = extractUniqueInspectorsFromRecords(
+        result.records,
+        clusterResult.deduplicatedInspectors
+      );
       setInspectors(updatedInspectors);
       try {
         localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(updatedInspectors));
@@ -206,9 +221,16 @@ export default function App() {
           message: `อ่านไฟล์ "${file.name}" พบข้อผิดพลาด ${errorCount} รายการ กรุณาตรวจสอบรายละเอียด`,
         });
       } else {
+        const mergeAuditMsg =
+          clusterResult.auditLogs.length > 0
+            ? ` • รวมชื่อสะกดผิดอัตโนมัติ: ${clusterResult.auditLogs
+                .map((a) => `${a.raw} ➔ ${a.canonical}`)
+                .slice(0, 2)
+                .join(', ')}${clusterResult.auditLogs.length > 2 ? ` และอีก ${clusterResult.auditLogs.length - 2} รายการ` : ''}`
+            : '';
         setToast({
           type: 'success',
-          message: `อ่านไฟล์ "${file.name}" สำเร็จ พบข้อมูลตรวจ ${result.records.length} วันตรวจ`,
+          message: `อ่านไฟล์ "${file.name}" สำเร็จ (${result.records.length} วันตรวจ)${mergeAuditMsg}`,
         });
       }
     } catch (err: any) {
@@ -222,17 +244,24 @@ export default function App() {
   // Load Built-in Master Sample Data
   const handleLoadSampleData = () => {
     const sample = getSampleParsedData();
+    const clusterResult = clusterAndNormalizeRecords(sample.records, inspectors);
+    sample.records = clusterResult.normalizedRecords;
+    const updatedInspectors = extractUniqueInspectorsFromRecords(
+      sample.records,
+      clusterResult.deduplicatedInspectors
+    );
+    setInspectors(updatedInspectors);
     setParsedData(sample);
     setFilters({
       plant: '',
       month: 'มีนาคม',
       year: '2569',
       equipmentType: 'all',
-      selectedInspectorId: inspectors.length > 0 ? inspectors[0].id : '',
+      selectedInspectorId: updatedInspectors.length > 0 ? updatedInspectors[0].id : '',
     });
     setToast({
       type: 'success',
-      message: 'โหลดข้อมูลตัวอย่าง มีนาคม 2569 ตาม Master PDF ต้นฉบับเรียบร้อยแล้ว',
+      message: 'โหลดข้อมูลตัวอย่าง มีนาคม 2569 (รวมและแก้ไขชื่อสะกดผิดให้ถูกต้องตามหลักไวยากรณ์แล้ว)',
     });
   };
 

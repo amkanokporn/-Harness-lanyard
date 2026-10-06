@@ -52,6 +52,7 @@ export interface Inspector {
   signatureDataUrl?: string; // Base64 PNG (horizontal)
   verticalSignatureDataUrl?: string; // Base64 PNG (rotated 90 degrees up for checklist columns)
   department?: string;
+  aliases?: string[]; // รายชื่อที่สะกดผิดหรือมีตัวอักษรคล้ายคลึงกันที่ถูกรวมเข้ากับบุคคลนี้
 }
 
 export interface FilterState {
