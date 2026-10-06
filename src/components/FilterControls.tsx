@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import {
   EquipmentType,
   FilterState,
@@ -53,7 +53,6 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
   generationProgressText,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const [inspectorSearchQuery, setInspectorSearchQuery] = useState('');
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -73,30 +72,48 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
     }
   };
 
-  // Filtered Records Summary (Without Plant filter since it's an overall checklist)
-  const filteredRecords = (parsedData?.records || []).filter((r) => {
-    const matchMonth = !filters.month || r.month === filters.month;
-    const matchYear = !filters.year || String(r.year) === String(filters.year);
-    const matchType =
-      filters.equipmentType === 'all' || r.equipmentType === filters.equipmentType;
-    return matchMonth && matchYear && matchType;
-  });
+  // Memoized Filtered Records
+  const filteredRecords = useMemo(() => {
+    return (parsedData?.records || []).filter((r) => {
+      const matchMonth = !filters.month || r.month === filters.month;
+      const matchYear = !filters.year || String(r.year) === String(filters.year);
+      const matchType =
+        filters.equipmentType === 'all' || r.equipmentType === filters.equipmentType;
+      return matchMonth && matchYear && matchType;
+    });
+  }, [parsedData?.records, filters.month, filters.year, filters.equipmentType]);
 
-  const checkedDays = Array.from(
-    new Set(filteredRecords.map((r) => Number(r.day)))
-  ).sort((a: number, b: number) => a - b);
+  const checkedDays = useMemo(() => {
+    return Array.from(new Set(filteredRecords.map((r) => Number(r.day)))).sort(
+      (a: number, b: number) => a - b
+    );
+  }, [filteredRecords]);
 
-  // Real inspectors appearing in current filtered month/year records (normalized to canonical names)
-  const monthInspectorNames = Array.from(
-    new Set(
+  // Precomputed inspector day counts for current filtered records (O(1) lookups)
+  const inspectorCountsMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const r of filteredRecords) {
+      const name = normalizeInspectorName(r.inspectorName);
+      if (name) {
+        map.set(name.toLowerCase(), (map.get(name.toLowerCase()) || 0) + 1);
+      }
+    }
+    return map;
+  }, [filteredRecords]);
+
+  // Set of inspector names appearing in current filtered month/year
+  const monthInspectorNamesSet = useMemo(() => {
+    return new Set(
       filteredRecords
         .map((r) => normalizeInspectorName(r.inspectorName || '').trim())
         .filter(Boolean)
-    )
-  );
+    );
+  }, [filteredRecords]);
 
-  // Filtered inspectors for display in badges based on search query
-  const displayedInspectors = fuzzyFilterInspectors(inspectors, inspectorSearchQuery);
+  // Memoized filtered inspectors for display in badges based on search query
+  const displayedInspectors = useMemo(() => {
+    return fuzzyFilterInspectors(inspectors, inspectorSearchQuery);
+  }, [inspectors, inspectorSearchQuery]);
 
   // Check validity for PDF/DOCX generation
   const validationErrors: string[] = [];
@@ -262,15 +279,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
             >
               <option value="">-- ผู้ตรวจสอบทั้งหมด (ภาพรวม) --</option>
               {inspectors.map((insp) => {
-                const count = (parsedData?.records || []).filter((r) => {
-                  const rName = normalizeInspectorName(r.inspectorName);
-                  const iName = normalizeInspectorName(insp.name);
-                  return (
-                    rName.toLowerCase() === iName.toLowerCase() &&
-                    (!filters.month || r.month === filters.month) &&
-                    (!filters.year || String(r.year) === String(filters.year))
-                  );
-                }).length;
+                const count = inspectorCountsMap.get(normalizeInspectorName(insp.name).toLowerCase()) || 0;
                 const aliasNotice =
                   insp.aliases && insp.aliases.length > 0
                     ? ` [รวมชื่อคล้าย ${insp.aliases.length}]`
@@ -338,7 +347,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
             <div className="flex items-center gap-2 flex-wrap">
               <UserCheck className="w-4 h-4 text-blue-600" />
               <span className="text-xs font-bold text-slate-800">
-                ผู้ตรวจสอบจากข้อมูลจริง (ตรวจพบ {monthInspectorNames.length > 0 ? `${monthInspectorNames.length} ท่านในเดือนนี้` : `ทั้งหมด ${inspectors.length} ท่าน`})
+                ผู้ตรวจสอบจากข้อมูลจริง (ตรวจพบ {monthInspectorNamesSet.size > 0 ? `${monthInspectorNamesSet.size} ท่านในเดือนนี้` : `ทั้งหมด ${inspectors.length} ท่าน`})
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                 <Sparkles className="w-3 h-3 text-emerald-600" /> รวมชื่อคล้ายคลึง & แก้คำสะกดผิดอัตโนมัติ
@@ -378,13 +387,11 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
               </span>
             ) : (
               displayedInspectors.map((insp) => {
+                const normName = normalizeInspectorName(insp.name);
+                const normKey = normName.toLowerCase();
                 const hasSig = Boolean(insp.signatureDataUrl);
-                const isCurrentMonth = monthInspectorNames.includes(insp.name) || monthInspectorNames.length === 0;
-                const countInMonth = filteredRecords.filter((r) => {
-                  const rName = normalizeInspectorName(r.inspectorName);
-                  const iName = normalizeInspectorName(insp.name);
-                  return rName.toLowerCase() === iName.toLowerCase();
-                }).length;
+                const isCurrentMonth = monthInspectorNamesSet.has(normName) || monthInspectorNamesSet.size === 0;
+                const countInMonth = inspectorCountsMap.get(normKey) || 0;
                 const isFilterSelected = filters.selectedInspectorId === insp.id;
 
                 return (

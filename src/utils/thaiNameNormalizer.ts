@@ -166,6 +166,26 @@ export const CANONICAL_PLANT_ROSTER: CanonicalRosterPerson[] = [
 ];
 
 /**
+ * Fast O(1) In-Memory Lookup Table & Memoization Caches
+ */
+const CANONICAL_MAP = new Map<string, string>();
+const CANONICAL_CACHE = new Map<string, string>();
+const SIMILARITY_CACHE = new Map<string, number>();
+
+// Initialize quick hash index from CANONICAL_PLANT_ROSTER
+for (const person of CANONICAL_PLANT_ROSTER) {
+  CANONICAL_MAP.set(person.cleanFullName, person.fullNameWithTitle);
+  CANONICAL_MAP.set(person.firstName, person.fullNameWithTitle);
+  CANONICAL_MAP.set(stripThaiTitlePrefix(person.fullNameWithTitle), person.fullNameWithTitle);
+  CANONICAL_MAP.set(person.fullNameWithTitle, person.fullNameWithTitle);
+
+  for (const v of person.variants) {
+    CANONICAL_MAP.set(v, person.fullNameWithTitle);
+    CANONICAL_MAP.set(stripThaiTitlePrefix(v), person.fullNameWithTitle);
+  }
+}
+
+/**
  * Strips title prefixes (นาย, นางสาว, ส.อ., etc.) and returns clean Thai name
  */
 export function stripThaiTitlePrefix(fullName: string): string {
@@ -195,6 +215,9 @@ export function fixThaiNameGrammar(name: string): string {
     .replace(/[\u200B-\u200D\uFEFF]/g, '')
     .trim()
     .replace(/\s+/g, ' ');
+
+  // Quick check: if no Thai characters, return as is
+  if (!/[\u0E00-\u0E7F]/.test(s)) return s;
 
   // 1. Incomplete/truncated word endings:
   // "สกั" at the end of word -> "สกุล" (as in "ยามะสกั" -> "ยามะสกุล")
@@ -269,44 +292,58 @@ export function extractThaiConsonants(str: string): string {
 }
 
 /**
- * Computes standard Levenshtein edit distance
+ * High-performance 1D array Levenshtein edit distance with early exit
  */
 export function levenshtein(a: string, b: string): number {
+  if (a === b) return 0;
   const m = a.length;
   const n = b.length;
   if (m === 0) return n;
   if (n === 0) return m;
+  if (Math.abs(m - n) > 4) return 10;
 
-  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  const prev = new Int32Array(n + 1);
+  const curr = new Int32Array(n + 1);
+
+  for (let j = 0; j <= n; j++) prev[j] = j;
 
   for (let i = 1; i <= m; i++) {
+    curr[0] = i;
+    const aChar = a.charCodeAt(i - 1);
     for (let j = 1; j <= n; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      dp[i][j] = Math.min(
-        dp[i - 1][j] + 1,
-        dp[i][j - 1] + 1,
-        dp[i - 1][j - 1] + cost
-      );
+      const cost = aChar === b.charCodeAt(j - 1) ? 0 : 1;
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+    }
+    for (let j = 0; j <= n; j++) {
+      prev[j] = curr[j];
     }
   }
-  return dp[m][n];
+  return prev[n];
 }
 
 /**
  * Calculates similarity between two Thai name strings (range 0.0 to 1.0)
- * Uses composite metric:
- * - Direct Levenshtein distance
- * - Consonant skeleton distance
- * - Shared starting letters (first consonant must match!)
+ * Uses composite metric with memoization cache
  */
 export function calculateThaiNameSimilarity(a: string, b: string): number {
+  if (!a || !b) return 0;
+  if (a === b) return 1.0;
+
+  const cacheKey = a < b ? `${a}:::${b}` : `${b}:::${a}`;
+  const cached = SIMILARITY_CACHE.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const normA = stripThaiTitlePrefix(fixThaiNameGrammar(a));
   const normB = stripThaiTitlePrefix(fixThaiNameGrammar(b));
 
-  if (!normA || !normB) return 0;
-  if (normA === normB) return 1.0;
+  if (!normA || !normB) {
+    SIMILARITY_CACHE.set(cacheKey, 0);
+    return 0;
+  }
+  if (normA === normB) {
+    SIMILARITY_CACHE.set(cacheKey, 1.0);
+    return 1.0;
+  }
 
   // Extract first names
   const tokenA = normA.split(/\s+/)[0] || '';
@@ -316,19 +353,24 @@ export function calculateThaiNameSimilarity(a: string, b: string): number {
   const consA = extractThaiConsonants(tokenA);
   const consB = extractThaiConsonants(tokenB);
 
-  if (consA.length === 0 || consB.length === 0) return 0;
-  if (consA.charAt(0) !== consB.charAt(0)) {
-    // If starting consonant doesn't match (e.g. ช vs อ in "ชญานนท์" vs "อานนท์"), definitely different people!
+  if (consA.length === 0 || consB.length === 0 || consA.charAt(0) !== consB.charAt(0)) {
+    SIMILARITY_CACHE.set(cacheKey, 0);
     return 0;
   }
 
   // Exact first name match (e.g. "ชญานนท์" vs "ชญานนท์ เชื้อคำ")
-  if (tokenA === tokenB) return 0.95;
+  if (tokenA === tokenB) {
+    SIMILARITY_CACHE.set(cacheKey, 0.95);
+    return 0.95;
+  }
 
   // Token prefix match (e.g. "ชญานน" vs "ชญานนท์")
   if (tokenA.startsWith(tokenB) || tokenB.startsWith(tokenA)) {
     const minLen = Math.min(tokenA.length, tokenB.length);
-    if (minLen >= 4) return 0.92;
+    if (minLen >= 4) {
+      SIMILARITY_CACHE.set(cacheKey, 0.92);
+      return 0.92;
+    }
   }
 
   // Consonant skeleton match
@@ -341,14 +383,13 @@ export function calculateThaiNameSimilarity(a: string, b: string): number {
   const maxStrLen = Math.max(tokenA.length, tokenB.length);
   const strSim = 1 - strDist / maxStrLen;
 
-  return consSim * 0.6 + strSim * 0.4;
+  const score = consSim * 0.6 + strSim * 0.4;
+  SIMILARITY_CACHE.set(cacheKey, score);
+  return score;
 }
 
 /**
- * Resolves any raw Thai inspector string to its verified canonical full name
- * 1. Checks plant reference roster for exact/variant matches
- * 2. Checks custom registered inspectors list
- * 3. Applies grammatical auto-correction for any Thai name
+ * Resolves any raw Thai inspector string to its verified canonical full name with O(1) caching
  */
 export function getCanonicalThaiName(
   rawName: string,
@@ -356,49 +397,50 @@ export function getCanonicalThaiName(
 ): string {
   if (!rawName || typeof rawName !== 'string') return '';
 
+  // 1. Cache hit check
+  const cached = CANONICAL_CACHE.get(rawName);
+  if (cached !== undefined) return cached;
+
   const cleanInput = stripThaiTitlePrefix(fixThaiNameGrammar(rawName));
-  if (!cleanInput) return '';
-
-  // 1. Search against CANONICAL_PLANT_ROSTER
-  for (const person of CANONICAL_PLANT_ROSTER) {
-    // Check against canonical names
-    if (
-      cleanInput === person.cleanFullName ||
-      cleanInput === person.firstName ||
-      cleanInput === stripThaiTitlePrefix(person.fullNameWithTitle)
-    ) {
-      return person.fullNameWithTitle;
-    }
-
-    // Check against variants
-    for (const v of person.variants) {
-      const cleanV = stripThaiTitlePrefix(fixThaiNameGrammar(v));
-      if (cleanInput === cleanV) {
-        return person.fullNameWithTitle;
-      }
-    }
-
-    // Fuzzy similarity match (threshold >= 0.88 with identical initial consonant)
-    const sim = calculateThaiNameSimilarity(cleanInput, person.cleanFullName);
-    if (sim >= 0.88) {
-      return person.fullNameWithTitle;
-    }
+  if (!cleanInput) {
+    CANONICAL_CACHE.set(rawName, '');
+    return '';
   }
 
-  // 2. Search against customInspectors
+  // 2. Direct O(1) Hash Map check against canonical dictionary
+  const quick = CANONICAL_MAP.get(cleanInput) || CANONICAL_MAP.get(rawName.trim());
+  if (quick) {
+    CANONICAL_CACHE.set(rawName, quick);
+    return quick;
+  }
+
+  // 3. Search against customInspectors
   for (const insp of customInspectors) {
     const cleanInsp = stripThaiTitlePrefix(fixThaiNameGrammar(insp.name));
     if (cleanInput === cleanInsp) {
+      CANONICAL_CACHE.set(rawName, insp.name);
       return insp.name;
     }
     const sim = calculateThaiNameSimilarity(cleanInput, cleanInsp);
     if (sim >= 0.88) {
+      CANONICAL_CACHE.set(rawName, insp.name);
       return insp.name;
     }
   }
 
-  // 3. Fallback: Return grammatically corrected version
-  return fixThaiNameGrammar(rawName.trim());
+  // 4. Fuzzy similarity match against plant roster
+  for (const person of CANONICAL_PLANT_ROSTER) {
+    const sim = calculateThaiNameSimilarity(cleanInput, person.cleanFullName);
+    if (sim >= 0.88) {
+      CANONICAL_CACHE.set(rawName, person.fullNameWithTitle);
+      return person.fullNameWithTitle;
+    }
+  }
+
+  // 5. Fallback: Return grammatically corrected version
+  const fallback = fixThaiNameGrammar(rawName.trim());
+  CANONICAL_CACHE.set(rawName, fallback);
+  return fallback;
 }
 
 /**
