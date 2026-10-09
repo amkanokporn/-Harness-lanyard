@@ -144,24 +144,24 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
         height: '793px',
         minHeight: '793px',
         maxHeight: '793px',
-        padding: '16px 22px 12px 22px',
+        padding: '10px 22px 8px 22px',
         boxSizing: 'border-box',
         fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
         color: '#000000',
         backgroundColor: '#ffffff',
         overflow: 'hidden',
-        lineHeight: 1.25,
+        lineHeight: 1.2,
       }}
     >
       {/* 1. Header Title */}
       <div className="text-center mb-1">
-        <h1 className="text-[20px] font-bold tracking-tight text-black leading-snug">
+        <h1 className="text-[18px] font-bold tracking-tight text-black leading-snug">
           {FORM_METADATA.title}
         </h1>
       </div>
 
       {/* 2. Subheader Metadata */}
-      <div className="flex items-center justify-start text-[18px] font-bold text-black px-1 mb-2 gap-9 leading-normal">
+      <div className="flex items-center justify-start text-[15px] font-bold text-black px-1 mb-1.5 gap-8 leading-normal">
         <span>เรียน&nbsp;&nbsp;หมผ – ธ.</span>
         <span>แผนก&nbsp;&nbsp;หมผ - ธ.</span>
         <span>กอง&nbsp;&nbsp;กคว - ธ.</span>
@@ -709,10 +709,10 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
       {/* 5. Footer: Copy Note & Document Revision Bar */}
       <div
         style={{
-          fontSize: '18px',
+          fontSize: '15px',
           color: '#000000',
-          margin: '6px 0 3px 2px',
-          lineHeight: 1.2,
+          margin: '3px 0 2px 2px',
+          lineHeight: 1.15,
         }}
       >
         {FORM_METADATA.copyNote}
@@ -727,18 +727,18 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
           backgroundColor: '#ffffff',
           color: '#000000',
           textAlign: 'center',
-          fontSize: '18px',
+          fontSize: '15px',
           fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
-          lineHeight: 1.35,
+          lineHeight: 1.25,
         }}
       >
         <tbody>
-          <tr style={{ height: '32px' }}>
+          <tr style={{ height: '28px' }}>
             <td
               style={{
                 width: '33.33%',
                 border: '1px solid #000000',
-                padding: '3px 6px',
+                padding: '2px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'center',
                 fontWeight: 'normal',
