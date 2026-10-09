@@ -140,11 +140,11 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
       id={pageId}
       className="bg-white text-black select-none shadow-md print:shadow-none mx-auto"
       style={{
-        width: '1080px',
-        height: '764px',
-        minHeight: '764px',
-        maxHeight: '764px',
-        padding: '12px 20px 8px 20px',
+        width: '1122px',
+        height: '793px',
+        minHeight: '793px',
+        maxHeight: '793px',
+        padding: '16px 22px 12px 22px',
         boxSizing: 'border-box',
         fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
         color: '#000000',
@@ -155,23 +155,23 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
     >
       {/* 1. Header Title */}
       <div className="text-center mb-1">
-        <h1 className="text-[18px] font-bold tracking-tight text-black leading-snug">
+        <h1 className="text-[20px] font-bold tracking-tight text-black leading-snug">
           {FORM_METADATA.title}
         </h1>
       </div>
 
       {/* 2. Subheader Metadata */}
-      <div className="flex items-center justify-start text-[12px] font-bold text-black px-1 mb-1.5 gap-8 leading-normal">
+      <div className="flex items-center justify-start text-[18px] font-bold text-black px-1 mb-2 gap-9 leading-normal">
         <span>เรียน&nbsp;&nbsp;หมผ – ธ.</span>
         <span>แผนก&nbsp;&nbsp;หมผ - ธ.</span>
         <span>กอง&nbsp;&nbsp;กคว - ธ.</span>
-        <span>ฝ่าย&nbsp;&nbsp;อคม. รวธ.</span>
+        <span>ฝ่าย&nbsp;&nbsp;อคม.&nbsp;&nbsp;รวธ.</span>
       </div>
 
       {/* 3. Top Equipment Table Box (12 Rows for Harness / 10 Rows for Lanyard) */}
       <div
         className="border border-black mb-1.5 p-1 text-black bg-white"
-        style={{ width: '1040px', boxSizing: 'border-box' }}
+        style={{ width: '1078px', boxSizing: 'border-box' }}
       >
         <table
           className="border-collapse text-[10.5px] leading-normal"
@@ -707,21 +707,72 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
       </table>
 
       {/* 5. Footer: Copy Note & Document Revision Bar */}
-      <div className="text-[10px] text-black mb-1 pl-1 font-normal leading-normal">
+      <div
+        style={{
+          fontSize: '18px',
+          color: '#000000',
+          margin: '6px 0 3px 2px',
+          lineHeight: 1.2,
+        }}
+      >
         {FORM_METADATA.copyNote}
       </div>
 
-      <div className="border border-black grid grid-cols-12 text-center text-[11px] font-normal min-h-[26px] bg-white leading-normal items-center">
-        <div className="col-span-4 border-r border-black flex items-center justify-center py-1 px-2 h-full">
-          {FORM_METADATA.subdivision}
-        </div>
-        <div className="col-span-4 border-r border-black font-normal flex items-center justify-center py-1 px-2 h-full">
-          {FORM_METADATA.docNumber}
-        </div>
-        <div className="col-span-4 flex items-center justify-center py-1 px-2 h-full">
-          {FORM_METADATA.revision}
-        </div>
-      </div>
+      <table
+        style={{
+          width: '1078px',
+          tableLayout: 'fixed',
+          borderCollapse: 'collapse',
+          border: '1px solid #000000',
+          backgroundColor: '#ffffff',
+          color: '#000000',
+          textAlign: 'center',
+          fontSize: '18px',
+          fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
+          lineHeight: 1.35,
+        }}
+      >
+        <tbody>
+          <tr style={{ height: '32px' }}>
+            <td
+              style={{
+                width: '33.33%',
+                border: '1px solid #000000',
+                padding: '3px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'center',
+                fontWeight: 'normal',
+              }}
+            >
+              {FORM_METADATA.subdivision}
+            </td>
+            <td
+              style={{
+                width: '33.33%',
+                border: '1px solid #000000',
+                padding: '3px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'center',
+                fontWeight: 'normal',
+              }}
+            >
+              {FORM_METADATA.docNumber}
+            </td>
+            <td
+              style={{
+                width: '33.34%',
+                border: '1px solid #000000',
+                padding: '3px 6px',
+                verticalAlign: 'middle',
+                textAlign: 'center',
+                fontWeight: 'normal',
+              }}
+            >
+              {FORM_METADATA.revision}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
