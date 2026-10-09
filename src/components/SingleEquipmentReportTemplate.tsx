@@ -99,23 +99,23 @@ const EquipmentSection: React.FC<{
           <col style={{ width: '358px' }} />
         </colgroup>
         <tbody>
-          <tr style={{ height: '26px' }}>
+          <tr style={{ height: '33px' }}>
             {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
             <td
               style={{
                 border: '1.2px solid #000000',
-                padding: '2px 8px',
+                padding: '4px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.15,
+                lineHeight: 1.25,
               }}
             >
               <span>ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
               {hasData ? (
-                <span style={{ fontWeight: 'bold' }}>
+                <span style={{ fontWeight: 'normal' }}>
                   {cleanName}
                   {isChecked && ' ✓'}
                 </span>
@@ -128,13 +128,13 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1.2px solid #000000',
-                padding: '2px 8px',
+                padding: '4px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.15,
+                lineHeight: 1.25,
               }}
             >
               <span>รหัสประจำตัวอุปกรณ์:&nbsp;</span>
@@ -145,13 +145,13 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1.2px solid #000000',
-                padding: '2px 8px',
+                padding: '4px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.15,
+                lineHeight: 1.25,
               }}
             >
               <span>ทะเบียน กฟผ.:&nbsp;</span>
@@ -162,13 +162,13 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1.2px solid #000000',
-                padding: '2px 8px',
+                padding: '4px 8px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '18px', // Exact 13.5pt in Word
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.15,
+                lineHeight: 1.25,
               }}
             >
               <span>ยี่ห้อ/รุ่น:&nbsp;</span>
@@ -211,7 +211,7 @@ const EquipmentSection: React.FC<{
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 fontSize: '18px', // 13.5pt
-                fontWeight: 'bold',
+                fontWeight: 'normal',
                 padding: '1px',
                 lineHeight: 1.1,
                 backgroundColor: '#ffffff',
@@ -227,7 +227,7 @@ const EquipmentSection: React.FC<{
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 fontSize: '18px', // 13.5pt
-                fontWeight: 'bold',
+                fontWeight: 'normal',
                 padding: '2px 8px',
                 lineHeight: 1.1,
                 backgroundColor: '#ffffff',
@@ -243,7 +243,7 @@ const EquipmentSection: React.FC<{
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 fontSize: '18px', // 13.5pt
-                fontWeight: 'bold',
+                fontWeight: 'normal',
                 padding: '2px 0',
                 lineHeight: 1.1,
                 backgroundColor: '#ffffff',
@@ -259,7 +259,7 @@ const EquipmentSection: React.FC<{
                 textAlign: 'center',
                 verticalAlign: 'middle',
                 fontSize: '18px', // 13.5pt
-                fontWeight: 'bold',
+                fontWeight: 'normal',
                 padding: '1px',
                 lineHeight: 1.1,
                 backgroundColor: '#ffffff',
@@ -281,7 +281,7 @@ const EquipmentSection: React.FC<{
                   textAlign: 'center',
                   verticalAlign: 'middle',
                   fontSize: '15px', // 11.5pt
-                  fontWeight: 'bold',
+                  fontWeight: 'normal',
                   padding: 0,
                   backgroundColor: '#ffffff',
                   lineHeight: 1,
@@ -306,7 +306,7 @@ const EquipmentSection: React.FC<{
                   textAlign: 'center',
                   verticalAlign: 'middle',
                   fontSize: '18px', // 13.5pt
-                  fontWeight: 'bold',
+                  fontWeight: 'normal',
                   padding: '1px',
                 }}
               >
@@ -351,7 +351,7 @@ const EquipmentSection: React.FC<{
                       <span
                         style={{
                           fontSize: '18.5px', // 14pt
-                          fontWeight: 'bold',
+                          fontWeight: 'normal',
                           lineHeight: '1',
                           display: 'inline-block',
                           verticalAlign: 'middle',
@@ -377,7 +377,7 @@ const EquipmentSection: React.FC<{
                       <span
                         style={{
                           fontSize: '14px',
-                          fontWeight: 'bold',
+                          fontWeight: 'normal',
                           lineHeight: '1',
                           display: 'inline-block',
                           verticalAlign: 'middle',
@@ -415,7 +415,7 @@ const EquipmentSection: React.FC<{
                 height: '44px',
                 border: '1.2px solid #000000',
                 verticalAlign: 'middle',
-                padding: '2px 6px',
+                padding: '4px 8px',
                 overflow: 'hidden',
                 boxSizing: 'border-box',
               }}
@@ -427,7 +427,7 @@ const EquipmentSection: React.FC<{
                   justifyContent: 'center',
                   width: '100%',
                   height: '100%',
-                  gap: '1px',
+                  gap: '3px',
                   overflow: 'hidden',
                 }}
               >
@@ -437,9 +437,9 @@ const EquipmentSection: React.FC<{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    fontSize: '13.5px',
+                    fontSize: '14px',
                     color: '#000000',
-                    lineHeight: 1.15,
+                    lineHeight: 1.2,
                     whiteSpace: 'nowrap',
                     width: '100%',
                   }}
@@ -449,22 +449,20 @@ const EquipmentSection: React.FC<{
                   <span>[■] ห้ามใช้</span>
                 </div>
 
-                {/* Row 2: ลงชื่อ ผู้ตรวจสอบ (รายละเอียดตามแนบ) */}
+                {/* Row 2: ลงชื่อ ผู้ตรวจสอบ */}
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
-                    gap: '4px',
-                    fontSize: '14.5px',
+                    fontSize: '15px',
                     color: '#000000',
-                    lineHeight: 1.15,
+                    lineHeight: 1.2,
                     whiteSpace: 'nowrap',
                     width: '100%',
                   }}
                 >
-                  <span style={{ fontWeight: 'bold' }}>ลงชื่อ ผู้ตรวจสอบ</span>
-                  <span style={{ fontSize: '13px', color: '#1e293b' }}>(รายละเอียดตามแนบ)</span>
+                  <span style={{ fontWeight: 'normal' }}>ลงชื่อ ผู้ตรวจสอบ</span>
                 </div>
               </div>
             </td>
@@ -600,7 +598,7 @@ const EquipmentSection: React.FC<{
                 <span
                   style={{
                     fontSize: '15px', // 11.5pt
-                    fontWeight: 'bold',
+                    fontWeight: 'normal',
                     lineHeight: '1',
                     whiteSpace: 'nowrap',
                     color: '#000000',
@@ -665,7 +663,7 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          fontSize: '18px', // 13.5pt bold
+          fontSize: '18px', // 13.5pt
           fontWeight: 'bold',
           color: '#000000',
           padding: '0 2px',
@@ -721,18 +719,21 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
           backgroundColor: '#ffffff',
           color: '#000000',
           textAlign: 'center',
-          fontSize: '16px', // 12pt
+          fontSize: '17px', // ~13pt
           fontFamily: "'TH Sarabun New', 'THSarabunNew', 'TH Sarabun PSK', 'Sarabun', Tahoma, sans-serif",
+          lineHeight: 1.35,
         }}
       >
         <tbody>
-          <tr style={{ height: '22px' }}>
+          <tr style={{ height: '30px' }}>
             <td
               style={{
                 width: '33.33%',
                 border: '1.2px solid #000000',
-                padding: '2px',
+                padding: '3px 6px',
                 verticalAlign: 'middle',
+                textAlign: 'center',
+                fontWeight: 'normal',
               }}
             >
               {FORM_METADATA.subdivision}
@@ -741,9 +742,10 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
               style={{
                 width: '33.33%',
                 border: '1.2px solid #000000',
-                padding: '2px',
+                padding: '3px 6px',
                 verticalAlign: 'middle',
-                fontWeight: 'bold',
+                textAlign: 'center',
+                fontWeight: 'normal',
               }}
             >
               {FORM_METADATA.docNumber}
@@ -752,8 +754,10 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
               style={{
                 width: '33.34%',
                 border: '1.2px solid #000000',
-                padding: '2px',
+                padding: '3px 6px',
                 verticalAlign: 'middle',
+                textAlign: 'center',
+                fontWeight: 'normal',
               }}
             >
               {FORM_METADATA.revision}

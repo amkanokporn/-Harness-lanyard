@@ -161,7 +161,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
       </div>
 
       {/* 2. Subheader Metadata */}
-      <div className="flex items-center justify-start text-[12px] font-medium text-black px-1 mb-1.5 gap-8 leading-normal">
+      <div className="flex items-center justify-start text-[12px] font-bold text-black px-1 mb-1.5 gap-8 leading-normal">
         <span>เรียน&nbsp;&nbsp;หมผ – ธ.</span>
         <span>แผนก&nbsp;&nbsp;หมผ - ธ.</span>
         <span>กอง&nbsp;&nbsp;กคว - ธ.</span>
@@ -202,7 +202,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                   >
                     <span className="font-normal text-slate-800">ชื่อเครื่องมืออุปกรณ์&nbsp;</span>
                     {hasData ? (
-                      <span className="font-bold text-black inline-flex items-center">
+                      <span className="font-normal text-black inline-flex items-center">
                         {cleanName}
                         {isChecked && <CheckmarkSvg size={11} className="ml-1.5" />}
                       </span>
@@ -536,11 +536,8 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
 
                 {/* Right inside column 2: ลงชื่อ ผู้ตรวจสอบ label */}
                 <div style={{ textAlign: 'right', paddingRight: '4px' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '11px', lineHeight: 1.25 }}>
+                  <div style={{ fontWeight: 'normal', fontSize: '11px', lineHeight: 1.25 }}>
                     ลงชื่อ ผู้ตรวจสอบ
-                  </div>
-                  <div style={{ fontSize: '9px', color: '#334155', lineHeight: 1.25 }}>
-                    (รายละเอียดตามแนบ)
                   </div>
                 </div>
               </div>
@@ -714,14 +711,14 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
         {FORM_METADATA.copyNote}
       </div>
 
-      <div className="border border-black grid grid-cols-12 text-center text-[10.5px] font-normal py-0.5 bg-white leading-normal">
-        <div className="col-span-4 border-r border-black">
+      <div className="border border-black grid grid-cols-12 text-center text-[11px] font-normal min-h-[26px] bg-white leading-normal items-center">
+        <div className="col-span-4 border-r border-black flex items-center justify-center py-1 px-2 h-full">
           {FORM_METADATA.subdivision}
         </div>
-        <div className="col-span-4 border-r border-black font-bold">
+        <div className="col-span-4 border-r border-black font-normal flex items-center justify-center py-1 px-2 h-full">
           {FORM_METADATA.docNumber}
         </div>
-        <div className="col-span-4">
+        <div className="col-span-4 flex items-center justify-center py-1 px-2 h-full">
           {FORM_METADATA.revision}
         </div>
       </div>
