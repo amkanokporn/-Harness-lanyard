@@ -1,0 +1,27 @@
+{
+  "entities": {
+    "Signature": {
+      "title": "Signature",
+      "description": "Inspector signature record",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "cleanName": { "type": "string" },
+        "signatureDataUrl": { "type": "string" },
+        "verticalSignatureDataUrl": { "type": "string" },
+        "isCustomSignature": { "type": "boolean" },
+        "uploadedAt": { "type": "string" },
+        "originalFileName": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" }
+      },
+      "required": ["name", "signatureDataUrl", "uploadedAt"]
+    }
+  },
+  "firestore": {
+    "/signatures/{signatureId}": {
+      "schema": "Signature",
+      "description": "User uploaded inspector signatures"
+    }
+  }
+}

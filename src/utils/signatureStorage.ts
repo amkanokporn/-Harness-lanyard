@@ -11,6 +11,8 @@
 
 import { Inspector } from '../types';
 import { cleanInspectorFullName } from './signatureUtils';
+import { db } from '../lib/firebase';
+import { collection, getDocs, setDoc, doc, deleteDoc } from 'firebase/firestore';
 
 export interface StoredSignatureRecord {
   id?: string;
@@ -66,7 +68,7 @@ function openDatabase(): Promise<IDBDatabase> {
 }
 
 /**
- * Initialize Signature Vault by reading IndexedDB and falling back to localStorage
+ * Initialize Signature Vault by reading IndexedDB, localStorage, and Firestore
  */
 export async function initSignatureVault(): Promise<Map<string, StoredSignatureRecord>> {
   if (isInitialized && memoryVault.size > 0) {
@@ -116,7 +118,19 @@ export async function initSignatureVault(): Promise<Map<string, StoredSignatureR
       tx.oncomplete = () => resolve();
     });
   } catch (e) {
-    console.warn('IndexedDB vault read error (using localStorage fallback):', e);
+    console.warn('IndexedDB vault read error:', e);
+  }
+
+  // 3. Sync from Firestore
+  try {
+    const querySnapshot = await getDocs(collection(db, 'signatures'));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data() as StoredSignatureRecord;
+      const k = normalizeKey(data.name);
+      memoryVault.set(k, data);
+    });
+  } catch (e) {
+    console.error('Firestore vault read error:', e);
   }
 
   isInitialized = true;
@@ -124,26 +138,16 @@ export async function initSignatureVault(): Promise<Map<string, StoredSignatureR
 }
 
 /**
- * Sync memory vault to both IndexedDB and localStorage safely
+ * Sync memory vault to Firestore
  */
 async function persistVault(): Promise<void> {
-  // 1. Save to IndexedDB
+  // Save to Firestore
   try {
-    const db = await openDatabase();
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    const store = tx.objectStore(IDB_STORE);
-
-    // Write all current records
     for (const [key, record] of memoryVault.entries()) {
-      store.put({ key, record });
+      await setDoc(doc(db, 'signatures', key), record);
     }
-
-    await new Promise<void>((resolve, reject) => {
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-    });
   } catch (e) {
-    console.warn('IndexedDB write error:', e);
+    console.error('Firestore write error:', e);
   }
 
   // 2. Mirror into localStorage (compressed summary)
@@ -156,7 +160,6 @@ async function persistVault(): Promise<void> {
       localStorage.setItem(LOCAL_STORAGE_VAULT_KEY, JSON.stringify(obj));
     }
   } catch (e) {
-    // If localStorage quota exceeded, IndexedDB still holds full data
     console.warn('LocalStorage quota limit warning:', e);
   }
 }
