@@ -26,7 +26,13 @@ import {
   ensureInspectorSignatures,
   convertToTransparentPng,
   rotateDataUrlToVertical,
+  cleanInspectorFullName,
 } from './utils/signatureUtils';
+import {
+  initSignatureVault,
+  applyVaultSignaturesToInspectors,
+  batchSaveSignaturesToVault,
+} from './utils/signatureStorage';
 import {
   CheckCircle2,
   AlertCircle,
@@ -104,56 +110,61 @@ export default function App() {
     }
   }, [toast]);
 
-  // Ensure all inspector signatures are 100% transparent PNG format without paper background
+  // Initialize permanent signature vault (IndexedDB + localStorage) on startup
   useEffect(() => {
     let isMounted = true;
-    const sanitizeSignatures = async () => {
-      let hasChanges = false;
-      const sanitized = await Promise.all(
-        inspectors.map(async (insp) => {
-          let sig = insp.signatureDataUrl;
-          let vertSig = insp.verticalSignatureDataUrl;
-          if (sig && typeof sig === 'string' && sig.startsWith('data:image/')) {
-            const cleanSig = await convertToTransparentPng(sig);
-            if (!vertSig || cleanSig !== sig) {
-              sig = cleanSig;
-              vertSig = await rotateDataUrlToVertical(cleanSig, -90);
-              hasChanges = true;
-            }
-          }
-          return {
-            ...insp,
-            signatureDataUrl: sig,
-            verticalSignatureDataUrl: vertSig,
-          };
-        })
-      );
-      if (hasChanges && isMounted) {
-        setInspectors(sanitized);
-        try {
-          localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(sanitized));
-        } catch (e) {
-          console.warn('Failed to update sanitized signatures in localStorage', e);
+    const initializeVaultAndSanitize = async () => {
+      try {
+        await initSignatureVault();
+        if (isMounted) {
+          setInspectors((prev) => {
+            const withVault = applyVaultSignaturesToInspectors(prev);
+            return withVault;
+          });
         }
+      } catch (err) {
+        console.warn('Vault init error:', err);
       }
     };
-    sanitizeSignatures();
+    initializeVaultAndSanitize();
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // Save inspectors to localStorage when modified
-  const handleSaveInspectors = (updatedInspectors: Inspector[]) => {
+  // Save inspectors to permanent vault and localStorage when modified
+  const handleSaveInspectors = async (updatedInspectors: Inspector[]) => {
     setInspectors(updatedInspectors);
+
+    // Save custom signatures to permanent vault
+    const customList = updatedInspectors
+      .filter((i) => i.isCustomSignature && i.signatureDataUrl)
+      .map((i) => ({
+        id: i.id,
+        name: i.name,
+        cleanName: cleanInspectorFullName(i.name),
+        signatureDataUrl: i.signatureDataUrl!,
+        verticalSignatureDataUrl: i.verticalSignatureDataUrl,
+        isCustomSignature: true,
+        uploadedAt: i.uploadedAt || new Date().toISOString(),
+        originalFileName: i.originalFileName,
+        position: i.position,
+        department: i.department,
+      }));
+
+    if (customList.length > 0) {
+      await batchSaveSignaturesToVault(customList);
+    }
+
     try {
       localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(updatedInspectors));
     } catch (e) {
       console.warn('Failed to save inspectors to localStorage', e);
     }
+
     setToast({
       type: 'success',
-      message: 'บันทึกข้อมูลผู้ตรวจสอบเรียบร้อยแล้ว',
+      message: 'บันทึกข้อมูลและจัดเก็บลายเซ็นจริงลงระบบถาวรเรียบร้อยแล้ว',
     });
   };
 
@@ -188,20 +199,22 @@ export default function App() {
         }
       }
 
-      // Automatically extract and sync all inspectors from real records
+      // Automatically extract and sync all inspectors from real records,
+      // and ALWAYS preserve uploaded custom signatures from the vault!
       const updatedInspectors = extractUniqueInspectorsFromRecords(
         result.records,
         inspectors
       );
-      setInspectors(updatedInspectors);
+      const preservedInspectors = applyVaultSignaturesToInspectors(updatedInspectors);
+      setInspectors(preservedInspectors);
       try {
-        localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(updatedInspectors));
+        localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(preservedInspectors));
       } catch (e) {
         console.warn(e);
       }
 
-      if (updatedInspectors.length > 0) {
-        newFilters.selectedInspectorId = updatedInspectors[0].id;
+      if (preservedInspectors.length > 0) {
+        newFilters.selectedInspectorId = preservedInspectors[0].id;
       }
 
       setFilters((prev) => ({

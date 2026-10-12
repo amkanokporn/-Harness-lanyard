@@ -53,6 +53,9 @@ export interface Inspector {
   verticalSignatureDataUrl?: string; // Base64 PNG (rotated 90 degrees up for checklist columns)
   department?: string;
   aliases?: string[]; // รายชื่อที่สะกดผิดหรือมีตัวอักษรคล้ายคลึงกันที่ถูกรวมเข้ากับบุคคลนี้
+  isCustomSignature?: boolean; // จริงเมื่อเป็นลายเซ็นจริงที่ผู้ใช้อัปโหลดมา
+  uploadedAt?: string; // วันที่และเวลาที่อัปโหลด (ISO string)
+  originalFileName?: string; // ชื่อไฟล์รูปภาพต้นฉบับ
 }
 
 export interface FilterState {

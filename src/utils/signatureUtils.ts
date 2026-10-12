@@ -491,6 +491,11 @@ export function ensureInspectorSignatures(inspector: Inspector): Inspector {
   const isValidDataUrl = (str?: string) =>
     Boolean(str && typeof str === 'string' && str.startsWith('data:image/'));
 
+  // If this is a real custom uploaded signature, NEVER overwrite it with computer generated signatures
+  if (inspector.isCustomSignature && isValidDataUrl(sig)) {
+    return inspector;
+  }
+
   if (!isValidDataUrl(sig) || !isValidDataUrl(vertSig)) {
     const generated = generateDigitalSignaturePng(inspector.name || 'ผู้ตรวจสอบ', inspector.id || inspector.name);
     if (!isValidDataUrl(sig)) sig = generated.horizontal;

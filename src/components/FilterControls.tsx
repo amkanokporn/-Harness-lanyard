@@ -21,9 +21,11 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
+  ShieldCheck,
 } from 'lucide-react';
 import { normalizeInspectorName } from '../utils/inspectionAggregation';
 import { fuzzyFilterInspectors } from '../utils/thaiNameNormalizer';
+import { generateSignatureExcelTemplate } from '../utils/signatureTemplateGenerator';
 
 interface FilterControlsProps {
   parsedData: ParsedExcelResult | null;

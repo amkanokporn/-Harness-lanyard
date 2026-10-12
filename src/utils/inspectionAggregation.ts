@@ -13,6 +13,7 @@ import {
   normalizeSerialNumber,
 } from './equipmentUtils';
 import { ensureInspectorSignatures, generateDigitalSignaturePng } from './signatureUtils';
+import { getSavedSignature } from './signatureStorage';
 import {
   getCanonicalThaiName,
   mergeAndDeduplicateInspectors,
@@ -682,7 +683,25 @@ export function extractUniqueInspectorsFromRecords(
         aliases.add(rawName);
       }
 
-      if (matched) {
+      // Check permanent vault first! If user has uploaded a real signature, preserve it 100%!
+      const vaultSaved = getSavedSignature(cleanName) || (rawName ? getSavedSignature(rawName) : null);
+      if (vaultSaved && vaultSaved.signatureDataUrl) {
+        inspectorMap.set(
+          key,
+          {
+            id: vaultSaved.id || `insp-vault-${Date.now()}`,
+            name: rawName || cleanName,
+            position: vaultSaved.position || 'ผู้ตรวจสอบความปลอดภัย',
+            department: vaultSaved.department || 'โรงไฟฟ้าจะนะ',
+            signatureDataUrl: vaultSaved.signatureDataUrl,
+            verticalSignatureDataUrl: vaultSaved.verticalSignatureDataUrl,
+            isCustomSignature: true,
+            uploadedAt: vaultSaved.uploadedAt,
+            originalFileName: vaultSaved.originalFileName,
+            aliases: Array.from(aliases),
+          }
+        );
+      } else if (matched) {
         if (matched.aliases) {
           matched.aliases.forEach((a) => aliases.add(a));
         }
