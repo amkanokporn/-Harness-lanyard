@@ -99,12 +99,12 @@ const EquipmentSection: React.FC<{
           <col style={{ width: '362px' }} />
         </colgroup>
         <tbody>
-          <tr style={{ height: '28px' }}>
+          <tr style={{ height: '22px' }}>
             {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 10px',
+                padding: '1px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
@@ -126,7 +126,7 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 10px',
+                padding: '1px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
@@ -144,7 +144,7 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 10px',
+                padding: '1px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
@@ -162,7 +162,7 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 10px',
+                padding: '1px 6px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
@@ -529,8 +529,8 @@ const EquipmentSection: React.FC<{
                           decoding="sync"
                           referrerPolicy="no-referrer"
                           style={{
-                            maxWidth: '19px',
-                            maxHeight: '36px',
+                            maxWidth: '16px',
+                            maxHeight: '32px',
                             width: 'auto',
                             height: 'auto',
                             objectFit: 'contain',

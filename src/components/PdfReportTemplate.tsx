@@ -193,11 +193,11 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
               return (
                 <tr
                   key={idx}
-                  style={{ height: isHarness ? '18px' : '20px' }}
+                  style={{ height: isHarness ? '16px' : '17px' }}
                 >
                   {/* Col 1: ชื่อเครื่องมืออุปกรณ์ */}
                   <td
-                    className="text-left py-[2px] px-2.5 text-black align-middle"
+                    className="text-left py-[1px] px-2 text-black align-middle"
                     style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
@@ -212,7 +212,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
 
                   {/* Col 2: รหัสประจำตัวอุปกรณ์ */}
                   <td
-                    className="text-left py-[2px] px-2.5 text-black align-middle"
+                    className="text-left py-[1px] px-2 text-black align-middle"
                     style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">รหัสประจำตัวอุปกรณ์:&nbsp;</span>
@@ -223,7 +223,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
 
                   {/* Col 3: ทะเบียน กฟผ. */}
                   <td
-                    className="text-left py-[2px] px-2.5 text-black align-middle"
+                    className="text-left py-[1px] px-2 text-black align-middle"
                     style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">ทะเบียน กฟผ.:&nbsp;</span>
@@ -234,7 +234,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
 
                   {/* Col 4: ยี่ห้อ/รุ่น */}
                   <td
-                    className="text-left py-[2px] px-2.5 text-black align-middle"
+                    className="text-left py-[1px] px-2 text-black align-middle"
                     style={{ border: '1px solid #000000', whiteSpace: 'nowrap', overflow: 'visible' }}
                   >
                     <span className="font-normal text-slate-800">ยี่ห้อ/รุ่น:&nbsp;</span>
@@ -563,6 +563,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                     verticalAlign: 'middle',
                     border: '1px solid #000000',
                     padding: '1px 0',
+                    overflow: 'hidden',
                   }}
                 >
                   {isInspected ? (
@@ -574,6 +575,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                           justifyContent: 'center',
                           width: '100%',
                           height: '100%',
+                          overflow: 'hidden',
                         }}
                       >
                         <img
@@ -583,8 +585,8 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                           decoding="sync"
                           referrerPolicy="no-referrer"
                           style={{
-                            maxWidth: '19px',
-                            maxHeight: '34px',
+                            maxWidth: '16px',
+                            maxHeight: '32px',
                             width: 'auto',
                             height: 'auto',
                             objectFit: 'contain',
