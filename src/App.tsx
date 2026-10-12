@@ -22,6 +22,7 @@ import {
   extractUniqueInspectorsFromRecords,
   EquipmentPairPageData,
 } from './utils/inspectionAggregation';
+import { mergeAndDeduplicateInspectors } from './utils/thaiNameNormalizer';
 import {
   ensureInspectorSignatures,
   convertToTransparentPng,
@@ -50,13 +51,13 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(ensureInspectorSignatures);
+          return mergeAndDeduplicateInspectors(parsed.map(ensureInspectorSignatures));
         }
       }
     } catch (e) {
       console.warn('Failed to load inspectors from localStorage', e);
     }
-    return DEFAULT_INSPECTORS.map(ensureInspectorSignatures);
+    return mergeAndDeduplicateInspectors(DEFAULT_INSPECTORS.map(ensureInspectorSignatures));
   });
 
   const [isInspectorModalOpen, setIsInspectorModalOpen] = useState(false);
@@ -133,7 +134,8 @@ export default function App() {
   }, []);
 
   // Save inspectors to permanent vault and localStorage when modified
-  const handleSaveInspectors = async (updatedInspectors: Inspector[]) => {
+  const handleSaveInspectors = async (rawUpdated: Inspector[]) => {
+    const updatedInspectors = mergeAndDeduplicateInspectors(rawUpdated);
     setInspectors(updatedInspectors);
 
     // Save custom signatures to permanent vault
@@ -200,12 +202,12 @@ export default function App() {
       }
 
       // Automatically extract and sync all inspectors from real records,
-      // and ALWAYS preserve uploaded custom signatures from the vault!
-      const updatedInspectors = extractUniqueInspectorsFromRecords(
+      // enforcing the 13 locked master personnel and preserving vault signatures!
+      const extractionRes = extractUniqueInspectorsFromRecords(
         result.records,
         inspectors
       );
-      const preservedInspectors = applyVaultSignaturesToInspectors(updatedInspectors);
+      const preservedInspectors = applyVaultSignaturesToInspectors(extractionRes.updatedInspectors);
       setInspectors(preservedInspectors);
       try {
         localStorage.setItem(LOCAL_STORAGE_INSPECTORS_KEY, JSON.stringify(preservedInspectors));
@@ -222,17 +224,24 @@ export default function App() {
         ...newFilters,
       }));
 
-      const errorCount = result.issues.filter((i) => i.type === 'error').length;
-      if (errorCount > 0) {
+      if (extractionRes.unknownNames.length > 0) {
         setToast({
           type: 'error',
-          message: `อ่านไฟล์ "${file.name}" พบข้อผิดพลาด ${errorCount} รายการ กรุณาตรวจสอบรายละเอียด`,
+          message: `แจ้งเตือน: พบรายชื่อนอกเหนือจาก 13 รายชื่อหลัก (${extractionRes.unknownNames.join(', ')}). ชื่อนอกเหนือจากนี้จะไม่ถูกเพิ่มในระบบจนกว่าจะมีการแอดเพิ่ม`,
         });
       } else {
-        setToast({
-          type: 'success',
-          message: `อ่านไฟล์ "${file.name}" สำเร็จ (${result.records.length} วันตรวจ) • ดึงชื่อผู้ใช้งานตรงตามไฟล์ต้นทางครบถ้วน`,
-        });
+        const errorCount = result.issues.filter((i) => i.type === 'error').length;
+        if (errorCount > 0) {
+          setToast({
+            type: 'error',
+            message: `อ่านไฟล์ "${file.name}" พบข้อผิดพลาด ${errorCount} รายการ กรุณาตรวจสอบรายละเอียด`,
+          });
+        } else {
+          setToast({
+            type: 'success',
+            message: `อ่านไฟล์ "${file.name}" สำเร็จ (${result.records.length} วันตรวจ) • ล็อกรายชื่อ 13 ท่านถูกต้องครบถ้วน`,
+          });
+        }
       }
     } catch (err: any) {
       setToast({
@@ -245,18 +254,18 @@ export default function App() {
   // Load Built-in Master Sample Data
   const handleLoadSampleData = () => {
     const sample = getSampleParsedData();
-    const updatedInspectors = extractUniqueInspectorsFromRecords(
+    const extractionRes = extractUniqueInspectorsFromRecords(
       sample.records,
       inspectors
     );
-    setInspectors(updatedInspectors);
+    setInspectors(extractionRes.updatedInspectors);
     setParsedData(sample);
     setFilters({
       plant: '',
       month: 'มีนาคม',
       year: '2569',
       equipmentType: 'all',
-      selectedInspectorId: updatedInspectors.length > 0 ? updatedInspectors[0].id : '',
+      selectedInspectorId: extractionRes.updatedInspectors.length > 0 ? extractionRes.updatedInspectors[0].id : '',
     });
     setToast({
       type: 'success',

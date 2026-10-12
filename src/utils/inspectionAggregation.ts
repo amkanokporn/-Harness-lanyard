@@ -136,6 +136,15 @@ export function matchInspectorSignature(
   const normExcel = normalizeInspectorName(excelInspectorName);
   if (!normExcel) return null;
 
+  // 0. Use getCanonicalThaiName to resolve variations and spelling differences (e.g. กิตติคุณ vs กิติคุณ)
+  const canonicalName = getCanonicalThaiName(excelInspectorName, inspectorsList);
+  if (canonicalName) {
+    const canonicalMatch = inspectorsList.find(
+      (i) => normalizeInspectorName(i.name).toLowerCase() === normalizeInspectorName(canonicalName).toLowerCase()
+    );
+    if (canonicalMatch) return ensureInspectorSignatures(canonicalMatch);
+  }
+
   // 1. Exact match after canonical normalization
   const exact = inspectorsList.find(
     (i) => normalizeInspectorName(i.name).toLowerCase() === normExcel.toLowerCase()
@@ -647,10 +656,19 @@ export function buildSingleEquipmentData(
 /**
  * Extracts all unique inspector names from real inspection records and combines with existing signatures
  */
+export interface ExtractionResult {
+  updatedInspectors: Inspector[];
+  unknownNames: string[];
+}
+
+/**
+ * Extracts all unique inspector names from real inspection records,
+ * enforcing the 13 locked master roster personnel and collecting unrecognized names.
+ */
 export function extractUniqueInspectorsFromRecords(
   records: InspectionRecord[],
   existingInspectors: Inspector[] = []
-): Inspector[] {
+): ExtractionResult {
   const inspectorMap = new Map<string, Inspector>();
 
   // Index existing inspectors by normalized name and ensure valid signatures
@@ -661,78 +679,65 @@ export function extractUniqueInspectorsFromRecords(
     }
   }
 
+  const unknownNamesSet = new Set<string>();
+
   // Extract from records
   for (const rec of records) {
     const rawName = (rec.inspectorName || '').trim();
     const cleanName = normalizeInspectorName(rawName);
     if (!cleanName) continue;
 
-    const key = cleanName.toLowerCase();
-    if (inspectorMap.has(key)) {
-      const existing = inspectorMap.get(key)!;
-      if (rawName && rawName !== cleanName) {
-        const aliases = new Set(existing.aliases || []);
-        aliases.add(rawName);
-        existing.aliases = Array.from(aliases);
-      }
-    } else {
-      // Find partial, canonical, or title match
-      const matched = matchInspectorSignature(cleanName, existingInspectors);
-      const aliases = new Set<string>();
-      if (rawName && rawName !== cleanName) {
-        aliases.add(rawName);
-      }
+    // Check permanent vault first
+    const vaultSaved = getSavedSignature(cleanName) || (rawName ? getSavedSignature(rawName) : null);
+    // Find matching master/registered inspector
+    const matched = matchInspectorSignature(cleanName, existingInspectors);
 
-      // Check permanent vault first! If user has uploaded a real signature, preserve it 100%!
-      const vaultSaved = getSavedSignature(cleanName) || (rawName ? getSavedSignature(rawName) : null);
-      if (vaultSaved && vaultSaved.signatureDataUrl) {
-        inspectorMap.set(
-          key,
-          {
-            id: vaultSaved.id || `insp-vault-${Date.now()}`,
-            name: rawName || cleanName,
-            position: vaultSaved.position || 'ผู้ตรวจสอบความปลอดภัย',
-            department: vaultSaved.department || 'โรงไฟฟ้าจะนะ',
-            signatureDataUrl: vaultSaved.signatureDataUrl,
-            verticalSignatureDataUrl: vaultSaved.verticalSignatureDataUrl,
-            isCustomSignature: true,
-            uploadedAt: vaultSaved.uploadedAt,
-            originalFileName: vaultSaved.originalFileName,
-            aliases: Array.from(aliases),
-          }
-        );
-      } else if (matched) {
-        if (matched.aliases) {
-          matched.aliases.forEach((a) => aliases.add(a));
-        }
-        inspectorMap.set(
-          key,
-          ensureInspectorSignatures({
-            ...matched,
-            name: cleanName,
-            aliases: Array.from(aliases),
-          })
-        );
-      } else {
-        const sigs = generateDigitalSignaturePng(cleanName);
-        inspectorMap.set(
-          key,
-          ensureInspectorSignatures({
-            id: `insp-auto-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-            name: cleanName,
-            position: 'ผู้ตรวจสอบความปลอดภัย',
-            department: 'แผนก หมผ - ธ. กอง กคว - ธ.',
-            signatureDataUrl: sigs.horizontal,
-            verticalSignatureDataUrl: sigs.vertical,
-            aliases: Array.from(aliases),
-          })
-        );
+    if (vaultSaved && vaultSaved.signatureDataUrl) {
+      const key = normalizeInspectorName(vaultSaved.name || cleanName).toLowerCase();
+      const existing = inspectorMap.get(key);
+      const aliases = new Set<string>(existing?.aliases || []);
+      if (rawName && rawName !== (vaultSaved.name || cleanName)) {
+        aliases.add(rawName);
       }
+      inspectorMap.set(
+        key,
+        {
+          id: vaultSaved.id || existing?.id || `insp-vault-${Date.now()}`,
+          name: vaultSaved.name || rawName || cleanName,
+          position: vaultSaved.position || existing?.position || 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ',
+          department: vaultSaved.department || existing?.department || 'โรงไฟฟ้าจะนะ',
+          signatureDataUrl: vaultSaved.signatureDataUrl,
+          verticalSignatureDataUrl: vaultSaved.verticalSignatureDataUrl || existing?.verticalSignatureDataUrl,
+          isCustomSignature: true,
+          uploadedAt: vaultSaved.uploadedAt,
+          originalFileName: vaultSaved.originalFileName,
+          aliases: Array.from(aliases),
+        }
+      );
+    } else if (matched) {
+      const key = normalizeInspectorName(matched.name).toLowerCase();
+      const aliases = new Set<string>(matched.aliases || []);
+      if (rawName && rawName !== matched.name) {
+        aliases.add(rawName);
+      }
+      inspectorMap.set(
+        key,
+        ensureInspectorSignatures({
+          ...matched,
+          aliases: Array.from(aliases),
+        })
+      );
+    } else {
+      // Name is outside the 13 master personnel roster -> DO NOT add to database
+      unknownNamesSet.add(rawName || cleanName);
     }
   }
 
   const rawList = Array.from(inspectorMap.values()).map(ensureInspectorSignatures);
-  return rawList.sort((a, b) => a.name.localeCompare(b.name, 'th'));
+  return {
+    updatedInspectors: rawList.sort((a, b) => a.name.localeCompare(b.name, 'th')),
+    unknownNames: Array.from(unknownNamesSet),
+  };
 }
 
 /**

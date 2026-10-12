@@ -2,6 +2,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { Inspector } from '../types';
 import { cleanInspectorFullName } from './signatureUtils';
+import { DEFAULT_INSPECTORS } from './sampleData';
 
 /**
  * Generates and downloads a beautifully formatted Excel template
@@ -25,32 +26,9 @@ export function generateSignatureExcelTemplate(
     'หมายเหตุการใช้งาน (Notes)',
   ];
 
-  const dataRows = (inspectors && inspectors.length > 0 ? inspectors : [
-    {
-      id: 'insp-1',
-      name: 'นายชญานนท์ เชื้อคำ',
-      position: 'พนักงานตรวจสอบอุปกรณ์',
-      department: 'โรงไฟฟ้าจะนะ',
-    },
-    {
-      id: 'insp-2',
-      name: 'นายนพพร เวชเตง',
-      position: 'ช่างชำนาญการ / ผู้ตรวจสอบ',
-      department: 'โรงไฟฟ้าจะนะ',
-    },
-    {
-      id: 'insp-3',
-      name: 'ส.อ.กรกฎ แลบัว',
-      position: 'ช่างชำนาญการ / ผู้ตรวจสอบ',
-      department: 'โรงไฟฟ้าจะนะ',
-    },
-    {
-      id: 'insp-4',
-      name: 'นายสมศักดิ์ วิริยะกิจ',
-      position: 'วิศวกรระดับ 6 / ผู้ตรวจสอบความปลอดภัย',
-      department: 'แผนก หมผ - ธ. กอง กคว - ธ. โรงไฟฟ้าจะนะ',
-    },
-  ]).map((insp, index) => {
+  const targetInspectors = inspectors && inspectors.length > 0 ? inspectors : DEFAULT_INSPECTORS;
+
+  const dataRows = targetInspectors.map((insp, index) => {
     const clean = cleanInspectorFullName(insp.name);
     const hasRealSig = Boolean(insp.isCustomSignature);
     const suggestedFileName = `${insp.name.replace(/\s+/g, '_')}.png`;

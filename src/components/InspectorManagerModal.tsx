@@ -65,7 +65,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
 }) => {
   const [activeDrawingId, setActiveDrawingId] = useState<string | null>(null);
   const [previewSignatureUrl, setPreviewSignatureUrl] = useState<string | null>(null);
-  const [localInspectors, setLocalInspectors] = useState<Inspector[]>(inspectors);
+  const [localInspectors, setLocalInspectors] = useState<Inspector[]>(() => mergeAndDeduplicateInspectors(inspectors));
   const [feedbackMsg, setFeedbackMsg] = useState<{
     text: string;
     type: 'success' | 'error' | 'info';
@@ -81,7 +81,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
   // Sync with prop when modal opens
   useEffect(() => {
     if (isOpen) {
-      setLocalInspectors(inspectors);
+      setLocalInspectors(mergeAndDeduplicateInspectors(inspectors));
       setFeedbackMsg(null);
       if (targetInspectorName) {
         const found = inspectors.find(

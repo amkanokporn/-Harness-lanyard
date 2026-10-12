@@ -20,16 +20,19 @@ function createInspectorItem(
 }
 
 export const DEFAULT_INSPECTORS: Inspector[] = [
-  createInspectorItem('insp-1', 'นายสมศักดิ์ วิริยะกิจ', 'วิศวกรระดับ 6 / ผู้ตรวจสอบความปลอดภัย', 'แผนก หมผ - ธ. กอง กคว - ธ. โรงไฟฟ้าจะนะ', 'seed1'),
-  createInspectorItem('insp-2', 'นายนพพร เวชเตง', 'ช่างชำนาญการ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed2'),
-  createInspectorItem('insp-3', 'ส.อ.กรกฎ แลบัว', 'ช่างชำนาญการ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed3'),
-  createInspectorItem('insp-4', 'นายภานุพงศ์ ยามะสกุล', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed4'),
-  createInspectorItem('insp-5', 'นายชญานนท์ เชื้อคำ', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed5'),
-  createInspectorItem('insp-6', 'นายนันทวัฒน์ พลเมฆ', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed6'),
-  createInspectorItem('insp-7', 'นายสุรินทร์ สารอนินทร์', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed7'),
-  createInspectorItem('insp-8', 'นายทรงศักดิ์ หุ้นศรี', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed8'),
-  createInspectorItem('insp-9', 'นายอานนท์ ภวรัญพงษ์', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed9'),
-  createInspectorItem('insp-10', 'นายกิตติคุณ ลิ่วศิริวงศ์เจริญ', 'พนักงานตรวจสอบอุปกรณ์', 'โรงไฟฟ้าจะนะ', 'seed10'),
+  createInspectorItem('insp-1', 'นางพรพรรณ บุญจึงมงคล', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed1'),
+  createInspectorItem('insp-2', 'นายชิตทัตต์ นุ่มนิ่ม', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed2'),
+  createInspectorItem('insp-3', 'นายอานนท์ ภวรัญพงษ์', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed3'),
+  createInspectorItem('insp-4', 'นายสุรินทร์ สารอินทร์', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed4'),
+  createInspectorItem('insp-5', 'ส.ท.ทรงศักดิ์ หุ้นศรี', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed5'),
+  createInspectorItem('insp-6', 'ส.อ.กรกฎ แลบัว', 'ช่างชำนาญการ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed6'),
+  createInspectorItem('insp-7', 'นายกิติคุณ ลิ่วศิริวงษ์เจริญ', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed7'),
+  createInspectorItem('insp-8', 'นายภานุพงศ์ ยามะสัก', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed8'),
+  createInspectorItem('insp-9', 'นายนันทวัฒน์ พลเมฆ', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed9'),
+  createInspectorItem('insp-10', 'นายชญานนท์ เชื้อคำ', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed10'),
+  createInspectorItem('insp-11', 'นายพชรพล กลัดอินทร์', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed11'),
+  createInspectorItem('insp-12', 'นายพงษ์ศักดิ์ แสนอินต๊ะ', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed12'),
+  createInspectorItem('insp-13', 'นายณัฐวุฒิ เขียวใจยา', 'พนักงานตรวจสอบอุปกรณ์ / ผู้ตรวจสอบ', 'โรงไฟฟ้าจะนะ', 'seed13'),
 ];
 
 export const SAMPLE_HARNESS_EQUIPMENT: EquipmentItem[] = [
@@ -63,11 +66,11 @@ export const SAMPLE_LANYARD_EQUIPMENT: EquipmentItem[] = [
 export function getSampleParsedData(): ParsedExcelResult {
   // Days inspected matching user's exact file: 4, 5, 6, 9, 10 March 2026 (พ.ศ. 2569)
   const daysData = [
-    { day: 4, inspector: 'นายนพพร เวชเตง', status: 'normal' as const },
-    { day: 5, inspector: 'นายสุรินทร์ สารอนินทร์', status: 'normal' as const },
+    { day: 4, inspector: 'นางพรพรรณ บุญจึงมงคล', status: 'normal' as const },
+    { day: 5, inspector: 'นายสุรินทร์ สารอินทร์', status: 'normal' as const },
     { day: 6, inspector: 'นายอานนท์ ภวรัญพงษ์', status: 'normal' as const },
-    { day: 9, inspector: 'นายกิตติคุณ ลิ่วศิริวงศ์เจริญ', status: 'abnormal_unusable' as const },
-    { day: 10, inspector: 'นายภานุพงศ์ ยามะสกุล', status: 'abnormal_unusable' as const },
+    { day: 9, inspector: 'นายกิติคุณ ลิ่วศิริวงษ์เจริญ', status: 'abnormal_unusable' as const },
+    { day: 10, inspector: 'นายภานุพงศ์ ยามะสัก', status: 'abnormal_unusable' as const },
   ];
 
   const records: InspectionRecord[] = [];
