@@ -2,7 +2,7 @@ import { ChecklistItemDef, FormMetadata } from '../types';
 
 export const FORM_METADATA: FormMetadata = {
   title: 'แบบตรวจสอบเครื่องมืออุปกรณ์ก่อนการใช้งาน',
-  subheader: 'เรียน  หมผ – ธ.    แผนก  หมผ - ธ.    กอง  กคว - ธ.    ฝ่าย  อคม.  รวธ.',
+  subheader: 'เรียน  หมผ - ธ.    แผนก  หมผ - ธ.    กอง  กคว - ธ.    ฝ่าย  อคม.  รวธ.',
   docNumber: 'FM-004/QP-PB-013',
   revision: 'แก้ไขครั้งที่ 02',
   subdivision: 'รองผู้ว่าการธุรกิจเกี่ยวเนื่อง',
@@ -13,11 +13,11 @@ export const FORM_METADATA: FormMetadata = {
 export const HARNESS_CHECKLIST_ITEMS: ChecklistItemDef[] = [
   {
     id: 1,
-    text: 'D-ring และหัวเข็มขัดต้องอยู่ในสภาพดี ไม่บิดเบี้ยว ไม่มีรอยแตกร้าว สนิม และขอบคมหัวเข็มขัด ต้องปรับเลื่อนได้โดยไม่ติดขัด',
+    text: 'D-ring และหัวเข็มขัดต้องอยู่ในสภาพดี ไม่บิดเบี้ยว ไม่มีรอยแตกร้าว สนิม และขอบคม หัวเข็มขัดต้องปรับเลื่อนได้โดยไม่ติดขัด',
   },
   {
     id: 2,
-    text: 'สายรัด ต้องอยู่ในสภาพ ดี ไม่มีรอยตัด ฉีกขาด รอยไหม้ เส้นด้ายหลุดลุ่ย หรือสีซีดจาง',
+    text: 'สายรัดต้องอยู่ในสภาพดี ไม่มีรอยตัด ฉีกขาด รอยไหม้ เส้นด้ายหลุดลุ่ย หรือสีซีดจาง',
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ export const HARNESS_CHECKLIST_ITEMS: ChecklistItemDef[] = [
 export const LANYARD_CHECKLIST_ITEMS: ChecklistItemDef[] = [
   {
     id: 1,
-    text: 'ตะขอเกี่ยว, Carabiner และ D-ring ต้องอยู่ใน สภาพดี ไม่บิดเบี้ยว ไม่มีรอยแตกร้าว สนิม และขอบคด',
+    text: 'ตะขอเกี่ยว, Carabiner และ D-ring ต้องอยู่ในสภาพดี ไม่บิดเบี้ยว ไม่มีรอยแตกร้าว สนิม และขอบคม',
   },
   {
     id: 2,
@@ -49,7 +49,7 @@ export const LANYARD_CHECKLIST_ITEMS: ChecklistItemDef[] = [
   },
   {
     id: 5,
-    text: 'อุปกรณ์ดูดซับแรงกระชาก ต้องอยู่ในสภาพดี ไม่ยืดออก และฉีดขาด',
+    text: 'อุปกรณ์ดูดซับแรงกระชาก ต้องอยู่ในสภาพดี ไม่ยืดออก และไม่ฉีกขาด',
   },
   {
     id: 6,

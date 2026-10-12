@@ -525,47 +525,18 @@ export function clusterAndNormalizeRecords(
   deduplicatedInspectors: Inspector[];
   auditLogs: NameMergeAuditItem[];
 } {
-  const auditMap = new Map<string, NameMergeAuditItem>();
-
+  // ดึงชื่อผู้ใช้งานจากไฟล์โดยตรง 100% ไม่ดัดแปลง ไม่แก้ไขคำผิด เพื่อให้คงตามไฟล์ต้นทาง
   const normalizedRecords = (records || []).map((rec) => {
-    const rawName = (rec.inspectorName || '').trim();
-    if (!rawName) return rec;
-
-    const canonical = getCanonicalThaiName(rawName, inspectors);
-    if (canonical && canonical !== rawName) {
-      const auditKey = `${rawName}===>${canonical}`;
-      if (!auditMap.has(auditKey)) {
-        let reason = 'แก้ไขตัวสะกดตามหลักไวยากรณ์และรวมชื่อ';
-        if (rawName.includes('สกั')) reason = 'เติมตัวสะกดสระ/พยัญชนะที่ขาดหาย (สกั ➔ สกุล)';
-        else if (rawName.includes('กฏ')) reason = 'แก้พยัญชนะสับสน (กฏ ➔ กฎ)';
-        else if (rawName.includes('นน') && !rawName.includes('นนท์')) reason = 'เติมไม้ทัณฑฆาต (นน ➔ นนท์)';
-        else if (rawName.includes('ศักดิ') && !rawName.includes('ศักดิ์')) reason = 'เติมไม้ทัณฑฆาต (ศักดิ ➔ ศักดิ์)';
-        else if (rawName.includes('รินทร') && !rawName.includes('รินทร์')) reason = 'เติมไม้ทัณฑฆาต (รินทร ➔ รินทร์)';
-        else if (rawName.includes('นภพร')) reason = 'แก้ตัวสะกดคล้ายคลึง (นภพร ➔ นพพร)';
-        else if (rawName.includes('คูณ')) reason = 'แก้สระเสียงสับสน (คูณ ➔ คุณ)';
-
-        auditMap.set(auditKey, {
-          raw: rawName,
-          canonical,
-          count: 0,
-          reason,
-        });
-      }
-      auditMap.get(auditKey)!.count++;
-      return {
-        ...rec,
-        inspectorName: canonical,
-      };
-    }
-    return rec;
+    return {
+      ...rec,
+      inspectorName: (rec.inspectorName || '').trim(),
+    };
   });
-
-  const deduplicatedInspectors = mergeAndDeduplicateInspectors(inspectors);
 
   return {
     normalizedRecords,
-    deduplicatedInspectors,
-    auditLogs: Array.from(auditMap.values()),
+    deduplicatedInspectors: inspectors,
+    auditLogs: [],
   };
 }
 

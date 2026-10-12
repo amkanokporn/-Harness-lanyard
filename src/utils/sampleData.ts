@@ -67,7 +67,7 @@ export function getSampleParsedData(): ParsedExcelResult {
     { day: 5, inspector: 'นายสุรินทร์ สารอนินทร์', status: 'normal' as const },
     { day: 6, inspector: 'นายอานนท์ ภวรัญพงษ์', status: 'normal' as const },
     { day: 9, inspector: 'นายกิตติคุณ ลิ่วศิริวงศ์เจริญ', status: 'abnormal_unusable' as const },
-    { day: 10, inspector: 'นายภานุพงศ์ ยามะสกั', status: 'abnormal_unusable' as const },
+    { day: 10, inspector: 'นายภานุพงศ์ ยามะสกุล', status: 'abnormal_unusable' as const },
   ];
 
   const records: InspectionRecord[] = [];

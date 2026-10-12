@@ -104,14 +104,14 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 8px',
+                padding: '2px 10px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
                 fontWeight: 'normal',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.25,
               }}
             >
               <span>ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
@@ -126,14 +126,14 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 8px',
+                padding: '2px 10px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
                 fontWeight: 'normal',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.25,
               }}
             >
               <span>รหัสประจำตัวอุปกรณ์:&nbsp;</span>
@@ -144,14 +144,14 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 8px',
+                padding: '2px 10px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
                 fontWeight: 'normal',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.25,
               }}
             >
               <span>ทะเบียน กฟผ.:&nbsp;</span>
@@ -162,14 +162,14 @@ const EquipmentSection: React.FC<{
             <td
               style={{
                 border: '1px solid #000000',
-                padding: '2px 8px',
+                padding: '2px 10px',
                 verticalAlign: 'middle',
                 textAlign: 'left',
                 fontSize: '16px',
                 fontWeight: 'normal',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: 1.2,
+                lineHeight: 1.25,
               }}
             >
               <span>ยี่ห้อ/รุ่น:&nbsp;</span>
@@ -213,8 +213,8 @@ const EquipmentSection: React.FC<{
                 verticalAlign: 'middle',
                 fontSize: '16px',
                 fontWeight: 'normal',
-                padding: '1px',
-                lineHeight: 1.1,
+                padding: '2px 3px',
+                lineHeight: 1.15,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -229,8 +229,8 @@ const EquipmentSection: React.FC<{
                 verticalAlign: 'middle',
                 fontSize: '16px',
                 fontWeight: 'normal',
-                padding: '2px 8px',
-                lineHeight: 1.1,
+                padding: '2px 10px',
+                lineHeight: 1.15,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -245,8 +245,8 @@ const EquipmentSection: React.FC<{
                 verticalAlign: 'middle',
                 fontSize: '16px',
                 fontWeight: 'normal',
-                padding: '2px 0',
-                lineHeight: 1.1,
+                padding: '2px 4px',
+                lineHeight: 1.15,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -261,8 +261,8 @@ const EquipmentSection: React.FC<{
                 verticalAlign: 'middle',
                 fontSize: '16px',
                 fontWeight: 'normal',
-                padding: '1px',
-                lineHeight: 1.1,
+                padding: '2px 3px',
+                lineHeight: 1.15,
                 backgroundColor: '#ffffff',
               }}
             >
@@ -308,7 +308,7 @@ const EquipmentSection: React.FC<{
                   verticalAlign: 'middle',
                   fontSize: '16px',
                   fontWeight: 'normal',
-                  padding: '1px',
+                  padding: '2px 3px',
                 }}
               >
                 {item.id}
@@ -323,8 +323,8 @@ const EquipmentSection: React.FC<{
                   textAlign: 'left',
                   verticalAlign: 'middle',
                   fontSize: isHarness ? '15px' : '14.5px',
-                  lineHeight: isHarness ? '1.18' : '1.15',
-                  padding: '1px 8px',
+                  lineHeight: isHarness ? '1.24' : '1.20',
+                  padding: '2px 10px',
                   fontWeight: 'normal',
                 }}
               >
@@ -431,7 +431,7 @@ const EquipmentSection: React.FC<{
                 height: '40px',
                 border: '1px solid #000000',
                 verticalAlign: 'middle',
-                padding: '2px 8px',
+                padding: '3px 10px',
                 overflow: 'hidden',
                 boxSizing: 'border-box',
               }}
@@ -453,9 +453,10 @@ const EquipmentSection: React.FC<{
                     textAlign: 'left',
                     fontSize: '13.5px',
                     color: '#000000',
-                    lineHeight: 1.15,
+                    lineHeight: 1.2,
                     whiteSpace: 'nowrap',
                     width: '100%',
+                    paddingLeft: '2px',
                   }}
                 >
                   <span>[✓] ปกติ&nbsp;&nbsp;&nbsp;[✕] ผิดปกติ ใช้ได้&nbsp;&nbsp;&nbsp;[■] ห้ามใช้</span>
@@ -467,9 +468,10 @@ const EquipmentSection: React.FC<{
                     textAlign: 'right',
                     fontSize: '15px',
                     color: '#000000',
-                    lineHeight: 1.15,
+                    lineHeight: 1.2,
                     whiteSpace: 'nowrap',
                     width: '100%',
+                    paddingRight: '4px',
                   }}
                 >
                   <span style={{ fontWeight: 'normal' }}>ลงชื่อ ผู้ตรวจสอบ</span>
@@ -682,7 +684,7 @@ export const SingleEquipmentReportTemplate: React.FC<SingleEquipmentReportTempla
           lineHeight: 1.15,
         }}
       >
-        <span>เรียน&nbsp;&nbsp;หมผ – ธ.</span>
+        <span>เรียน&nbsp;&nbsp;หมผ - ธ.</span>
         <span>แผนก&nbsp;&nbsp;หมผ - ธ.</span>
         <span>กอง&nbsp;&nbsp;กคว - ธ.</span>
         <span>ฝ่าย&nbsp;&nbsp;อคม.&nbsp;&nbsp;รวธ.</span>

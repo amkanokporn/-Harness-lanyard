@@ -52,11 +52,10 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
   // Sync and auto-merge with prop when modal opens
   useEffect(() => {
     if (isOpen) {
-      const autoMerged = mergeAndDeduplicateInspectors(inspectors);
-      setLocalInspectors(autoMerged);
+      setLocalInspectors(inspectors);
       setFeedbackMsg(null);
       if (targetInspectorName) {
-        const found = autoMerged.find(
+        const found = inspectors.find(
           (i) => normalizeInspectorName(i.name) === normalizeInspectorName(targetInspectorName)
         );
         if (found) {
@@ -192,18 +191,18 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
         id="inspector-manager-dialog"
         className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 text-white border-b-2 border-yellow-400">
+        {/* Header - Soft, Clean, Elegant */}
+        <div className="flex items-center justify-between px-6 py-4.5 bg-white text-slate-800 border-b border-slate-200/90">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-md">
-              <UserCheck className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-xl bg-[#1e3a8a] text-[#fbbf24] flex items-center justify-center font-bold shrink-0 shadow-2xs">
+              <UserCheck className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <h3 className="text-lg sm:text-xl font-bold tracking-wide">
+              <h3 className="text-base sm:text-lg font-bold text-[#1e3a8a] tracking-tight">
                 จัดการรายชื่อและลายเซ็นผู้ตรวจสอบ
               </h3>
-              <p className="text-xs sm:text-sm text-blue-200 mt-0.5">
-                รวมชื่อสะกดผิดอัตโนมัติ และแนบลายเซ็นดิจิทัลสำหรับประทับลงในเอกสาร
+              <p className="text-xs text-slate-500 mt-0.5">
+                แนบหรือวาดลายเซ็นดิจิทัลสำหรับประทับลงในช่องวันที่ตรวจของเอกสาร A4
               </p>
             </div>
           </div>
@@ -211,53 +210,42 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
             type="button"
             id="btn-close-inspector-modal"
             onClick={onClose}
-            className="p-2 text-blue-200 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Status Bar with Search & Quick Actions */}
-        <div className="px-6 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
+        <div className="px-6 py-3 bg-slate-50/70 border-b border-slate-200/80 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-slate-800 text-sm sm:text-base">สถานะ:</span>
-            <span className="inline-flex items-center gap-1.5 font-bold px-3 py-1 rounded-xl bg-blue-950 text-yellow-300 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-yellow-400" />
+            <span className="font-semibold text-slate-700 text-xs sm:text-sm">สถานะ:</span>
+            <span className="inline-flex items-center gap-1 font-medium px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs">
+              <CheckCircle2 className="w-3.5 h-3.5" />
               พร้อมใช้งาน {totalWithSignature} / {totalInspectors} ท่าน
             </span>
           </div>
 
           {/* Search bar inside modal */}
-          <div className="relative w-full sm:w-60">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <div className="relative w-full sm:w-56">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="ค้นหาชื่อผู้ตรวจ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 text-sm sm:text-base border border-slate-300 rounded-xl bg-white text-slate-800 focus:border-blue-900 focus:outline-none font-normal"
+              className="w-full pl-8 pr-3 py-1.5 text-xs sm:text-sm border border-slate-200 rounded-lg bg-white text-slate-800 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
           <div className="flex items-center gap-2">
             <button
               type="button"
-              id="btn-smart-merge-sigs"
-              onClick={handleSmartMergeAndFixGrammar}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-yellow-400 hover:bg-yellow-300 text-blue-950 rounded-xl font-bold shadow-xs transition-colors cursor-pointer text-sm"
-              title="ระบบรวมชื่อและแก้ไขคำสะกดผิดอัตโนมัติ"
-            >
-              <Sparkles className="w-4 h-4 text-blue-950" />
-              รวมชื่อออโต้แล้ว
-            </button>
-
-            <button
-              type="button"
               id="btn-quick-fill-all-sigs"
               onClick={handleAutoFillAllSignatures}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-950 hover:bg-blue-900 text-white rounded-xl font-bold shadow-xs transition-colors cursor-pointer text-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-lg font-medium shadow-2xs transition-colors cursor-pointer text-xs sm:text-sm"
             >
-              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <Sparkles className="w-3.5 h-3.5" />
               สร้างลายเซ็นทุกคน
             </button>
           </div>
@@ -482,7 +470,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
             type="button"
             id="btn-done-inspector-modal"
             onClick={onClose}
-            className="w-full sm:w-auto px-6 py-2.5 text-sm sm:text-base font-bold text-white bg-blue-950 hover:bg-blue-900 rounded-xl shadow-sm transition-all cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2 text-xs sm:text-sm font-medium text-white bg-[#1e3a8a] hover:bg-[#1e40af] rounded-lg shadow-2xs transition-colors cursor-pointer"
           >
             บันทึกและปิดหน้าต่าง
           </button>

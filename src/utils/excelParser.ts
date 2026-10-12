@@ -537,15 +537,13 @@ function isNonInspectorValue(str: string): boolean {
 
 function cleanInspectorNameStr(raw: string): string {
   if (!raw) return '';
-  const cleaned = raw
+  // ดึงชื่อผู้ใช้งานจากไฟล์โดยตรง ไม่ดัดแปลง ไม่แก้คำผิด ปล่อยให้ตรงตามไฟล์ต้นทาง
+  const cleaned = String(raw)
     .normalize('NFC')
-    .replace(/\(.*?\)|\[.*?\]/g, '')
-    .replace(/^[\d\.\-\s_]+/, '')
-    .trim()
-    .replace(/\s+/g, ' ');
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .trim();
 
-  if (!cleaned) return '';
-  return getCanonicalThaiName(cleaned);
+  return cleaned;
 }
 
 function isLikelyInspectorName(str: string): boolean {
@@ -1187,11 +1185,11 @@ export function generateExcelTemplate() {
     '1.4 Harness_ป้ายเครื่องหมาย: ต้องอยู่ในสภาพดีไม่ขาด ตัวหนังสือชัดเจน',
     'ผลการตรวจสอบ Full Body Harness',
     '(2)Lanyard',
-    '2.1 Lanyard_ตะขอเกี่ยว, Carabiner และ D-ring : ต้องอยู่ใน สภาพดีไม่บิดเบี้ยว ไม่มีรอยแตกรา้ว สนิม และขอบคด',
+    '2.1 Lanyard_ตะขอเกี่ยว, Carabiner และ D-ring : ต้องอยู่ในสภาพดีไม่บิดเบี้ยว ไม่มีรอยแตกร้าว สนิม และขอบคม',
     '2.2 Lanyard_สายรัด : ต้องอยู่ในสภาพดีไม่มีรอยตัด ฉีกขาด รอยไหม้เส้นด้ายหลุดลุ่ย หรือสีซีดจาง',
     '2.3 Lanyard_รอยเย็บ: ต้องแน่นและไม่มีรอยตัด',
     '2.4 Lanyard_เชือก: ต้องอยู่ในสภาพดีแน่นเป็นเส้นเดียวกัน ไม่มีรอยตัด รอยไหม้ ไม่พันกันเป็นปม หรือสีซีดจาง',
-    '2.5 Lanyard_อุปกรณ์ดูดซับแรงกระชาก: ต้องอยู่ในสภาพดีไม่ยืดออก และฉีดขาด',
+    '2.5 Lanyard_อุปกรณ์ดูดซับแรงกระชาก: ต้องอยู่ในสภาพดีไม่ยืดออก และไม่ฉีกขาด',
     '2.6 Lanyard_ป้ายเครื่องหมาย: ต้องอยู่ในสภาพดีไม่ขาด ตัวหนังสือชัดเจน',
     'ผลการตรวจสอบ_Lanyard',
   ];

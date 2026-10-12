@@ -23,15 +23,16 @@ import {
   EquipmentPairPageData,
 } from './utils/inspectionAggregation';
 import {
-  clusterAndNormalizeRecords,
-  mergeAndDeduplicateInspectors,
-} from './utils/thaiNameNormalizer';
-import {
   ensureInspectorSignatures,
   convertToTransparentPng,
   rotateDataUrlToVertical,
 } from './utils/signatureUtils';
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
+import {
+  CheckCircle2,
+  AlertCircle,
+  Info,
+  X,
+} from 'lucide-react';
 
 const LOCAL_STORAGE_INSPECTORS_KEY = 'pre_use_inspection_inspectors_v1';
 
@@ -43,23 +44,20 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return mergeAndDeduplicateInspectors(parsed.map(ensureInspectorSignatures));
+          return parsed.map(ensureInspectorSignatures);
         }
       }
     } catch (e) {
       console.warn('Failed to load inspectors from localStorage', e);
     }
-    return mergeAndDeduplicateInspectors(DEFAULT_INSPECTORS.map(ensureInspectorSignatures));
+    return DEFAULT_INSPECTORS.map(ensureInspectorSignatures);
   });
 
   const [isInspectorModalOpen, setIsInspectorModalOpen] = useState(false);
 
-  // 2. Parsed Data State (Default initialized with the sample data matching Master PDF)
+  // 3. Parsed Data State (Default initialized with the sample data matching Master PDF)
   const [parsedData, setParsedData] = useState<ParsedExcelResult | null>(() => {
-    const sample = getSampleParsedData();
-    const cluster = clusterAndNormalizeRecords(sample.records, DEFAULT_INSPECTORS);
-    sample.records = cluster.normalizedRecords;
-    return sample;
+    return getSampleParsedData();
   });
 
   // 3. Filter State (Plant removed since it is an overall checklist)
@@ -165,10 +163,7 @@ export default function App() {
       const buffer = await file.arrayBuffer();
       const result = parseInspectionExcel(buffer, file.name);
 
-      // Automatically cluster, normalize, and fix grammatical errors in inspector names
-      const clusterResult = clusterAndNormalizeRecords(result.records, inspectors);
-      result.records = clusterResult.normalizedRecords;
-
+      // ดึงชื่อผู้ใช้งานและบันทึกการตรวจจากไฟล์โดยตรง 100% ไม่ดัดแปลง ไม่แก้ไขคำผิด เพื่อให้คงตามไฟล์ต้นทาง
       setParsedData(result);
 
       // Automatically update filter defaults if detected from the uploaded excel
@@ -196,7 +191,7 @@ export default function App() {
       // Automatically extract and sync all inspectors from real records
       const updatedInspectors = extractUniqueInspectorsFromRecords(
         result.records,
-        clusterResult.deduplicatedInspectors
+        inspectors
       );
       setInspectors(updatedInspectors);
       try {
@@ -221,16 +216,9 @@ export default function App() {
           message: `อ่านไฟล์ "${file.name}" พบข้อผิดพลาด ${errorCount} รายการ กรุณาตรวจสอบรายละเอียด`,
         });
       } else {
-        const mergeAuditMsg =
-          clusterResult.auditLogs.length > 0
-            ? ` • รวมชื่อสะกดผิดอัตโนมัติ: ${clusterResult.auditLogs
-                .map((a) => `${a.raw} ➔ ${a.canonical}`)
-                .slice(0, 2)
-                .join(', ')}${clusterResult.auditLogs.length > 2 ? ` และอีก ${clusterResult.auditLogs.length - 2} รายการ` : ''}`
-            : '';
         setToast({
           type: 'success',
-          message: `อ่านไฟล์ "${file.name}" สำเร็จ (${result.records.length} วันตรวจ)${mergeAuditMsg}`,
+          message: `อ่านไฟล์ "${file.name}" สำเร็จ (${result.records.length} วันตรวจ) • ดึงชื่อผู้ใช้งานตรงตามไฟล์ต้นทางครบถ้วน`,
         });
       }
     } catch (err: any) {
@@ -244,11 +232,9 @@ export default function App() {
   // Load Built-in Master Sample Data
   const handleLoadSampleData = () => {
     const sample = getSampleParsedData();
-    const clusterResult = clusterAndNormalizeRecords(sample.records, inspectors);
-    sample.records = clusterResult.normalizedRecords;
     const updatedInspectors = extractUniqueInspectorsFromRecords(
       sample.records,
-      clusterResult.deduplicatedInspectors
+      inspectors
     );
     setInspectors(updatedInspectors);
     setParsedData(sample);
@@ -261,7 +247,7 @@ export default function App() {
     });
     setToast({
       type: 'success',
-      message: 'โหลดข้อมูลตัวอย่าง มีนาคม 2569 (รวมและแก้ไขชื่อสะกดผิดให้ถูกต้องตามหลักไวยากรณ์แล้ว)',
+      message: 'โหลดข้อมูลตัวอย่าง มีนาคม 2569 สำเร็จ (ดึงรายชื่อและรายการตรวจครบถ้วน)',
     });
   };
 
@@ -410,7 +396,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-['Prompt','Sarabun',sans-serif]">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-['Prompt','Sarabun',sans-serif]">
       {/* Top Navbar */}
       <Navbar
         onOpenInspectorModal={() => setIsInspectorModalOpen(true)}
@@ -419,42 +405,42 @@ export default function App() {
         hasLoadedData={!!parsedData}
       />
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Toast Alert */}
+      {/* Main Content Area - Single, Intuitive, Familiar Standard Layout */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5">
+        {/* Soft, Calming Toast Alert */}
         {toast && (
           <div
             id="toast-notification"
-            className={`flex items-center justify-between p-4 sm:p-5 rounded-2xl border-2 shadow-md transition-all ${
+            className={`flex items-center justify-between p-3.5 sm:p-4 rounded-xl border shadow-xs transition-all ${
               toast.type === 'success'
-                ? 'bg-blue-950 border-yellow-400 text-yellow-300'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                 : toast.type === 'error'
-                ? 'bg-red-950 border-red-400 text-red-100'
-                : 'bg-blue-900 border-blue-400 text-white'
+                ? 'bg-red-50 border-red-200 text-red-800'
+                : 'bg-blue-50 border-blue-200 text-blue-800'
             }`}
           >
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-2.5">
               {toast.type === 'success' ? (
-                <div className="w-9 h-9 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-sm">
-                  <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
+                <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                  <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                 </div>
               ) : toast.type === 'error' ? (
-                <div className="w-9 h-9 rounded-xl bg-red-500 text-white flex items-center justify-center font-bold shrink-0 shadow-sm">
-                  <AlertCircle className="w-5 h-5 stroke-[2.5]" />
+                <div className="w-7 h-7 rounded-lg bg-red-100 text-red-700 flex items-center justify-center font-bold shrink-0">
+                  <AlertCircle className="w-4 h-4 stroke-[2.5]" />
                 </div>
               ) : (
-                <div className="w-9 h-9 rounded-xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shrink-0 shadow-sm">
-                  <Info className="w-5 h-5 stroke-[2.5]" />
+                <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                  <Info className="w-4 h-4 stroke-[2.5]" />
                 </div>
               )}
-              <span className="text-sm sm:text-base font-semibold tracking-normal">{toast.message}</span>
+              <span className="text-xs sm:text-sm font-medium">{toast.message}</span>
             </div>
             <button
               type="button"
               onClick={() => setToast(null)}
-              className="p-1.5 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-1 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -462,7 +448,7 @@ export default function App() {
         {/* Validation Issues / Error Banner from Excel parsing */}
         {parsedData && <ValidationBanner issues={parsedData.issues} />}
 
-        {/* Filter Controls Panel */}
+        {/* 1. Filter Controls & Import Excel Panel */}
         <FilterControls
           parsedData={parsedData}
           filters={filters}
@@ -478,7 +464,7 @@ export default function App() {
           generationProgressText={generationProgressText}
         />
 
-        {/* Master PDF Layout Preview Panel */}
+        {/* 2. Master Document Preview Panel */}
         <ReportPreviewPanel
           plant={filters.plant}
           month={filters.month}

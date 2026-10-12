@@ -113,13 +113,13 @@ export interface MonthlyReportData {
  */
 export function normalizeInspectorName(raw?: string): string {
   if (!raw || typeof raw !== 'string') return '';
+  // ตัดช่องว่างส่วนเกินและปรับ normalize แต่คงตัวสะกดและชื่อเฉพาะตามไฟล์ต้นทาง 100%
   const clean = raw
     .normalize('NFC')
     .replace(/[\u200B-\u200D\uFEFF]/g, '')
     .trim()
     .replace(/\s+/g, ' ');
-  if (!clean) return '';
-  return getCanonicalThaiName(clean);
+  return clean;
 }
 
 const THAI_NAME_PREFIX_REGEX = /^(นาย|นางสาว|นาง|น\.ส\.|นส\.|ด\.ช\.|ด\.ญ\.|คุณ|ดร\.|อาจารย์|อ\.|ผศ\.|รศ\.|ศ\.|นพ\.|พญ\.|นายแพทย์|แพทย์หญิง|ส\.อ\.|ส\.ท\.|ส\.ต\.|จ\.ส\.อ\.|จ\.ส\.ท\.|จ\.ส\.ต\.|ร\.ต\.|ร\.ท\.|ร\.อ\.|พ\.ต\.|พ\.ท\.|พ\.อ\.|พ\.ต\.ต\.|พ\.ต\.ท\.|พ\.ต\.อ\.|ด\.ต\.|ส\.ต\.ต\.|ส\.ต\.ท\.|ส\.ต\.อ\.|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรี|Mr\.|Mrs\.|Miss|Ms\.|Dr\.)\s*/i;
@@ -713,7 +713,7 @@ export function extractUniqueInspectorsFromRecords(
   }
 
   const rawList = Array.from(inspectorMap.values()).map(ensureInspectorSignatures);
-  return mergeAndDeduplicateInspectors(rawList);
+  return rawList.sort((a, b) => a.name.localeCompare(b.name, 'th'));
 }
 
 /**

@@ -66,10 +66,10 @@ const CELL_BORDERS_ALL = {
 };
 
 const CELL_MARGIN_COMPACT = {
-  top: 25,
-  bottom: 25,
-  left: 40,
-  right: 40,
+  top: 35,
+  bottom: 35,
+  left: 60,
+  right: 60,
 };
 
 const CELL_MARGIN_FOOTER = {
@@ -140,10 +140,10 @@ function createEquipmentDocxSection(
     alignment: AlignmentType.LEFT,
     spacing: { before: 0, after: 20, line: 200 },
     children: [
-      new TextRun({ text: 'เรียน  หมผ – ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
+      new TextRun({ text: 'เรียน  หมผ - ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
       new TextRun({ text: 'แผนก  หมผ - ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
       new TextRun({ text: 'กอง  กคว - ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
-      new TextRun({ text: 'ฝ่าย  อคม. รวธ.', font: 'TH Sarabun New', size: 27, bold: true }),
+      new TextRun({ text: 'ฝ่าย  อคม.  รวธ.', font: 'TH Sarabun New', size: 27, bold: true }),
     ],
   });
 
@@ -812,7 +812,7 @@ function createSingleEquipmentDocxElements(
         new TableCell({
           width: { size: colWText, type: WidthType.DXA },
           borders: CELL_BORDERS_ALL,
-          margins: { top: 6, bottom: 6, left: 20, right: 20 },
+          margins: { top: 15, bottom: 15, left: 60, right: 60 },
           verticalAlign: VerticalAlign.CENTER,
           children: [
             new Paragraph({
@@ -869,7 +869,7 @@ function createSingleEquipmentDocxElements(
         width: { size: colWSeq + colWText, type: WidthType.DXA },
         columnSpan: 2,
         borders: CELL_BORDERS_ALL,
-        margins: { top: 30, bottom: 30, left: 60, right: 60 },
+        margins: { top: 30, bottom: 30, left: 80, right: 80 },
         verticalAlign: VerticalAlign.CENTER,
         children: [
           new Paragraph({
@@ -1044,7 +1044,7 @@ function createEquipmentPairDocxPage(
     spacing: { before: 0, after: 15, line: 180 },
     children: [
       new TextRun({
-        text: 'เรียน  หมผ – ธ.    แผนก  หมผ - ธ.    กอง  กคว - ธ.    ฝ่าย  อคม.  รวธ.',
+        text: 'เรียน  หมผ - ธ.    แผนก  หมผ - ธ.    กอง  กคว - ธ.    ฝ่าย  อคม.  รวธ.',
         font: 'TH Sarabun New',
         size: 27,
         bold: true,

@@ -16,63 +16,65 @@ export const Navbar: React.FC<NavbarProps> = ({
   hasLoadedData,
 }) => {
   return (
-    <header className="bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 text-white border-b-2 border-yellow-400 sticky top-0 z-30 shadow-md">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo & Title */}
-          <div className="flex items-center gap-3.5 sm:gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-yellow-400 text-blue-950 flex items-center justify-center font-bold shadow-md shadow-yellow-500/20 ring-2 ring-yellow-300 shrink-0">
-              <ShieldCheck className="w-7 h-7 stroke-[2.5]" />
+        <div className="flex items-center justify-between h-18 gap-4">
+          {/* Logo & Title - กฟผ. โทนน้ำเงิน-เหลือง เรียบๆ สบายตา */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#1e3a8a] text-[#fbbf24] flex items-center justify-center font-bold shadow-2xs shrink-0">
+              <ShieldCheck className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-lg sm:text-xl font-bold text-white tracking-wide">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-base sm:text-lg font-bold text-[#1e3a8a] tracking-tight">
                   ระบบรายงานตรวจอุปกรณ์ก่อนการใช้งาน
                 </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 text-xs sm:text-sm font-bold bg-yellow-400 text-blue-950 rounded-lg">
+                <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300 rounded-md">
                   FM-004/QP-PB-013 (กฟผ.)
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-blue-200 mt-0.5 font-normal">
-                Full Body Harness & Lanyard Inspection Report (ส่งออก PDF & Word 13.5pt พอดีหน้า A4)
+              <p className="text-xs text-slate-500 font-normal">
+                Full Body Harness & Lanyard (ส่งออก PDF & Word 13.5pt พอดีหน้า A4 แนวนอน)
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Load Sample Data Button */}
+          {/* Action Buttons - เรียบๆ โทนน้ำเงิน-เหลือง กฟผ. */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            {/* โหลดข้อมูลตัวอย่าง */}
             <button
               type="button"
               id="btn-load-sample-data"
               onClick={onLoadSampleData}
-              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-semibold text-blue-950 bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 rounded-xl transition-all shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-[#1e3a8a] bg-blue-50/80 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
               title="โหลดข้อมูลตัวอย่าง มีนาคม 2569"
             >
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-950 shrink-0" />
-              <span>โหลดตัวอย่าง</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="hidden sm:inline">ข้อมูลตัวอย่าง</span>
+              <span className="sm:hidden">ตัวอย่าง</span>
             </button>
 
-            {/* Download Excel Template */}
+            {/* แม่แบบ Excel */}
             <button
               type="button"
               id="btn-download-excel-template"
               onClick={generateExcelTemplate}
-              className="hidden md:flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-semibold text-yellow-300 bg-blue-900/80 hover:bg-blue-800 border border-yellow-400/40 rounded-xl transition-colors cursor-pointer"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors cursor-pointer"
               title="ดาวน์โหลดไฟล์แม่แบบ Excel เพื่อนำไปกรอกข้อมูล"
             >
-              <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 shrink-0" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               <span>แม่แบบ Excel</span>
             </button>
 
-            {/* Manage Inspectors */}
+            {/* จัดการรายชื่อผู้ตรวจ */}
             <button
               type="button"
               id="btn-manage-inspectors-nav"
               onClick={onOpenInspectorModal}
-              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base font-semibold text-white bg-blue-800 hover:bg-blue-700 border border-blue-600 rounded-xl transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-[#1e3a8a] bg-amber-50/90 hover:bg-amber-100 border border-amber-300/80 rounded-lg transition-colors cursor-pointer"
+              title="จัดการรายชื่อผู้ตรวจและลายเซ็น"
             >
-              <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 shrink-0" />
+              <UserCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <span>ผู้ตรวจ ({totalInspectors})</span>
             </button>
           </div>
