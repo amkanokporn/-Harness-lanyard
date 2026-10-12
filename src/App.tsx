@@ -44,20 +44,23 @@ import {
 const LOCAL_STORAGE_INSPECTORS_KEY = 'pre_use_inspection_inspectors_v1';
 
 export default function App() {
-  // 1. Inspectors State (persisted in localStorage)
+  // Inspectors State (persisted in localStorage)
   const [inspectors, setInspectors] = useState<Inspector[]>(() => {
+    let initialInspectors = DEFAULT_INSPECTORS.map(ensureInspectorSignatures);
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_INSPECTORS_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return mergeAndDeduplicateInspectors(parsed.map(ensureInspectorSignatures));
+          initialInspectors = parsed.map(ensureInspectorSignatures);
         }
       }
     } catch (e) {
       console.warn('Failed to load inspectors from localStorage', e);
     }
-    return mergeAndDeduplicateInspectors(DEFAULT_INSPECTORS.map(ensureInspectorSignatures));
+    // We can't apply vault signatures here because initSignatureVault is async,
+    // so we apply them in the useEffect below.
+    return mergeAndDeduplicateInspectors(initialInspectors);
   });
 
   const [isInspectorModalOpen, setIsInspectorModalOpen] = useState(false);
@@ -118,6 +121,7 @@ export default function App() {
       try {
         await initSignatureVault();
         if (isMounted) {
+          // Re-fetch everything from vault and update inspectors
           setInspectors((prev) => {
             const withVault = applyVaultSignaturesToInspectors(prev);
             return withVault;
@@ -131,7 +135,7 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, []); // Note: This only runs once on mount. If inspectors update, we might need a better trigger.
 
   // Save inspectors to permanent vault and localStorage when modified
   const handleSaveInspectors = async (rawUpdated: Inspector[]) => {

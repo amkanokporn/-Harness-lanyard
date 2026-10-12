@@ -146,6 +146,7 @@ async function persistVault(): Promise<void> {
     for (const [key, record] of memoryVault.entries()) {
       await setDoc(doc(db, 'signatures', key), record);
     }
+    console.log('Successfully persisted all signatures to Firestore');
   } catch (e) {
     console.error('Firestore write error:', e);
   }
