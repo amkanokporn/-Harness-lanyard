@@ -141,10 +141,13 @@ export async function initSignatureVault(): Promise<Map<string, StoredSignatureR
  * Sync memory vault to Firestore
  */
 async function persistVault(): Promise<void> {
-  // Save to Firestore
+  // Save to Firestore using a more robust collection approach
   try {
+    const signaturesCollection = collection(db, 'signatures');
     for (const [key, record] of memoryVault.entries()) {
-      await setDoc(doc(db, 'signatures', key), record);
+      // Use setDoc with a unique ID mapping if needed, or stick to the key as doc ID
+      // To ensure uniqueness, perhaps append a hash or just use the name key
+      await setDoc(doc(signaturesCollection, key), record);
     }
     console.log('Successfully persisted all signatures to Firestore');
   } catch (e) {
