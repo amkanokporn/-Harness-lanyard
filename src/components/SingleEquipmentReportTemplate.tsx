@@ -116,10 +116,7 @@ const EquipmentSection: React.FC<{
             >
               <span>ชื่อเครื่องมืออุปกรณ์:&nbsp;</span>
               {hasData ? (
-                <span>
-                  {cleanName}
-                  {isChecked && ' ✓'}
-                </span>
+                <span>{cleanName}</span>
               ) : (
                 <span>-</span>
               )}
@@ -338,7 +335,9 @@ const EquipmentSection: React.FC<{
               {days.map((d) => {
                 const res = data.dayResults[d]?.[item.id];
                 const isInspectedDay = data.inspectedDays.includes(d);
-                const symbol = isInspectedDay ? (res || '/') : '';
+                const rawSymbol = isInspectedDay ? (res || '✓') : '';
+                // Any normal inspection result ('/', '√', '✓') matches the example [✓] in the legend
+                const symbol = (rawSymbol === '/' || rawSymbol === '√') ? '✓' : rawSymbol;
 
                 return (
                   <td
@@ -352,7 +351,7 @@ const EquipmentSection: React.FC<{
                       padding: 0,
                     }}
                   >
-                    {(symbol === '/' || symbol === '√') && (
+                    {symbol === '✓' && (
                       <span
                         style={{
                           fontSize: '16px',
@@ -362,23 +361,35 @@ const EquipmentSection: React.FC<{
                           verticalAlign: 'middle',
                         }}
                       >
-                        /
+                        ✓
                       </span>
                     )}
-                    {symbol === '✓' && <CheckmarkSvg size={12} />}
-                    {symbol === 'X' && <CrossSvg size={11} />}
+                    {(symbol === 'X' || symbol === '✕') && (
+                      <span
+                        style={{
+                          fontSize: '15px',
+                          fontWeight: 'normal',
+                          lineHeight: '1',
+                          display: 'inline-block',
+                          verticalAlign: 'middle',
+                        }}
+                      >
+                        ✕
+                      </span>
+                    )}
                     {symbol === '■' && (
                       <span
                         style={{
+                          fontSize: '14px',
+                          lineHeight: '1',
                           display: 'inline-block',
-                          width: '8px',
-                          height: '8px',
-                          backgroundColor: '#000000',
                           verticalAlign: 'middle',
                         }}
-                      ></span>
+                      >
+                        ■
+                      </span>
                     )}
-                    {symbol && !['/', '√', '✓', 'X', '■'].includes(symbol) && (
+                    {symbol && !['✓', 'X', '✕', '■'].includes(symbol) && (
                       <span
                         style={{
                           fontSize: '13.5px',

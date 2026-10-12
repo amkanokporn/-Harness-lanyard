@@ -232,7 +232,7 @@ export function buildEquipmentListForReport(
 
     return {
       ...eq,
-      name: isChecked ? `${cleanName} ✓` : cleanName,
+      name: cleanName,
       isCheckedInReport: isChecked,
     };
   });

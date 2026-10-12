@@ -628,7 +628,7 @@ function createSingleEquipmentDocxElements(
                 children: [
                   new TextRun({ text: 'ชื่อเครื่องมืออุปกรณ์: ', font: 'TH Sarabun New', size: 27 }),
                   new TextRun({
-                    text: `${cleanName}${isChecked ? ' ✓' : ''}`,
+                    text: cleanName,
                     font: 'TH Sarabun New',
                     size: 27,
                     bold: false,
@@ -831,7 +831,8 @@ function createSingleEquipmentDocxElements(
         ...days.map((d) => {
           const res = data.dayResults[d]?.[item.id];
           const isInspected = data.inspectedDays.includes(d);
-          const symbol = isInspected ? (res || '/') : '';
+          const rawSymbol = isInspected ? (res || '✓') : '';
+          const displaySymbol = (rawSymbol === '/' || rawSymbol === '√') ? '✓' : (rawSymbol === 'X' ? '✕' : rawSymbol);
 
           return new TableCell({
             width: { size: colWDay, type: WidthType.DXA },
@@ -842,8 +843,8 @@ function createSingleEquipmentDocxElements(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 160 },
-                children: symbol
-                  ? [new TextRun({ text: symbol === '✓' ? '✓' : symbol, font: 'TH Sarabun New', size: 24, bold: false })]
+                children: displaySymbol
+                  ? [new TextRun({ text: displaySymbol, font: 'TH Sarabun New', size: 24, bold: false })]
                   : [],
               }),
             ],

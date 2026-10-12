@@ -204,7 +204,6 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                     {hasData ? (
                       <span className="font-normal text-black inline-flex items-center">
                         {cleanName}
-                        {isChecked && <CheckmarkSvg size={11} className="ml-1.5" />}
                       </span>
                     ) : (
                       <span className="font-normal text-slate-400">-</span>
@@ -386,8 +385,8 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
               {days.map((d) => {
                 const res = dayResultsMap[d]?.[item.id];
                 const hasDayData = inspectedDaysSet.has(d);
-                // Display slash '/' or symbol ONLY if day was inspected in the data table
-                const symbol = hasDayData ? (res || '/') : '';
+                const rawSymbol = hasDayData ? (res || '✓') : '';
+                const symbol = (rawSymbol === '/' || rawSymbol === '√') ? '✓' : rawSymbol;
 
                 return (
                   <td
@@ -401,23 +400,10 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                       padding: 0,
                     }}
                   >
-                    {(symbol === '/' || symbol === '√') && (
-                      <span
-                        style={{
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          lineHeight: '1',
-                          display: 'inline-block',
-                          verticalAlign: 'middle',
-                        }}
-                      >
-                        /
-                      </span>
-                    )}
                     {symbol === '✓' && (
                       <CheckmarkSvg size={11} />
                     )}
-                    {symbol === 'X' && (
+                    {(symbol === 'X' || symbol === '✕') && (
                       <CrossSvg size={10} />
                     )}
                     {symbol === '■' && (
@@ -431,7 +417,7 @@ export const PdfReportTemplate: React.FC<PdfReportTemplateProps> = ({
                         }}
                       ></span>
                     )}
-                    {symbol && !['/', '√', '✓', 'X', '■'].includes(symbol) && (
+                    {symbol && !['✓', 'X', '✕', '■'].includes(symbol) && (
                       <span
                         style={{
                           fontSize: '11px',

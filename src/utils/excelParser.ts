@@ -189,7 +189,7 @@ export function parseInspectionResultValue(val: any): {
     str === 'y' ||
     str === '1'
   ) {
-    return { symbol: '/', status: 'normal' };
+    return { symbol: '✓', status: 'normal' };
   }
 
   // Fallback string if non-empty
@@ -882,14 +882,8 @@ function applyItemResult(
     }
   } else {
     // Normal / Pass
-    if (parsed.symbol === '✓') {
-      if (dayObj.itemResults[itemIdx] !== '■' && dayObj.itemResults[itemIdx] !== 'X') {
-        dayObj.itemResults[itemIdx] = '✓';
-      }
-    } else {
-      if (!dayObj.itemResults[itemIdx] || (dayObj.itemResults[itemIdx] !== '■' && dayObj.itemResults[itemIdx] !== 'X' && dayObj.itemResults[itemIdx] !== '✓')) {
-        dayObj.itemResults[itemIdx] = '/';
-      }
+    if (dayObj.itemResults[itemIdx] !== '■' && dayObj.itemResults[itemIdx] !== 'X') {
+      dayObj.itemResults[itemIdx] = '✓';
     }
   }
 }
@@ -1038,7 +1032,7 @@ function parseSingleSheet(
 
   for (const data of groupMap.values()) {
     for (let i = 1; i <= maxItems; i++) {
-      if (!data.itemResults[i]) data.itemResults[i] = '/';
+      if (!data.itemResults[i]) data.itemResults[i] = '✓';
     }
     records.push({
       plant: '',
@@ -1153,14 +1147,14 @@ function parseMatrixSheet(
         if (val !== '' && val !== null && val !== undefined) {
           hasAnyData = true;
           const parsed = parseInspectionResultValue(val);
-          itemResults[i] = parsed.symbol || '/';
+          itemResults[i] = parsed.symbol || '✓';
         }
       }
     }
 
     if (hasAnyData) {
       for (let i = 1; i <= maxItems; i++) {
-        if (!itemResults[i]) itemResults[i] = '/';
+        if (!itemResults[i]) itemResults[i] = '✓';
       }
       records.push({
         plant: '',

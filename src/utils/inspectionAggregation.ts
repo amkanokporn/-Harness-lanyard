@@ -406,7 +406,7 @@ export function aggregateInspectionData(
 
     return {
       ...masterEq,
-      name: isChecked ? `${cleanName} ✓` : cleanName,
+      name: cleanName,
       isCheckedInReport: isChecked,
       _daysCount: daysCount,
       _inspectCount: inspectCount,
