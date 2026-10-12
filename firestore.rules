@@ -5,6 +5,9 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /signatures {
+      allow list: if true;
+    }
     match /signatures/{signatureId} {
       // Allow public read access to signatures to fix the 'Missing or insufficient permissions' error
       allow read: if true;
