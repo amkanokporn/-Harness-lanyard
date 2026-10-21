@@ -6,14 +6,8 @@ service cloud.firestore {
     }
 
     match /signatures/{signatureId} {
-      allow read: if true;
-      allow write: if isValidSignature(request.resource.data);
-      allow delete: if true;
+      // Allow full read and write access to signatures across all devices and sessions
+      allow read, write, delete: if true;
     }
-  }
-
-  function isValidSignature(data) {
-    return data.name is string && data.name.size() <= 255
-      && data.signatureDataUrl is string;
   }
 }

@@ -1,4 +1,5 @@
 import { Inspector } from '../types';
+import { MASTER_REAL_SIGNATURES } from '../constants/masterSignatures';
 
 /**
  * Signature Utility Module
@@ -491,11 +492,32 @@ export function ensureInspectorSignatures(inspector: Inspector): Inspector {
   const isValidDataUrl = (str?: string) =>
     Boolean(str && typeof str === 'string' && str.startsWith('data:image/'));
 
-  // If this is a real custom uploaded signature, NEVER overwrite it with computer generated signatures
-  if (inspector.isCustomSignature && isValidDataUrl(sig)) {
-    return inspector;
+  // 1. Check if there is an authentic master real signature embedded for this inspector
+  const cleanName = cleanInspectorFullName(inspector.name || '');
+  const key1 = cleanName.replace(/\s+/g, '').toLowerCase().trim();
+  const key2 = (inspector.name || '').replace(/\s+/g, '').toLowerCase().trim();
+  const master = MASTER_REAL_SIGNATURES[key1] || MASTER_REAL_SIGNATURES[key2] || MASTER_REAL_SIGNATURES[inspector.name];
+
+  if (master && isValidDataUrl(master.signatureDataUrl)) {
+    return {
+      ...inspector,
+      signatureDataUrl: master.signatureDataUrl,
+      verticalSignatureDataUrl: master.verticalSignatureDataUrl || master.signatureDataUrl,
+      isCustomSignature: true,
+      uploadedAt: inspector.uploadedAt || '2026-10-21T00:00:00.000Z',
+    };
   }
 
+  // 2. If this is already a verified custom signature, keep it
+  if (inspector.isCustomSignature && isValidDataUrl(sig)) {
+    return {
+      ...inspector,
+      signatureDataUrl: sig,
+      verticalSignatureDataUrl: isValidDataUrl(vertSig) ? vertSig : sig,
+    };
+  }
+
+  // 3. Fallback for unknown new personnel: generate cursive handwriting
   if (!isValidDataUrl(sig) || !isValidDataUrl(vertSig)) {
     const generated = generateDigitalSignaturePng(inspector.name || 'ผู้ตรวจสอบ', inspector.id || inspector.name);
     if (!isValidDataUrl(sig)) sig = generated.horizontal;

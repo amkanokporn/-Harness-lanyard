@@ -42,10 +42,10 @@ import {
   X,
 } from 'lucide-react';
 
-const LOCAL_STORAGE_INSPECTORS_KEY = 'pre_use_inspection_inspectors_v1';
+const LOCAL_STORAGE_INSPECTORS_KEY = 'pre_use_inspection_inspectors_v7_master';
 
 export default function App() {
-  // Inspectors State (persisted in localStorage)
+  // Inspectors State (guaranteed synchronous master real signatures on all machines)
   const [inspectors, setInspectors] = useState<Inspector[]>(() => {
     let initialInspectors = DEFAULT_INSPECTORS.map(ensureInspectorSignatures);
     try {
@@ -59,9 +59,9 @@ export default function App() {
     } catch (e) {
       console.warn('Failed to load inspectors from localStorage', e);
     }
-    // We can't apply vault signatures here because initSignatureVault is async,
-    // so we apply them in the useEffect below.
-    return mergeAndDeduplicateInspectors(initialInspectors);
+    // Apply vault signatures synchronously so first frame on ANY machine has verified real signatures
+    const synced = applyVaultSignaturesToInspectors(initialInspectors);
+    return mergeAndDeduplicateInspectors(synced);
   });
 
   const [isInspectorModalOpen, setIsInspectorModalOpen] = useState(false);

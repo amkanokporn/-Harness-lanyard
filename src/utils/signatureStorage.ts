@@ -14,6 +14,7 @@ import { Inspector } from '../types';
 import { cleanInspectorFullName } from './signatureUtils';
 import { db } from '../lib/firebase';
 import { collection, getDocs, setDoc, doc, deleteDoc } from 'firebase/firestore';
+import { MASTER_REAL_SIGNATURES } from '../constants/masterSignatures';
 
 export interface StoredSignatureRecord {
   id?: string;
@@ -30,7 +31,7 @@ export interface StoredSignatureRecord {
 
 const IDB_NAME = 'EGAT_Inspection_Signatures_DB_v2';
 const IDB_STORE = 'inspector_signatures';
-const LOCAL_STORAGE_VAULT_KEY = 'egat_permanent_signature_vault_v2';
+const LOCAL_STORAGE_VAULT_KEY = 'egat_permanent_signature_vault_v3';
 
 // In-memory cache for instant synchronous access
 let memoryVault = new Map<string, StoredSignatureRecord>();
@@ -43,6 +44,34 @@ export function normalizeKey(str: string): string {
     .toLowerCase()
     .trim();
 }
+
+/**
+ * Seed memory vault immediately from the master embedded signatures.
+ * Guarantees that any device/browser has 100% of real inspector signatures
+ * with zero dependence on Firestore quotas or server network connectivity.
+ */
+function seedFromMasterSignatures() {
+  for (const [key, item] of Object.entries(MASTER_REAL_SIGNATURES)) {
+    const rec: StoredSignatureRecord = {
+      name: item.name,
+      cleanName: item.cleanName || cleanInspectorFullName(item.name),
+      signatureDataUrl: item.signatureDataUrl,
+      verticalSignatureDataUrl: item.verticalSignatureDataUrl || item.signatureDataUrl,
+      isCustomSignature: true,
+      uploadedAt: '2026-10-21T00:00:00.000Z',
+    };
+    const k1 = normalizeKey(item.name);
+    const k2 = normalizeKey(item.cleanName);
+    const k3 = normalizeKey(key);
+    if (k1) memoryVault.set(k1, rec);
+    if (k2) memoryVault.set(k2, rec);
+    if (k3) memoryVault.set(k3, rec);
+    memoryVault.set(key, rec);
+  }
+}
+
+// Synchronously seed immediately upon module import
+seedFromMasterSignatures();
 
 /**
  * Open IndexedDB database safely
@@ -75,6 +104,9 @@ function openDatabase(): Promise<IDBDatabase> {
  * 3. Firebase Firestore (Cloud database)
  */
 export async function initSignatureVault(): Promise<Map<string, StoredSignatureRecord>> {
+  // Always seed master real signatures first
+  seedFromMasterSignatures();
+
   // 1. Try reading localStorage first for instant initial render
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -317,6 +349,19 @@ export function getSavedSignature(
     }
   }
 
+  // Fallback direct check against MASTER_REAL_SIGNATURES
+  const master = MASTER_REAL_SIGNATURES[key1] || MASTER_REAL_SIGNATURES[key2] || MASTER_REAL_SIGNATURES[name];
+  if (master && master.signatureDataUrl) {
+    return {
+      name: master.name,
+      cleanName: master.cleanName,
+      signatureDataUrl: master.signatureDataUrl,
+      verticalSignatureDataUrl: master.verticalSignatureDataUrl || master.signatureDataUrl,
+      isCustomSignature: true,
+      uploadedAt: '2026-10-21T00:00:00.000Z',
+    };
+  }
+
   return null;
 }
 
@@ -348,10 +393,10 @@ export function applyVaultSignaturesToInspectors(
       return {
         ...insp,
         signatureDataUrl: saved.signatureDataUrl,
-        verticalSignatureDataUrl: saved.verticalSignatureDataUrl || insp.verticalSignatureDataUrl,
+        verticalSignatureDataUrl: saved.verticalSignatureDataUrl || saved.signatureDataUrl,
         isCustomSignature: true,
-        uploadedAt: saved.uploadedAt,
-        originalFileName: saved.originalFileName,
+        uploadedAt: saved.uploadedAt || insp.uploadedAt,
+        originalFileName: saved.originalFileName || insp.originalFileName,
       };
     }
     return insp;

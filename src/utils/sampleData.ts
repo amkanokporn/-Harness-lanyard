@@ -1,5 +1,6 @@
 import { EquipmentItem, InspectionRecord, Inspector, ParsedExcelResult } from '../types';
-import { generateDigitalSignaturePng } from './signatureUtils';
+import { generateDigitalSignaturePng, cleanInspectorFullName } from './signatureUtils';
+import { MASTER_REAL_SIGNATURES } from '../constants/masterSignatures';
 
 function createInspectorItem(
   id: string,
@@ -8,6 +9,20 @@ function createInspectorItem(
   department: string,
   seed: string
 ): Inspector {
+  const norm = cleanInspectorFullName(name).replace(/\s+/g, '').toLowerCase().trim();
+  const master = MASTER_REAL_SIGNATURES[norm] || MASTER_REAL_SIGNATURES[name];
+  if (master && master.signatureDataUrl) {
+    return {
+      id,
+      name,
+      position,
+      department,
+      signatureDataUrl: master.signatureDataUrl,
+      verticalSignatureDataUrl: master.verticalSignatureDataUrl || master.signatureDataUrl,
+      isCustomSignature: true,
+      uploadedAt: '2026-10-21T00:00:00.000Z',
+    };
+  }
   const sigs = generateDigitalSignaturePng(name, seed);
   return {
     id,

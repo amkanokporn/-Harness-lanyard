@@ -26,6 +26,9 @@ async function startServer() {
     fs.mkdirSync(signaturesDir, { recursive: true });
   }
 
+  // Explicitly serve /signatures directory with static middleware
+  app.use('/signatures', express.static(signaturesDir));
+
   const signaturesFile = path.join(dataDir, 'signatures.json');
 
   // Helper to read server signatures

@@ -558,7 +558,16 @@ export function buildSingleEquipmentData(
     let sigDataUrl = matchedInspector?.signatureDataUrl;
     let vertSigDataUrl = matchedInspector?.verticalSignatureDataUrl || matchedInspector?.signatureDataUrl;
 
-    // Guaranteed fallback: If signature does not exist, generate digital signature on the fly
+    // Check permanent vault / master signatures if missing or if vertical is missing
+    if (!sigDataUrl || !vertSigDataUrl) {
+      const saved = getSavedSignature(displayName) || getSavedSignature(inspectorName);
+      if (saved && saved.signatureDataUrl) {
+        sigDataUrl = saved.signatureDataUrl;
+        vertSigDataUrl = saved.verticalSignatureDataUrl || saved.signatureDataUrl;
+      }
+    }
+
+    // Guaranteed fallback: If signature does not exist anywhere, generate digital signature on the fly
     if (!sigDataUrl || !vertSigDataUrl) {
       const generated = generateDigitalSignaturePng(displayName);
       if (!sigDataUrl) sigDataUrl = generated.horizontal;
