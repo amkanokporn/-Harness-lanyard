@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, UserCheck, FileSpreadsheet, Sparkles } from 'lucide-react';
+import { ShieldCheck, UserCheck, FileSpreadsheet, Sparkles, Database } from 'lucide-react';
 import { generateExcelTemplate } from '../utils/excelParser';
 
 interface NavbarProps {
@@ -76,6 +76,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <UserCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <span>ผู้ตรวจ ({totalInspectors})</span>
+            </button>
+
+            {/* ฐานข้อมูลลายเซ็น & Server Sync */}
+            <button
+              type="button"
+              id="btn-database-sync-nav"
+              onClick={onOpenInspectorModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg transition-colors cursor-pointer"
+              title="ช่องอัปโหลดลายเซ็นขึ้น Server และฐานข้อมูลกลาง (เปิดเครื่องไหนก็เจอ)"
+            >
+              <Database className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+              <span className="hidden sm:inline">อัปโหลดลายเซ็นขึ้น Database</span>
+              <span className="sm:hidden">Database</span>
             </button>
           </div>
         </div>

@@ -1,12 +1,13 @@
 /**
- * Signature Storage Module (Multi-layer Persistent Vault)
+ * Signature Storage Module (Dual Server + Firestore Cloud Vault)
  *
- * Provides unbreakable persistent storage for real uploaded inspector signatures
- * using IndexedDB (primary, unlimited quota, persists across sessions/reloads)
- * with localStorage mirror (synchronous fast cache) and JSON backup/restore.
+ * Provides unbreakable persistent storage for inspector signatures:
+ * 1. Express Server Disk API (/api/signatures) - saved directly into server JSON + PNG files
+ * 2. Firebase Firestore (/signatures collection) - real-time cloud database across all devices
+ * 3. IndexedDB & LocalStorage - client-side caching for instant zero-latency rendering
  *
- * Guarantees that once a signature is uploaded, it is NEVER overwritten by
- * new Excel uploads, code edits, or page refreshes until the user explicitly overwrites it.
+ * Guarantees that any signature saved or uploaded on ONE device is immediately
+ * available on ANY other computer, mobile device, or browser session.
  */
 
 import { Inspector } from '../types';
@@ -35,7 +36,7 @@ const LOCAL_STORAGE_VAULT_KEY = 'egat_permanent_signature_vault_v2';
 let memoryVault = new Map<string, StoredSignatureRecord>();
 let isInitialized = false;
 
-function normalizeKey(str: string): string {
+export function normalizeKey(str: string): string {
   if (!str) return '';
   return cleanInspectorFullName(str)
     .replace(/\s+/g, '')
@@ -56,9 +57,9 @@ function openDatabase(): Promise<IDBDatabase> {
     const request = window.indexedDB.open(IDB_NAME, 1);
 
     request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(IDB_STORE)) {
-        db.createObjectStore(IDB_STORE, { keyPath: 'key' });
+      const dbInstance = (event.target as IDBOpenDBRequest).result;
+      if (!dbInstance.objectStoreNames.contains(IDB_STORE)) {
+        dbInstance.createObjectStore(IDB_STORE, { keyPath: 'key' });
       }
     };
 
@@ -68,13 +69,12 @@ function openDatabase(): Promise<IDBDatabase> {
 }
 
 /**
- * Initialize Signature Vault by reading IndexedDB, localStorage, and Firestore
+ * Initialize Signature Vault by reading:
+ * 1. LocalStorage & IndexedDB (Fast initial render)
+ * 2. Express Server API /api/signatures (Server disk database)
+ * 3. Firebase Firestore (Cloud database)
  */
 export async function initSignatureVault(): Promise<Map<string, StoredSignatureRecord>> {
-  if (isInitialized && memoryVault.size > 0) {
-    return memoryVault;
-  }
-
   // 1. Try reading localStorage first for instant initial render
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -95,11 +95,11 @@ export async function initSignatureVault(): Promise<Map<string, StoredSignatureR
     console.warn('LocalStorage vault read error:', e);
   }
 
-  // 2. Read IndexedDB for complete, full-resolution records
+  // 2. Read IndexedDB
   try {
-    const db = await openDatabase();
+    const idb = await openDatabase();
     await new Promise<void>((resolve) => {
-      const tx = db.transaction(IDB_STORE, 'readonly');
+      const tx = idb.transaction(IDB_STORE, 'readonly');
       const store = tx.objectStore(IDB_STORE);
       const req = store.getAll();
 
@@ -121,43 +121,62 @@ export async function initSignatureVault(): Promise<Map<string, StoredSignatureR
     console.warn('IndexedDB vault read error:', e);
   }
 
-  // 3. Sync from Firestore
+  // 3. Fetch from Server Disk API (/api/signatures)
+  try {
+    const res = await fetch('/api/signatures');
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.success && json.signatures) {
+        Object.values(json.signatures).forEach((rec: any) => {
+          if (rec && rec.name && rec.signatureDataUrl) {
+            const k = normalizeKey(rec.name);
+            memoryVault.set(k, rec as StoredSignatureRecord);
+            const cleanK = normalizeKey(cleanInspectorFullName(rec.name));
+            if (cleanK && cleanK !== k) {
+              memoryVault.set(cleanK, rec as StoredSignatureRecord);
+            }
+          }
+        });
+        console.log(`[Vault] Loaded ${Object.keys(json.signatures).length} signatures from Server API`);
+      }
+    }
+  } catch (e) {
+    console.warn('Server API read warning:', e);
+  }
+
+  // 4. Fetch from Cloud Firestore (/signatures)
   try {
     const querySnapshot = await getDocs(collection(db, 'signatures'));
-    querySnapshot.forEach((doc) => {
-      const data = doc.data() as StoredSignatureRecord;
-      const k = normalizeKey(data.name);
-      memoryVault.set(k, data);
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data() as StoredSignatureRecord;
+      if (data && data.name && data.signatureDataUrl) {
+        const k = normalizeKey(data.name);
+        memoryVault.set(k, data);
+        const cleanK = normalizeKey(cleanInspectorFullName(data.name));
+        if (cleanK && cleanK !== k) {
+          memoryVault.set(cleanK, data);
+        }
+      }
     });
+    console.log(`[Vault] Loaded ${querySnapshot.size} signatures from Firestore Cloud`);
   } catch (e) {
-    console.error('Firestore vault read error:', e);
+    console.warn('Firestore vault read warning:', e);
   }
+
+  // Cache back to local storage
+  mirrorToLocalStorage();
 
   isInitialized = true;
   return memoryVault;
 }
 
 /**
- * Sync memory vault to Firestore
+ * Mirror memory vault into localStorage
  */
-async function persistVault(): Promise<void> {
-  // Save to Firestore using a more robust collection approach
-  try {
-    const signaturesCollection = collection(db, 'signatures');
-    for (const [key, record] of memoryVault.entries()) {
-      // Use setDoc with a unique ID mapping if needed, or stick to the key as doc ID
-      // To ensure uniqueness, perhaps append a hash or just use the name key
-      await setDoc(doc(signaturesCollection, key), record);
-    }
-    console.log('Successfully persisted all signatures to Firestore');
-  } catch (e) {
-    console.error('Firestore write error:', e);
-  }
-
-  // 2. Mirror into localStorage (compressed summary)
+function mirrorToLocalStorage() {
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const obj: { [key: string]: StoredSignatureRecord } = {};
+      const obj: Record<string, StoredSignatureRecord> = {};
       for (const [key, record] of memoryVault.entries()) {
         obj[key] = record;
       }
@@ -166,6 +185,56 @@ async function persistVault(): Promise<void> {
   } catch (e) {
     console.warn('LocalStorage quota limit warning:', e);
   }
+}
+
+/**
+ * Sync memory vault to BOTH Server Disk (/api/signatures) AND Cloud Firestore
+ */
+async function persistVault(): Promise<void> {
+  const currentEntries: Record<string, StoredSignatureRecord> = {};
+  for (const [key, record] of memoryVault.entries()) {
+    currentEntries[key] = record;
+  }
+
+  // 1. Save to Server Disk API (/api/signatures)
+  try {
+    const res = await fetch('/api/signatures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ signatures: currentEntries }),
+    });
+    if (res.ok) {
+      console.log('✅ Successfully saved signatures to Server Disk');
+    }
+  } catch (e) {
+    console.warn('Could not post to server signatures API:', e);
+  }
+
+  // 2. Save to Cloud Firestore
+  try {
+    const signaturesCollection = collection(db, 'signatures');
+    for (const [key, record] of memoryVault.entries()) {
+      await setDoc(doc(signaturesCollection, key), record);
+    }
+    console.log('✅ Successfully persisted signatures to Cloud Firestore');
+  } catch (e) {
+    console.warn('Firestore write warning:', e);
+  }
+
+  // 3. Save to IndexedDB
+  try {
+    const idb = await openDatabase();
+    const tx = idb.transaction(IDB_STORE, 'readwrite');
+    const store = tx.objectStore(IDB_STORE);
+    for (const [key, record] of memoryVault.entries()) {
+      store.put({ key, record });
+    }
+  } catch (e) {
+    console.warn('IndexedDB write warning:', e);
+  }
+
+  // 4. Save to LocalStorage
+  mirrorToLocalStorage();
 }
 
 /**
@@ -188,7 +257,6 @@ export async function saveSignatureToVault(
 
   memoryVault.set(key, updatedRecord);
 
-  // Also set key with clean name without title if different
   const cleanKey = normalizeKey(clean);
   if (cleanKey && cleanKey !== key) {
     memoryVault.set(cleanKey, updatedRecord);
@@ -288,6 +356,60 @@ export function applyVaultSignaturesToInspectors(
     }
     return insp;
   });
+}
+
+/**
+ * Force manual sync from both Server and Firestore to guarantee latest data
+ */
+export async function forceSyncFromDatabase(): Promise<{
+  serverCount: number;
+  firestoreCount: number;
+  totalVaultCount: number;
+}> {
+  let serverCount = 0;
+  let firestoreCount = 0;
+
+  // 1. Fetch Server
+  try {
+    const res = await fetch('/api/signatures');
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.signatures) {
+        Object.values(json.signatures).forEach((rec: any) => {
+          if (rec && rec.name && rec.signatureDataUrl) {
+            const k = normalizeKey(rec.name);
+            memoryVault.set(k, rec);
+            serverCount++;
+          }
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('Server force sync error:', e);
+  }
+
+  // 2. Fetch Firestore
+  try {
+    const querySnapshot = await getDocs(collection(db, 'signatures'));
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data() as StoredSignatureRecord;
+      if (data && data.name && data.signatureDataUrl) {
+        const k = normalizeKey(data.name);
+        memoryVault.set(k, data);
+        firestoreCount++;
+      }
+    });
+  } catch (e) {
+    console.warn('Firestore force sync error:', e);
+  }
+
+  mirrorToLocalStorage();
+
+  return {
+    serverCount,
+    firestoreCount,
+    totalVaultCount: getAllSavedSignatures().length,
+  };
 }
 
 /**

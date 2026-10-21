@@ -23,6 +23,7 @@ import {
   exportSignaturesBackupJson,
   importSignaturesBackupJson,
 } from '../utils/signatureStorage';
+import { DatabaseSignatureUploader } from './DatabaseSignatureUploader';
 import { saveAs } from 'file-saver';
 import {
   X,
@@ -806,7 +807,16 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
         )}
 
         {/* Inspectors List */}
-        <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-3.5 bg-slate-50/40">
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 bg-slate-50/40">
+          {/* Prominent Database Uploader Panel */}
+          <DatabaseSignatureUploader
+            inspectors={localInspectors}
+            onInspectorsUpdated={(updated) => {
+              setLocalInspectors(updated);
+              onSaveInspectors(updated);
+            }}
+          />
+
           {displayedInspectors.length === 0 ? (
             <div className="text-center py-12 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-2xl bg-white">
               <UserCheck className="w-10 h-10 mx-auto text-slate-300 mb-2" />
