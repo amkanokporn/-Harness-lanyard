@@ -47,6 +47,7 @@ import {
   Info,
   Plus,
   Edit3,
+  Database,
 } from 'lucide-react';
 
 interface InspectorManagerModalProps {
@@ -76,6 +77,7 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isProcessingBatch, setIsProcessingBatch] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showDatabaseUploader, setShowDatabaseUploader] = useState(false);
 
   // Add & Edit Inspector state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -737,6 +739,22 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                 <span>เติมคนที่ขาด</span>
               </button>
+
+              {/* Toggle Database Uploader */}
+              <button
+                type="button"
+                id="btn-toggle-database-uploader"
+                onClick={() => setShowDatabaseUploader(!showDatabaseUploader)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer shadow-2xs ${
+                  showDatabaseUploader
+                    ? 'bg-blue-50 text-[#1e3a8a] border-blue-300'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                }`}
+                title={showDatabaseUploader ? 'ซ่อนช่องอัปโหลดลายเซ็นขึ้นฐานข้อมูล' : 'แสดงช่องอัปโหลดลายเซ็นขึ้นฐานข้อมูล'}
+              >
+                <Database className="w-3.5 h-3.5 text-[#1e3a8a]" />
+                <span>{showDatabaseUploader ? 'ซ่อนช่องอัปโหลด' : 'ช่องอัปโหลด Database'}</span>
+              </button>
             </div>
           </div>
 
@@ -808,14 +826,28 @@ export const InspectorManagerModal: React.FC<InspectorManagerModalProps> = ({
 
         {/* Inspectors List */}
         <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 bg-slate-50/40">
-          {/* Prominent Database Uploader Panel */}
-          <DatabaseSignatureUploader
-            inspectors={localInspectors}
-            onInspectorsUpdated={(updated) => {
-              setLocalInspectors(updated);
-              onSaveInspectors(updated);
-            }}
-          />
+          {/* Collapsible Database Uploader Panel (Hidden by default) */}
+          {showDatabaseUploader && (
+            <div className="relative">
+              <div className="flex justify-end mb-1">
+                <button
+                  type="button"
+                  onClick={() => setShowDatabaseUploader(false)}
+                  className="text-xs text-slate-500 hover:text-slate-800 underline flex items-center gap-1 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  ซ่อนช่องอัปโหลดลายเซ็นขึ้นฐานข้อมูล
+                </button>
+              </div>
+              <DatabaseSignatureUploader
+                inspectors={localInspectors}
+                onInspectorsUpdated={(updated) => {
+                  setLocalInspectors(updated);
+                  onSaveInspectors(updated);
+                }}
+              />
+            </div>
+          )}
 
           {displayedInspectors.length === 0 ? (
             <div className="text-center py-12 text-slate-400 text-sm border-2 border-dashed border-slate-200 rounded-2xl bg-white">

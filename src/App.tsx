@@ -15,7 +15,6 @@ import { FilterControls } from './components/FilterControls';
 import { ValidationBanner } from './components/ValidationBanner';
 import { ReportPreviewPanel } from './components/ReportPreviewPanel';
 import { InspectorManagerModal } from './components/InspectorManagerModal';
-import { DatabaseSignatureUploader } from './components/DatabaseSignatureUploader';
 import { PdfReportTemplate } from './components/PdfReportTemplate';
 import { SingleEquipmentReportTemplate } from './components/SingleEquipmentReportTemplate';
 import {
@@ -475,11 +474,6 @@ export default function App() {
         {/* Validation Issues / Error Banner from Excel parsing */}
         {parsedData && <ValidationBanner issues={parsedData.issues} />}
 
-        {/* Dedicated Signature Database Uploader & Sync Panel */}
-        <DatabaseSignatureUploader
-          inspectors={inspectors}
-          onInspectorsUpdated={handleSaveInspectors}
-        />
 
         {/* 1. Filter Controls & Import Excel Panel */}
         <FilterControls

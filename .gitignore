@@ -33,3 +33,7 @@ Thumbs.db
 *.sln
 *.sw?
 *.tmp
+
+# AI Studio Chat Media Attachments & Artifacts
+.aistudio/
+public/assets/aistudio/
