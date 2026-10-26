@@ -140,10 +140,10 @@ function createEquipmentDocxSection(
     alignment: AlignmentType.LEFT,
     spacing: { before: 0, after: 20, line: 200 },
     children: [
-      new TextRun({ text: 'เรียน  หมผ - ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
-      new TextRun({ text: 'แผนก  หมผ - ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
-      new TextRun({ text: 'กอง  กคว - ธ.            ', font: 'TH Sarabun New', size: 27, bold: true }),
-      new TextRun({ text: 'ฝ่าย  อคม.  รวธ.', font: 'TH Sarabun New', size: 27, bold: true }),
+      new TextRun({ text: 'เรียน  หมผ - ธ.            ', font: 'TH Sarabun New', size: 26, bold: true }),
+      new TextRun({ text: 'แผนก  หมผ - ธ.            ', font: 'TH Sarabun New', size: 26, bold: true }),
+      new TextRun({ text: 'กอง  กคว - ธ.            ', font: 'TH Sarabun New', size: 26, bold: true }),
+      new TextRun({ text: 'ฝ่าย  อคม.  รวธ.', font: 'TH Sarabun New', size: 26, bold: true }),
     ],
   });
 
@@ -161,8 +161,8 @@ function createEquipmentDocxSection(
             new Paragraph({
               spacing: { before: 0, after: 0, line: 180 },
               children: [
-                new TextRun({ text: 'ชื่อเครื่องมืออุปกรณ์: ', font: 'TH Sarabun New', size: 27 }),
-                new TextRun({ text: eq.name || '-', font: 'TH Sarabun New', size: 27, bold: false }),
+                new TextRun({ text: 'ชื่อเครื่องมืออุปกรณ์: ', font: 'TH Sarabun New', size: 26 }),
+                new TextRun({ text: eq.name || '-', font: 'TH Sarabun New', size: 26, bold: false }),
               ],
             }),
           ],
@@ -176,8 +176,8 @@ function createEquipmentDocxSection(
             new Paragraph({
               spacing: { before: 0, after: 0, line: 180 },
               children: [
-                new TextRun({ text: 'รหัสประจำตัวอุปกรณ์: ', font: 'TH Sarabun New', size: 27 }),
-                new TextRun({ text: eq.sn || '-', font: 'TH Sarabun New', size: 27 }),
+                new TextRun({ text: 'รหัสประจำตัวอุปกรณ์: ', font: 'TH Sarabun New', size: 26 }),
+                new TextRun({ text: eq.sn || '-', font: 'TH Sarabun New', size: 26 }),
               ],
             }),
           ],
@@ -191,8 +191,8 @@ function createEquipmentDocxSection(
             new Paragraph({
               spacing: { before: 0, after: 0, line: 180 },
               children: [
-                new TextRun({ text: 'ทะเบียน กฟผ.: ', font: 'TH Sarabun New', size: 27 }),
-                new TextRun({ text: eq.egatNo || '-', font: 'TH Sarabun New', size: 27 }),
+                new TextRun({ text: 'ทะเบียน กฟผ.: ', font: 'TH Sarabun New', size: 26 }),
+                new TextRun({ text: eq.egatNo || '-', font: 'TH Sarabun New', size: 26 }),
               ],
             }),
           ],
@@ -206,8 +206,8 @@ function createEquipmentDocxSection(
             new Paragraph({
               spacing: { before: 0, after: 0, line: 180 },
               children: [
-                new TextRun({ text: 'ยี่ห้อ/รุ่น: ', font: 'TH Sarabun New', size: 27 }),
-                new TextRun({ text: eq.brandModel || '-', font: 'TH Sarabun New', size: 27 }),
+                new TextRun({ text: 'ยี่ห้อ/รุ่น: ', font: 'TH Sarabun New', size: 26 }),
+                new TextRun({ text: eq.brandModel || '-', font: 'TH Sarabun New', size: 26 }),
               ],
             }),
           ],
@@ -246,7 +246,7 @@ function createEquipmentDocxSection(
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 0, after: 0, line: 180 },
-            children: [new TextRun({ text: 'ลำดับ\nที่', font: 'TH Sarabun New', size: 27, bold: false })],
+            children: [new TextRun({ text: 'ลำดับ\nที่', font: 'TH Sarabun New', size: 26, bold: false })],
           }),
         ],
       }),
@@ -260,7 +260,7 @@ function createEquipmentDocxSection(
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 0, after: 0, line: 180 },
-            children: [new TextRun({ text: 'รายการตรวจสอบ', font: 'TH Sarabun New', size: 27, bold: false })],
+            children: [new TextRun({ text: 'รายการตรวจสอบ', font: 'TH Sarabun New', size: 26, bold: false })],
           }),
         ],
       }),
@@ -278,7 +278,7 @@ function createEquipmentDocxSection(
               new TextRun({
                 text: `เดือน ${month || '............'} พ.ศ. ${year || '........'}`,
                 font: 'TH Sarabun New',
-                size: 27,
+                size: 26,
                 bold: false,
               }),
             ],
@@ -295,7 +295,7 @@ function createEquipmentDocxSection(
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 0, after: 0, line: 180 },
-            children: [new TextRun({ text: 'หมายเหตุ', font: 'TH Sarabun New', size: 27, bold: false })],
+            children: [new TextRun({ text: 'หมายเหตุ', font: 'TH Sarabun New', size: 26, bold: false })],
           }),
         ],
       }),
@@ -337,7 +337,7 @@ function createEquipmentDocxSection(
             new Paragraph({
               alignment: AlignmentType.CENTER,
               spacing: { before: 0, after: 0, line: 180 },
-              children: [new TextRun({ text: String(item.id), font: 'TH Sarabun New', size: 27, bold: false })],
+              children: [new TextRun({ text: String(item.id), font: 'TH Sarabun New', size: 26, bold: false })],
             }),
           ],
         }),
@@ -349,7 +349,7 @@ function createEquipmentDocxSection(
           children: [
             new Paragraph({
               spacing: { before: 0, after: 0, line: 180 },
-              children: [new TextRun({ text: item.text, font: 'TH Sarabun New', size: 27 })],
+              children: [new TextRun({ text: item.text, font: 'TH Sarabun New', size: 26 })],
             }),
           ],
         }),
@@ -435,8 +435,8 @@ function createEquipmentDocxSection(
                   new ImageRun({
                     data: sigBytes,
                     transformation: {
-                      width: 28,
-                      height: 48,
+                      width: 20.16,
+                      height: 26.88,
                     },
                     type: 'png',
                   }),
@@ -502,7 +502,7 @@ function createEquipmentDocxSection(
               alignment: AlignmentType.CENTER,
               spacing: { before: 0, after: 0, line: 140 },
               children: [
-                new TextRun({ text: 'ผู้รายงาน', font: 'TH Sarabun New', size: 27, bold: false }),
+                new TextRun({ text: 'ผู้รายงาน', font: 'TH Sarabun New', size: 26, bold: false }),
               ],
             })
           );
@@ -523,7 +523,7 @@ function createEquipmentDocxSection(
   // 5. Footer: Copy Note & Revision Box
   const copyNotePara = new Paragraph({
     spacing: { before: 10, after: 10, line: 180 },
-    children: [new TextRun({ text: FORM_METADATA.copyNote, font: 'TH Sarabun New', size: 27 })],
+    children: [new TextRun({ text: FORM_METADATA.copyNote, font: 'TH Sarabun New', size: 26 })],
   });
 
   const footerTable = new Table({
@@ -544,7 +544,7 @@ function createEquipmentDocxSection(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 260 },
-                children: [new TextRun({ text: FORM_METADATA.subdivision, font: 'TH Sarabun New', size: 27 })],
+                children: [new TextRun({ text: FORM_METADATA.subdivision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
           }),
@@ -557,7 +557,7 @@ function createEquipmentDocxSection(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 260 },
-                children: [new TextRun({ text: FORM_METADATA.docNumber, font: 'TH Sarabun New', size: 27, bold: false })],
+                children: [new TextRun({ text: FORM_METADATA.docNumber, font: 'TH Sarabun New', size: 26, bold: false })],
               }),
             ],
           }),
@@ -570,7 +570,7 @@ function createEquipmentDocxSection(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 260 },
-                children: [new TextRun({ text: FORM_METADATA.revision, font: 'TH Sarabun New', size: 27 })],
+                children: [new TextRun({ text: FORM_METADATA.revision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
           }),
@@ -626,11 +626,11 @@ function createSingleEquipmentDocxElements(
               new Paragraph({
                 spacing: { before: 0, after: 0, line: 220 },
                 children: [
-                  new TextRun({ text: 'ชื่อเครื่องมืออุปกรณ์: ', font: 'TH Sarabun New', size: 27 }),
+                  new TextRun({ text: 'ชื่อเครื่องมืออุปกรณ์: ', font: 'TH Sarabun New', size: 26 }),
                   new TextRun({
                     text: cleanName,
                     font: 'TH Sarabun New',
-                    size: 27,
+                    size: 26,
                     bold: false,
                   }),
                 ],
@@ -646,8 +646,8 @@ function createSingleEquipmentDocxElements(
               new Paragraph({
                 spacing: { before: 0, after: 0, line: 220 },
                 children: [
-                  new TextRun({ text: 'รหัสประจำตัวอุปกรณ์: ', font: 'TH Sarabun New', size: 27 }),
-                  new TextRun({ text: eq.sn || '-', font: 'TH Sarabun New', size: 27 }),
+                  new TextRun({ text: 'รหัสประจำตัวอุปกรณ์: ', font: 'TH Sarabun New', size: 26 }),
+                  new TextRun({ text: eq.sn || '-', font: 'TH Sarabun New', size: 26 }),
                 ],
               }),
             ],
@@ -661,8 +661,8 @@ function createSingleEquipmentDocxElements(
               new Paragraph({
                 spacing: { before: 0, after: 0, line: 220 },
                 children: [
-                  new TextRun({ text: 'ทะเบียน กฟผ.: ', font: 'TH Sarabun New', size: 27 }),
-                  new TextRun({ text: eq.egatNo || '-', font: 'TH Sarabun New', size: 27 }),
+                  new TextRun({ text: 'ทะเบียน กฟผ.: ', font: 'TH Sarabun New', size: 26 }),
+                  new TextRun({ text: eq.egatNo || '-', font: 'TH Sarabun New', size: 26 }),
                 ],
               }),
             ],
@@ -676,8 +676,8 @@ function createSingleEquipmentDocxElements(
               new Paragraph({
                 spacing: { before: 0, after: 0, line: 220 },
                 children: [
-                  new TextRun({ text: 'ยี่ห้อ/รุ่น: ', font: 'TH Sarabun New', size: 27 }),
-                  new TextRun({ text: eq.brandModel || '-', font: 'TH Sarabun New', size: 27 }),
+                  new TextRun({ text: 'ยี่ห้อ/รุ่น: ', font: 'TH Sarabun New', size: 26 }),
+                  new TextRun({ text: eq.brandModel || '-', font: 'TH Sarabun New', size: 26 }),
                 ],
               }),
             ],
@@ -707,7 +707,7 @@ function createSingleEquipmentDocxElements(
             alignment: AlignmentType.CENTER,
             spacing: { before: 0, after: 0, line: 180 },
             children: [
-              new TextRun({ text: 'ลำดับ\nที่', font: 'TH Sarabun New', size: 27, bold: false }),
+              new TextRun({ text: 'ลำดับ\nที่', font: 'TH Sarabun New', size: 26, bold: false }),
             ],
           }),
         ],
@@ -723,7 +723,7 @@ function createSingleEquipmentDocxElements(
             alignment: AlignmentType.CENTER,
             spacing: { before: 0, after: 0, line: 180 },
             children: [
-              new TextRun({ text: 'รายการตรวจสอบ', font: 'TH Sarabun New', size: 27, bold: false }),
+              new TextRun({ text: 'รายการตรวจสอบ', font: 'TH Sarabun New', size: 26, bold: false }),
             ],
           }),
         ],
@@ -742,7 +742,7 @@ function createSingleEquipmentDocxElements(
               new TextRun({
                 text: `เดือน ${month || '............'} พ.ศ. ${year || '........'}`,
                 font: 'TH Sarabun New',
-                size: 27,
+                size: 26,
                 bold: false,
               }),
             ],
@@ -760,7 +760,7 @@ function createSingleEquipmentDocxElements(
             alignment: AlignmentType.CENTER,
             spacing: { before: 0, after: 0, line: 180 },
             children: [
-              new TextRun({ text: 'หมายเหตุ', font: 'TH Sarabun New', size: 27, bold: false }),
+              new TextRun({ text: 'หมายเหตุ', font: 'TH Sarabun New', size: 26, bold: false }),
             ],
           }),
         ],
@@ -805,7 +805,7 @@ function createSingleEquipmentDocxElements(
             new Paragraph({
               alignment: AlignmentType.CENTER,
               spacing: { before: 0, after: 0, line: 180 },
-              children: [new TextRun({ text: `${item.id}`, font: 'TH Sarabun New', size: 27, bold: false })],
+              children: [new TextRun({ text: `${item.id}`, font: 'TH Sarabun New', size: 26, bold: false })],
             }),
           ],
         }),
@@ -822,7 +822,7 @@ function createSingleEquipmentDocxElements(
                 new TextRun({
                   text: item.text,
                   font: 'TH Sarabun New',
-                  size: 27,
+                  size: 26,
                 }),
               ],
             }),
@@ -920,8 +920,8 @@ function createSingleEquipmentDocxElements(
                   new ImageRun({
                     data: sigBytes,
                     transformation: {
-                      width: 28,
-                      height: 48,
+                      width: 20.16,
+                      height: 26.88,
                     },
                     type: 'png',
                   }),
@@ -993,7 +993,7 @@ function createSingleEquipmentDocxElements(
               alignment: AlignmentType.CENTER,
               spacing: { before: 0, after: 0, line: 140 },
               children: [
-                new TextRun({ text: 'ผู้รายงาน', font: 'TH Sarabun New', size: 27, bold: false }),
+                new TextRun({ text: 'ผู้รายงาน', font: 'TH Sarabun New', size: 26, bold: false }),
               ],
             })
           );
@@ -1046,7 +1046,7 @@ function createEquipmentPairDocxPage(
       new TextRun({
         text: 'เรียน  หมผ - ธ.    แผนก  หมผ - ธ.    กอง  กคว - ธ.    ฝ่าย  อคม.  รวธ.',
         font: 'TH Sarabun New',
-        size: 27,
+        size: 26,
         bold: true,
         color: '000000',
       }),
@@ -1069,7 +1069,7 @@ function createEquipmentPairDocxPage(
 
   const copyNotePara = new Paragraph({
     spacing: { before: 8, after: 8, line: 160 },
-    children: [new TextRun({ text: FORM_METADATA.copyNote, font: 'TH Sarabun New', size: 27 })],
+    children: [new TextRun({ text: FORM_METADATA.copyNote, font: 'TH Sarabun New', size: 26 })],
   });
 
   const footerTable = new Table({
@@ -1090,7 +1090,7 @@ function createEquipmentPairDocxPage(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 260 },
-                children: [new TextRun({ text: FORM_METADATA.subdivision, font: 'TH Sarabun New', size: 27 })],
+                children: [new TextRun({ text: FORM_METADATA.subdivision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
           }),
@@ -1103,7 +1103,7 @@ function createEquipmentPairDocxPage(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 260 },
-                children: [new TextRun({ text: FORM_METADATA.docNumber, font: 'TH Sarabun New', size: 27, bold: false })],
+                children: [new TextRun({ text: FORM_METADATA.docNumber, font: 'TH Sarabun New', size: 26, bold: false })],
               }),
             ],
           }),
@@ -1116,7 +1116,7 @@ function createEquipmentPairDocxPage(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 spacing: { before: 0, after: 0, line: 260 },
-                children: [new TextRun({ text: FORM_METADATA.revision, font: 'TH Sarabun New', size: 27 })],
+                children: [new TextRun({ text: FORM_METADATA.revision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
           }),

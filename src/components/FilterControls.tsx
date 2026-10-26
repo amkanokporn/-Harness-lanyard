@@ -524,7 +524,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
               ? 'bg-white hover:bg-blue-50/60 text-[#1e3a8a] border-blue-200 cursor-pointer shadow-2xs hover:border-blue-300'
               : 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed'
           }`}
-          title="สร้างไฟล์ Word (.docx) 13.5pt พอดีหน้า A4 แนวนอน"
+          title="สร้างไฟล์ Word (.docx) 13pt พอดีหน้า A4 แนวนอน"
         >
           {isGeneratingDocx ? (
             <>
