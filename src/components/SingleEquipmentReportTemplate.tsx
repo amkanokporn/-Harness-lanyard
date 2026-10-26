@@ -58,6 +58,80 @@ const CrossSvg: React.FC<{ size?: number; className?: string }> = ({ size = 13, 
 );
 
 /**
+ * Formats checklist items with exact line breaks, spacing, and phrasing
+ * matching the Microsoft Word 2019 master report template identically.
+ */
+const renderChecklistItemText = (equipmentType: 'harness' | 'lanyard', itemId: number) => {
+  if (equipmentType === 'harness') {
+    switch (itemId) {
+      case 1:
+        return (
+          <>
+            D-ring และหัวเข็มขัดต้องอยู่ในสภาพดี ไม่บิดเบี้ยว<br />
+            ไม่มีรอยแตกร้าว สนิม และขอบคม<br />
+            หัวเข็มขัดต้องปรับเลื่อนได้โดยไม่ติดขัด
+          </>
+        );
+      case 2:
+        return (
+          <>
+            สายรัดต้องอยู่ในสภาพดี ไม่มีรอยตัด ฉีกขาด รอยไหม้<br />
+            เส้นด้ายหลุดลุ่ย หรือสีซีดจาง
+          </>
+        );
+      case 3:
+        return <>รอยเย็บต้องแน่นและไม่มีรอยตัด</>;
+      case 4:
+        return <>ป้ายเครื่องหมายต้องอยู่ในสภาพดี ไม่ขาด ตัวหนังสือชัดเจน</>;
+      default:
+        return null;
+    }
+  } else {
+    switch (itemId) {
+      case 1:
+        return (
+          <>
+            ตะขอเกี่ยว, Carabiner และ D-ring ต้องอยู่ในสภาพดี<br />
+            ไม่บิดเบี้ยว ไม่มีรอยแตกร้าว สนิม และขอบคม
+          </>
+        );
+      case 2:
+        return (
+          <>
+            สายรัด Lanyard ต้องอยู่ในสภาพดี ไม่มีรอยตัด ฉีกขาด<br />
+            รอยไหม้ เส้นด้ายหลุดลุ่ย หรือสีซีดจาง
+          </>
+        );
+      case 3:
+        return <>รอยเย็บ Lanyard ต้องแน่น และไม่มีรอยตัด</>;
+      case 4:
+        return (
+          <>
+            เชือก Lanyard ต้องอยู่ในสภาพดี แน่นเป็นเส้นเดียวกัน<br />
+            ไม่มีรอยตัด รอยไหม้ ไม่พันกันเป็นปม หรือสีซีดจาง
+          </>
+        );
+      case 5:
+        return (
+          <>
+            อุปกรณ์ดูดซับแรงกระชาก ต้องอยู่ในสภาพดี ไม่ยืดออก<br />
+            และไม่ฉีกขาด
+          </>
+        );
+      case 6:
+        return (
+          <>
+            ป้ายเครื่องหมาย ต้องอยู่ในสภาพดี ไม่ขาด<br />
+            ตัวหนังสือชัดเจน
+          </>
+        );
+      default:
+        return null;
+    }
+  }
+};
+
+/**
  * Sub-component for rendering a single equipment's header box and 31-day checklist table
  * Built as an EXACT 1:1 digital twin of the Microsoft Word template (FM-004/QP-PB-013)
  * Full 13.5pt (18px) TH Sarabun New font for maximum clarity and exact document fidelity
@@ -322,13 +396,13 @@ const EquipmentSection: React.FC<{
                   border: '1px solid #000000',
                   textAlign: 'left',
                   verticalAlign: 'middle',
-                  fontSize: isHarness ? '15px' : '14.5px',
-                  lineHeight: isHarness ? '1.24' : '1.20',
-                  padding: '2px 10px',
+                  fontSize: '15.5px',
+                  lineHeight: '1.24',
+                  padding: '3px 8px',
                   fontWeight: 'normal',
                 }}
               >
-                {item.text}
+                {renderChecklistItemText(data.equipmentType, item.id) || item.text}
               </td>
 
               {/* 31 Day Check Cells (shows '/' like in Word) */}

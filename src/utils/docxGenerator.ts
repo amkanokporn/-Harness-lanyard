@@ -73,10 +73,10 @@ const CELL_MARGIN_COMPACT = {
 };
 
 const CELL_MARGIN_FOOTER = {
-  top: 45,
-  bottom: 45,
-  left: 60,
-  right: 60,
+  top: 70,
+  bottom: 70,
+  left: 80,
+  right: 80,
 };
 
 /**
@@ -392,11 +392,11 @@ function createEquipmentDocxSection(
         width: { size: colWSeq + colWText, type: WidthType.DXA },
         columnSpan: 2,
         borders: CELL_BORDERS_ALL,
-        margins: CELL_MARGIN_COMPACT,
+        margins: { top: 40, bottom: 60, left: 80, right: 80 },
         verticalAlign: VerticalAlign.CENTER,
         children: [
           new Paragraph({
-            spacing: { before: 0, after: 0, line: 200 },
+            spacing: { before: 0, after: 20, line: 220 },
             children: [
               new TextRun({
                 text: '[✓] สภาพปกติ   [✕] สภาพผิดปกติ ยังใช้ได้   [■] สภาพผิดปกติ ต้องแก้ไขห้ามใช้\n',
@@ -522,7 +522,7 @@ function createEquipmentDocxSection(
 
   // 5. Footer: Copy Note & Revision Box
   const copyNotePara = new Paragraph({
-    spacing: { before: 10, after: 10, line: 180 },
+    spacing: { before: 40, after: 40, line: 220 },
     children: [new TextRun({ text: FORM_METADATA.copyNote, font: 'TH Sarabun New', size: 26 })],
   });
 
@@ -533,7 +533,7 @@ function createEquipmentDocxSection(
     rows: [
       new TableRow({
         cantSplit: true,
-        height: { value: 380, rule: HeightRule.ATLEAST },
+        height: { value: 440, rule: HeightRule.ATLEAST },
         children: [
           new TableCell({
             width: { size: 5200, type: WidthType.DXA },
@@ -543,7 +543,7 @@ function createEquipmentDocxSection(
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 260 },
+                spacing: { before: 10, after: 10, line: 240 },
                 children: [new TextRun({ text: FORM_METADATA.subdivision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
@@ -556,7 +556,7 @@ function createEquipmentDocxSection(
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 260 },
+                spacing: { before: 10, after: 10, line: 240 },
                 children: [new TextRun({ text: FORM_METADATA.docNumber, font: 'TH Sarabun New', size: 26, bold: false })],
               }),
             ],
@@ -569,7 +569,7 @@ function createEquipmentDocxSection(
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 260 },
+                spacing: { before: 10, after: 10, line: 240 },
                 children: [new TextRun({ text: FORM_METADATA.revision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
@@ -869,7 +869,7 @@ function createSingleEquipmentDocxElements(
         width: { size: colWSeq + colWText, type: WidthType.DXA },
         columnSpan: 2,
         borders: CELL_BORDERS_ALL,
-        margins: { top: 30, bottom: 30, left: 80, right: 80 },
+        margins: { top: 40, bottom: 60, left: 80, right: 80 },
         verticalAlign: VerticalAlign.CENTER,
         children: [
           new Paragraph({
@@ -885,7 +885,7 @@ function createSingleEquipmentDocxElements(
           }),
           new Paragraph({
             alignment: AlignmentType.RIGHT,
-            spacing: { before: 0, after: 0, line: 200 },
+            spacing: { before: 0, after: 20, line: 220 },
             children: [
               new TextRun({
                 text: 'ลงชื่อ ผู้ตรวจสอบ',
@@ -1068,7 +1068,7 @@ function createEquipmentPairDocxPage(
   );
 
   const copyNotePara = new Paragraph({
-    spacing: { before: 8, after: 8, line: 160 },
+    spacing: { before: 40, after: 40, line: 220 },
     children: [new TextRun({ text: FORM_METADATA.copyNote, font: 'TH Sarabun New', size: 26 })],
   });
 
@@ -1079,7 +1079,7 @@ function createEquipmentPairDocxPage(
     rows: [
       new TableRow({
         cantSplit: true,
-        height: { value: 380, rule: HeightRule.ATLEAST },
+        height: { value: 440, rule: HeightRule.ATLEAST },
         children: [
           new TableCell({
             width: { size: 5200, type: WidthType.DXA },
@@ -1089,7 +1089,7 @@ function createEquipmentPairDocxPage(
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 260 },
+                spacing: { before: 10, after: 10, line: 240 },
                 children: [new TextRun({ text: FORM_METADATA.subdivision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
@@ -1102,7 +1102,7 @@ function createEquipmentPairDocxPage(
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 260 },
+                spacing: { before: 10, after: 10, line: 240 },
                 children: [new TextRun({ text: FORM_METADATA.docNumber, font: 'TH Sarabun New', size: 26, bold: false })],
               }),
             ],
@@ -1115,7 +1115,7 @@ function createEquipmentPairDocxPage(
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 260 },
+                spacing: { before: 10, after: 10, line: 240 },
                 children: [new TextRun({ text: FORM_METADATA.revision, font: 'TH Sarabun New', size: 26 })],
               }),
             ],
