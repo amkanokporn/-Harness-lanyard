@@ -96,89 +96,89 @@ export const ReportPreviewPanel: React.FC<ReportPreviewPanelProps> = ({
       className="bg-white rounded-xl border border-slate-200 shadow-2xs p-5 sm:p-6 flex flex-col space-y-4"
     >
       {/* Top Preview Control Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#1e3a8a] text-[#fbbf24] flex items-center justify-center font-bold shrink-0 shadow-2xs">
-            <Eye className="w-6 h-6 stroke-[2.2]" />
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#1e3a8a] text-[#fbbf24] flex items-center justify-center font-bold shrink-0 shadow-2xs">
+            <Eye className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h2 className="text-lg sm:text-xl font-bold text-[#1e3a8a] tracking-tight">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-base sm:text-lg font-bold text-[#1e3a8a] tracking-tight">
                 ตัวอย่างเอกสารรายงานจริง (A4 แนวนอน)
               </h2>
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs sm:text-sm font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                <Sparkles className="w-4 h-4 mr-1 text-amber-600" /> ลายเซ็นลงตรงตามวันตรวจ
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-900 border border-amber-300">
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" /> ลายเซ็นลงตรงตามวันตรวจ
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 font-normal">
               แบบฟอร์ม FM-004/QP-PB-013 กฟผ. (ขนาด A4 แนวนอน • ฟอนต์ TH Sarabun New 13.5pt พอดี 1 หน้า)
             </p>
           </div>
         </div>
 
         {/* View Mode & Zoom Controls */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
           {/* Layout Mode Switcher */}
-          <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 flex items-center gap-1 text-xs sm:text-sm">
+          <div className="bg-slate-50 p-1 rounded-lg border border-slate-200 flex items-center gap-1 text-xs sm:text-sm">
             <button
               type="button"
               id="tab-mode-pair"
               onClick={() => setViewFormat('pair')}
-              className={`px-3.5 py-2 rounded-lg transition-colors cursor-pointer font-semibold flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer font-medium flex items-center gap-1.5 ${
                 viewFormat === 'pair'
-                  ? 'bg-[#1e3a8a] text-white shadow-2xs'
+                  ? 'bg-[#1e3a8a] text-white shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-3.5 h-3.5" />
               <span>รายชุดอุปกรณ์ (Word Layout)</span>
             </button>
             <button
               type="button"
               id="tab-mode-matrix"
               onClick={() => setViewFormat('matrix')}
-              className={`px-3.5 py-2 rounded-lg transition-colors cursor-pointer font-semibold flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md transition-colors cursor-pointer font-medium flex items-center gap-1.5 ${
                 viewFormat === 'matrix'
-                  ? 'bg-[#1e3a8a] text-white shadow-2xs'
+                  ? 'bg-[#1e3a8a] text-white shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="w-3.5 h-3.5" />
               <span>ตารางรวม (Matrix)</span>
             </button>
           </div>
 
           {/* Zoom Buttons */}
-          <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 flex items-center gap-1 text-xs sm:text-sm font-semibold">
+          <div className="bg-slate-50 p-1 rounded-lg border border-slate-200 flex items-center gap-0.5 text-xs sm:text-sm">
             <button
               type="button"
               id="btn-zoom-out"
               onClick={handleZoomOut}
-              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
+              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-md hover:bg-white transition-colors cursor-pointer"
               title="ย่อขนาด"
             >
-              <ZoomOut className="w-4 h-4" />
+              <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="px-2 text-xs sm:text-sm font-mono font-bold text-slate-800 min-w-[42px] text-center">
+            <span className="px-1.5 text-xs font-mono font-medium text-slate-700 min-w-[38px] text-center">
               {Math.round(zoomLevel * 100)}%
             </span>
             <button
               type="button"
               id="btn-zoom-in"
               onClick={handleZoomIn}
-              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
+              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-md hover:bg-white transition-colors cursor-pointer"
               title="ขยายขนาด"
             >
-              <ZoomIn className="w-4 h-4" />
+              <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               id="btn-zoom-reset"
               onClick={handleResetZoom}
-              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-white transition-colors cursor-pointer"
+              className="p-1.5 text-slate-600 hover:text-slate-900 rounded-md hover:bg-white transition-colors cursor-pointer"
               title="ขนาดพอดีจอ"
             >
-              <Maximize2 className="w-4 h-4" />
+              <Maximize2 className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
