@@ -465,7 +465,7 @@ function createEquipmentDocxSection(
       new TableCell({
         width: { size: colWNote, type: WidthType.DXA },
         borders: CELL_BORDERS_ALL,
-        margins: { top: 2, bottom: 2, left: 4, right: 4 },
+        margins: { top: 20, bottom: 20, left: 20, right: 20 },
         verticalAlign: VerticalAlign.CENTER,
         children: (() => {
           const topInsp = activeInspectors[0];
@@ -482,13 +482,13 @@ function createEquipmentDocxSection(
             paragraphs.push(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 80 },
+                spacing: { before: 0, after: 15, line: 120 },
                 children: [
                   new ImageRun({
                     data: topSigBytes,
                     transformation: {
-                      width: 96,
-                      height: 32,
+                      width: 65,
+                      height: 23,
                     },
                     type: 'png',
                   }),
@@ -500,7 +500,7 @@ function createEquipmentDocxSection(
           paragraphs.push(
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              spacing: { before: 0, after: 0, line: 140 },
+              spacing: { before: 0, after: 0, line: 160 },
               children: [
                 new TextRun({ text: 'ผู้รายงาน', font: 'TH Sarabun New', size: 26, bold: false }),
               ],
@@ -957,7 +957,7 @@ function createSingleEquipmentDocxElements(
       new TableCell({
         width: { size: colWNote, type: WidthType.DXA },
         borders: CELL_BORDERS_ALL,
-        margins: { top: 2, bottom: 2, left: 4, right: 4 },
+        margins: { top: 20, bottom: 20, left: 20, right: 20 },
         verticalAlign: VerticalAlign.CENTER,
         children: (() => {
           let reporterSigUrl = data.primaryInspector?.signatureDataUrl;
@@ -973,13 +973,13 @@ function createSingleEquipmentDocxElements(
             paragraphs.push(
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 0, after: 0, line: 80 },
+                spacing: { before: 0, after: 15, line: 120 },
                 children: [
                   new ImageRun({
                     data: reporterSigBytes,
                     transformation: {
-                      width: 92,
-                      height: 30,
+                      width: 55,
+                      height: 20,
                     },
                     type: 'png',
                   }),
@@ -991,7 +991,7 @@ function createSingleEquipmentDocxElements(
           paragraphs.push(
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              spacing: { before: 0, after: 0, line: 140 },
+              spacing: { before: 0, after: 0, line: 160 },
               children: [
                 new TextRun({ text: 'ผู้รายงาน', font: 'TH Sarabun New', size: 26, bold: false }),
               ],
