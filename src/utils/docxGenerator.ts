@@ -615,16 +615,16 @@ function createSingleEquipmentDocxElements(
     rows: [
       new TableRow({
         cantSplit: true,
-        height: { value: 460, rule: HeightRule.ATLEAST },
+        height: { value: 310, rule: HeightRule.ATLEAST },
         children: [
           new TableCell({
             width: { size: 3900, type: WidthType.DXA },
             borders: CELL_BORDERS_ALL,
-            margins: { top: 60, bottom: 60, left: 80, right: 80 },
+            margins: { top: 20, bottom: 20, left: 80, right: 80 },
             verticalAlign: VerticalAlign.CENTER,
             children: [
               new Paragraph({
-                spacing: { before: 0, after: 0, line: 220 },
+                spacing: { before: 0, after: 0, line: 180 },
                 children: [
                   new TextRun({ text: 'ชื่อเครื่องมืออุปกรณ์: ', font: 'TH Sarabun New', size: 26 }),
                   new TextRun({
@@ -640,11 +640,11 @@ function createSingleEquipmentDocxElements(
           new TableCell({
             width: { size: 3150, type: WidthType.DXA },
             borders: CELL_BORDERS_ALL,
-            margins: { top: 60, bottom: 60, left: 80, right: 80 },
+            margins: { top: 20, bottom: 20, left: 80, right: 80 },
             verticalAlign: VerticalAlign.CENTER,
             children: [
               new Paragraph({
-                spacing: { before: 0, after: 0, line: 220 },
+                spacing: { before: 0, after: 0, line: 180 },
                 children: [
                   new TextRun({ text: 'รหัสประจำตัวอุปกรณ์: ', font: 'TH Sarabun New', size: 26 }),
                   new TextRun({ text: eq.sn || '-', font: 'TH Sarabun New', size: 26 }),
@@ -655,11 +655,11 @@ function createSingleEquipmentDocxElements(
           new TableCell({
             width: { size: 3300, type: WidthType.DXA },
             borders: CELL_BORDERS_ALL,
-            margins: { top: 60, bottom: 60, left: 80, right: 80 },
+            margins: { top: 20, bottom: 20, left: 80, right: 80 },
             verticalAlign: VerticalAlign.CENTER,
             children: [
               new Paragraph({
-                spacing: { before: 0, after: 0, line: 220 },
+                spacing: { before: 0, after: 0, line: 180 },
                 children: [
                   new TextRun({ text: 'ทะเบียน กฟผ.: ', font: 'TH Sarabun New', size: 26 }),
                   new TextRun({ text: eq.egatNo || '-', font: 'TH Sarabun New', size: 26 }),
@@ -670,11 +670,11 @@ function createSingleEquipmentDocxElements(
           new TableCell({
             width: { size: 5250, type: WidthType.DXA },
             borders: CELL_BORDERS_ALL,
-            margins: { top: 60, bottom: 60, left: 80, right: 80 },
+            margins: { top: 20, bottom: 20, left: 80, right: 80 },
             verticalAlign: VerticalAlign.CENTER,
             children: [
               new Paragraph({
-                spacing: { before: 0, after: 0, line: 220 },
+                spacing: { before: 0, after: 0, line: 180 },
                 children: [
                   new TextRun({ text: 'ยี่ห้อ/รุ่น: ', font: 'TH Sarabun New', size: 26 }),
                   new TextRun({ text: eq.brandModel || '-', font: 'TH Sarabun New', size: 26 }),
